@@ -55,7 +55,15 @@ public class EntryValuePanel : MonoBehaviour
         entrBtn.onClick.AddListener(() =>
         {
             if (valText.text.Length == 0) valText.text = "0,00";
-            while (!outReg1.IsMatch(valText.text)) valText.text += "0";
+            int breakCounter = 0;
+            while (!outReg1.IsMatch(valText.text))
+            {
+                valText.text += "0";
+                if (++breakCounter == 20)
+                {
+                    break;
+                }
+            }
             if (!outReg2.IsMatch(valText.text)) valText.text = "0" + valText.text;
 
             targetField.text = valText.text;

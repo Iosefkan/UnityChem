@@ -1,0 +1,252 @@
+
+--[Начало CurrTimeUpdate.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CurrTimeUpdate : MonoBehaviour
+{
+    TMP_Text text;
+    private void Start()
+    {
+        text = GetComponent<TMP_Text>();
+    }
+
+    void Update()
+    {
+        text.text = System.DateTime.Now.ToString("HH:mm:ss");
+    }
+}
+
+--[Конец CurrTimeUpdate.cs]--
+
+--[Начало EntryValuePanel.cs]--
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Xml;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class EntryValuePanel : MonoBehaviour
+{
+    Regex inReg = new Regex("^(\\d?){0,3}(,(\\d?){0,2})?$");
+    Regex outReg1 = new Regex("^.*,\\d\\d$");
+    Regex outReg2 = new Regex("^\\d.*");
+
+    [SerializeField] Button[] valBtns = new Button[10];
+    [SerializeField] Button commaBtn;
+    [SerializeField] Button delBtn;
+    [SerializeField] Button entrBtn;
+
+    [SerializeField] TMP_Text valText;
+
+    TMP_Text targetField;
+
+    void Start()
+    {
+        for (int i = 0; i < valBtns.Length; ++i)
+        {
+            int elem = i;
+            valBtns[i].onClick.AddListener(() =>
+            {
+                string resStr = valText.text + elem.ToString();
+                if (inReg.IsMatch(resStr))
+                {
+                    valText.text = resStr;
+                }                
+            });
+        }
+
+        commaBtn.onClick.AddListener(() =>
+        {
+            string resStr = valText.text + ",";
+            if (inReg.IsMatch(resStr))
+            {
+                valText.text = resStr;
+            }
+        });
+
+        delBtn.onClick.AddListener(() =>
+        {
+            if (valText.text.Length == 0) return;
+            valText.text = valText.text.Substring(0, valText.text.Length - 1);
+        });
+
+        entrBtn.onClick.AddListener(() =>
+        {
+            if (valText.text.Length == 0) valText.text = "0,00";
+            int breakCounter = 0;
+            while (!outReg1.IsMatch(valText.text))
+            {
+                valText.text += "0";
+                if (++breakCounter == 20)
+                {
+                    break;
+                }
+            }
+            if (!outReg2.IsMatch(valText.text)) valText.text = "0" + valText.text;
+
+            targetField.text = valText.text;
+            gameObject.SetActive(false);
+        });
+    }
+
+    public void Open(TMP_Text t)
+    {
+        targetField = t;
+        valText.text = t.text;
+        gameObject.SetActive(true);
+    }
+}
+
+--[Конец EntryValuePanel.cs]--
+
+--[Начало OnOffManager.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using static OnOffManager;
+
+public class OnOffManager : MonoBehaviour
+{
+    [System.Serializable]
+    public struct OnOff
+    {
+        public Button btnOn;
+        public Button btnOff;
+        public OnOffTablo[] onOffTablos;
+    }
+
+    [SerializeField] OnOff[] onOffs;
+
+    void Start()
+    {
+        foreach (OnOff onOff in onOffs)
+        {
+            foreach (OnOffTablo onOffTablo in onOff.onOffTablos)
+            {
+                onOff.btnOn.onClick.AddListener(() => { onOffTablo.СhangeOnOff(true); });
+                onOff.btnOff.onClick.AddListener(() => { onOffTablo.СhangeOnOff(false); });
+            }
+        }
+    }
+}
+--[Конец OnOffManager.cs]--
+
+--[Начало OnOffTablo.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class OnOffTablo : MonoBehaviour
+{
+    bool IsOn = false;
+    
+    void Start()
+    {
+        СhangeOnOff(false);
+    }
+
+    public void СhangeOnOff(bool isOn)
+    {
+        IsOn = isOn;
+        TMP_Text t = transform.GetComponentInChildren<TMP_Text>();
+        
+        if (IsOn)
+        {
+            ColorUtility.TryParseHtmlString("#35763B", out Color color);
+            t.text = "ВКЛ";
+            t.color = color;
+        }
+        else
+        {
+            ColorUtility.TryParseHtmlString("#493C3C", out Color color);
+            t.text = "ВЫКЛ";
+            t.color = color;
+        }
+    }
+
+    public bool isOn()
+    {
+        return IsOn;
+    }
+}
+
+--[Конец OnOffTablo.cs]--
+
+--[Начало SelectedBtn.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SelectedBtn : MonoBehaviour
+{
+    public string Name;
+
+    private bool isSelected = false;
+
+    public string select(bool isSelect)
+    {
+        isSelected = isSelect;
+        transform.GetChild(0).gameObject.SetActive(!isSelected);
+
+        return Name;
+    }
+}
+
+--[Конец SelectedBtn.cs]--
+
+--[Начало SwitchPanels.cs]--
+using System;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SwitchPanels : MonoBehaviour
+{
+    [Serializable]
+    struct Switch
+    {
+        public Button btn;
+        public GameObject panel;
+        public String text;
+    }
+
+    [SerializeField] TMP_Text header;
+    [SerializeField] Switch[] switchs;
+
+    Switch currSwt;
+
+    void Start()
+    {
+        foreach (Switch sw in switchs)
+        {
+            sw.btn.onClick.AddListener(() => ActivePanel(sw));
+        }
+
+        if (switchs.Length > 0) ActivePanel(switchs.First());
+    }
+
+    void ActivePanel(Switch sw)
+    {
+        if (currSwt.panel) currSwt.panel.SetActive(false);
+        if (currSwt.btn) currSwt.btn.GetComponent<SelectedBtn>().select(false);
+
+        currSwt = sw;
+
+        currSwt.panel.SetActive(true);
+        currSwt.btn.GetComponent<SelectedBtn>().select(true);
+        header.text = currSwt.text;
+    }
+}
+--[Конец SwitchPanels.cs]--

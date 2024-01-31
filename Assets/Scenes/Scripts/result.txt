@@ -1,0 +1,311 @@
+
+--[Начало ClickedObj.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public interface ClickedObj
+{
+    public void Click(PointerEventData.InputButton ibtn);
+}
+--[Конец ClickedObj.cs]--
+
+--[Начало ClickOnObj.cs]--
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
+
+public class ClickOnObj : MonoBehaviour
+{
+    readonly int leftMouseBtn = (int)PointerEventData.InputButton.Left;
+    readonly int rightMouseBtn = (int)PointerEventData.InputButton.Right;
+
+    [SerializeField] private int rangePressing = 10;
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(leftMouseBtn) || Input.GetMouseButtonDown(rightMouseBtn))
+        {            
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit, rangePressing))
+            {
+                ClickedObj clObj = hit.collider.gameObject.GetComponent<ClickedObj>();
+                if (clObj != null)
+                {
+                    if (Input.GetMouseButtonDown(leftMouseBtn))
+                    {
+                        clObj.Click(PointerEventData.InputButton.Left);
+                    }
+                    else if (Input.GetMouseButtonDown(rightMouseBtn))
+                    {
+                        clObj.Click(PointerEventData.InputButton.Right);
+                    }
+                }
+            }
+        }
+    }
+}
+
+--[Конец ClickOnObj.cs]--
+
+--[Начало ClickOnUI.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class ClickOnUI : MonoBehaviour
+{
+    readonly int leftMouseBtn = (int)PointerEventData.InputButton.Left;
+    readonly int rightMouseBtn = (int)PointerEventData.InputButton.Right;
+
+    GraphicRaycaster gr;
+    PointerEventData ped;
+
+    void Start()
+    {
+        gr = this.GetComponent<GraphicRaycaster>();
+        ped = new PointerEventData(null);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(leftMouseBtn) || Input.GetMouseButtonDown(rightMouseBtn))
+        {
+            ped.position = Input.mousePosition;
+            List<RaycastResult> results = new List<RaycastResult>();
+            gr.Raycast(ped, results);
+
+            foreach (RaycastResult result in results)
+            {
+                Button btn = result.gameObject.GetComponent<Button>();
+                if (btn) btn.onClick.Invoke();
+            }
+        }
+    }
+}
+
+--[Конец ClickOnUI.cs]--
+
+--[Начало CursorLock.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CursorLock : MonoBehaviour
+{
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+}
+
+--[Конец CursorLock.cs]--
+
+--[Начало MoveCharacter.cs]--
+using UnityEngine;
+
+public class MoveCharacter : MonoBehaviour
+{
+    public float rotationSpeed = 300;
+    public float moveSpeed = 5;
+
+    void FixedUpdate()
+    {
+        Rotate();
+        Move();
+    }
+
+    void Rotate()
+    {
+        float y = Input.GetAxis("Mouse X");
+        float x = -Input.GetAxis("Mouse Y") ;
+
+        transform.eulerAngles += new Vector3(x, y, 0) * Time.deltaTime * rotationSpeed;
+    }
+
+    void Move()
+    {
+        Vector3? moveVector = null;
+        if (Input.GetKey(KeyCode.W))
+        {
+            if (!moveVector.HasValue) moveVector = Vector3.zero;
+            moveVector += transform.forward * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            if (!moveVector.HasValue) moveVector = Vector3.zero;
+            moveVector -= transform.forward * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            if (!moveVector.HasValue) moveVector = Vector3.zero;
+            moveVector += transform.right * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            if (!moveVector.HasValue) moveVector = Vector3.zero;
+            moveVector -= transform.right * Time.deltaTime * moveSpeed;
+        }
+
+        if (moveVector.HasValue)
+        {
+            Vector3 v = moveVector.Value;
+            v.y = 0;
+            transform.position += v;
+        }
+    }
+}
+
+--[Конец MoveCharacter.cs]--
+
+--[Начало OpenMenu.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class OpenMenu : MonoBehaviour
+{
+    GameObject menu;
+    ClickOnObj clickOnObj;
+    MoveCharacter moveScript;
+    void Start()
+    {
+        moveScript = GameObject.Find("Main Camera").GetComponent<MoveCharacter>();
+        menu = GameObject.Find("UI/Canvas/MenuPanel");
+        clickOnObj = GameObject.Find("Settings").GetComponent<ClickOnObj>();
+
+
+        Button btn = GameObject.Find("UI/Canvas/MenuPanel/ExitButton").GetComponent<Button>();
+        if (btn) btn.onClick.AddListener(() => { Application.Quit(); });
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            
+            if (menu != null)
+            {
+                menu.SetActive(!menu.activeSelf);
+                if (menu.activeSelf)
+                {
+                    clickOnObj.enabled = false;
+                    Cursor.lockState = CursorLockMode.None;
+                    moveScript.enabled = false;
+                }
+                else
+                {
+                    clickOnObj.enabled = true;
+                    Cursor.lockState = CursorLockMode.Locked;
+                    moveScript.enabled = true;
+                }
+            }
+        }
+    }
+}
+
+--[Конец OpenMenu.cs]--
+
+--[Начало PressClick1.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class BackPressClick : MonoBehaviour, ClickedObj
+{
+    Vector3 pos;
+    [SerializeField] private float depth = 0.1f;
+    [SerializeField] private float timeBack = 1f;
+    private float time= 1f;
+    private bool isPressable = true;
+
+    void Start()
+    {
+        pos = transform.position;
+        time = timeBack;
+    }
+
+    public void Click(PointerEventData.InputButton ibtn)
+    {
+        if (!isPressable) return;
+        switch (ibtn)
+        {
+            case PointerEventData.InputButton.Left:
+            case PointerEventData.InputButton.Right:
+            {
+                transform.position += Vector3.forward * depth;
+                isPressable = false;
+                break;
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (isPressable) return;
+
+        time -= Time.deltaTime;
+        if (time <= 0)
+        {
+            transform.position = pos;
+            time = timeBack;
+            isPressable = true;
+        }
+    }
+}
+
+--[Конец PressClick1.cs]--
+
+--[Начало RotateClicked.cs]--
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class RotateClick : MonoBehaviour, ClickedObj
+{
+    [SerializeField] private float rotAng = 10;
+    [SerializeField] private float minAng = -10;
+    [SerializeField] private float maxAng = 10;
+
+    private float currAng = 0;
+
+    public void Click(PointerEventData.InputButton ibtn)
+    {
+        switch (ibtn)
+        {
+            case PointerEventData.InputButton.Left:
+            {
+                if (currAng + rotAng <= maxAng)
+                {
+                    transform.Rotate(Vector3.forward, rotAng);
+                    currAng += rotAng;
+                }
+                break;
+            }
+            case PointerEventData.InputButton.Right:
+            {
+                if (currAng - rotAng >= minAng)
+                {
+                    transform.Rotate(Vector3.forward, -rotAng);
+                    currAng -= rotAng;
+                }
+                break;
+            }
+        }        
+    }
+}
+
+--[Конец RotateClicked.cs]--
