@@ -6,9 +6,13 @@ using System.Xml;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static EntryValuePanel;
 
 public class EntryValuePanel : MonoBehaviour
 {
+    public delegate void ChangeVal(TMP_Text message);
+    public event ChangeVal? OnChangeVal;
+
     Regex inReg = new Regex("^(\\d?){0,3}(,(\\d?){0,2})?$");
     Regex outReg1 = new Regex("^.*,\\d\\d$");
     Regex outReg2 = new Regex("^\\d.*");
@@ -54,19 +58,20 @@ public class EntryValuePanel : MonoBehaviour
 
         entrBtn.onClick.AddListener(() =>
         {
-            if (valText.text.Length == 0) valText.text = "0,00";
-            int breakCounter = 0;
-            while (!outReg1.IsMatch(valText.text))
-            {
-                valText.text += "0";
-                if (++breakCounter == 20)
-                {
-                    break;
-                }
-            }
-            if (!outReg2.IsMatch(valText.text)) valText.text = "0" + valText.text;
+            //if (valText.text.Length == 0) valText.text = "0,00";
+            //int breakCounter = 0;
+            //while (!outReg1.IsMatch(valText.text))
+            //{
+            //    valText.text += "0";
+            //    if (++breakCounter == 20)
+            //    {
+            //        break;
+            //    }
+            //}
+            //if (!outReg2.IsMatch(valText.text)) valText.text = "0" + valText.text;
 
-            targetField.text = valText.text;
+            targetField.text = string.Format("{0:f}", double.Parse(valText.text));
+            OnChangeVal?.Invoke(targetField);
             gameObject.SetActive(false);
         });
     }

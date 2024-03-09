@@ -14,7 +14,7 @@ public class SwitchPanels : MonoBehaviour
         public String text;
     }
 
-    [SerializeField] TMP_Text header;
+    [SerializeField] TMP_Text header = null;
     [SerializeField] Switch[] switchs;
 
     Switch currSwt;
@@ -24,6 +24,9 @@ public class SwitchPanels : MonoBehaviour
         foreach (Switch sw in switchs)
         {
             sw.btn.onClick.AddListener(() => ActivePanel(sw));
+            //Необходимо активировать, чтобы вызвались скрипты скрытых панелей
+            sw.panel.SetActive(true);
+            sw.panel.SetActive(false);
         }
 
         if (switchs.Length > 0) ActivePanel(switchs.First());
@@ -38,6 +41,6 @@ public class SwitchPanels : MonoBehaviour
 
         currSwt.panel.SetActive(true);
         currSwt.btn.GetComponent<SelectedBtn>().select(true);
-        header.text = currSwt.text;
+        if (header != null) header.text = currSwt.text;
     }
 }

@@ -8,6 +8,9 @@ TagManager:
   - CurrPanel
   - "\u041E\u0431\u0437\u043E\u0440"
   - "\u041E\u0431\u0441\u043B\u0443\u0436."
+  - EntryValuePanel
+  - ShnekSpeed
+  - ResText
   layers:
   - Default
   - TransparentFX
