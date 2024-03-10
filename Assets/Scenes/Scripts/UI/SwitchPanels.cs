@@ -9,7 +9,7 @@ public class SwitchPanels : MonoBehaviour
     [Serializable]
     struct Switch
     {
-        public Button btn;
+        public VrButton btn;
         public GameObject panel;
         public String text;
     }
@@ -23,7 +23,7 @@ public class SwitchPanels : MonoBehaviour
     {
         foreach (Switch sw in switchs)
         {
-            sw.btn.onClick.AddListener(() => ActivePanel(sw));
+            sw.btn.down.AddListener(() => ActivePanel(sw));
             //Необходимо активировать, чтобы вызвались скрипты скрытых панелей
             sw.panel.SetActive(true);
             sw.panel.SetActive(false);
