@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class WindowGraph : MonoBehaviour
 {
+    public string graphName = string.Empty;
     public string xName = string.Empty;
     public string yName = string.Empty;
 
@@ -12,30 +13,23 @@ public class WindowGraph : MonoBehaviour
     private RectTransform graphContainer;
     private RectTransform labelTemplateX;
     private RectTransform labelTemplateY;
-    //private RectTransform dashTemplateX;
-    //private RectTransform dashTemplateY;
+    private RectTransform dashTemplateHor;
+    private RectTransform dashTemplateVer;
     private List<GameObject> gameObjectList;
 
-    private void Awake() 
+    private void Awake()
     {
+        gameObjectList = new List<GameObject>();
+
         graphContainer = transform.Find("graphContainer").GetComponent<RectTransform>();
         labelTemplateX = graphContainer.Find("labelTemplateX").GetComponent<RectTransform>();
         labelTemplateY = graphContainer.Find("labelTemplateY").GetComponent<RectTransform>();
-        //dashTemplateX = graphContainer.Find("dashTemplateX").GetComponent<RectTransform>();
-        //dashTemplateY = graphContainer.Find("dashTemplateY").GetComponent<RectTransform>();
-
-        gameObjectList = new List<GameObject>();
-
-        //List<System.Numerics.Vector2> valueList = new List<System.Numerics.Vector2>()
-        //{
-        //    new System.Numerics.Vector2(30, 30), new System.Numerics.Vector2(-50, 50),
-        //    new System.Numerics.Vector2(10, -70), new System.Numerics.Vector2(100, 100),
-        //    new System.Numerics.Vector2(300, 800), new System.Numerics.Vector2(-800, 500),
-        //    new System.Numerics.Vector2(700, 700), new System.Numerics.Vector2(1000, -100),
-        //    new System.Numerics.Vector2(-1150, -10)
-        //};
-
-        //Show(valueList);
+        dashTemplateHor = graphContainer.Find("dashTemplateHor").GetComponent<RectTransform>();
+        dashTemplateVer = graphContainer.Find("dashTemplateVer").GetComponent<RectTransform>();
+        if (graphName != string.Empty)
+        {
+            transform.Find("graphName").GetComponent<Text>().text = graphName;
+        }
     }
 
     public void Show(List<System.Numerics.Vector2> valueList)
@@ -145,11 +139,19 @@ public class WindowGraph : MonoBehaviour
                 if (xName != string.Empty) labelX.GetComponent<Text>().text = xName;
             }
 
-            //RectTransform dashY = Instantiate(dashTemplateY);
-            //dashY.SetParent(graphContainer, false);
-            //dashY.gameObject.SetActive(true);
-            //dashY.anchoredPosition = new Vector2(-4f, normalizedValue * graphHeight);
-            //gameObjectList.Add(dashY.gameObject);
+            if (i == 0) continue;
+
+            RectTransform dashHor = Instantiate(dashTemplateHor);
+            dashHor.SetParent(graphContainer, false);
+            dashHor.gameObject.SetActive(true);
+            dashHor.anchoredPosition = new Vector2(-4f, normalizedValue * graphHeight);
+            gameObjectList.Add(dashHor.gameObject);
+
+            RectTransform dashVer = Instantiate(dashTemplateVer);
+            dashVer.SetParent(graphContainer, false);
+            dashVer.gameObject.SetActive(true);
+            dashVer.anchoredPosition = new Vector2(normalizedValue * graphWidth, -4f);
+            gameObjectList.Add(dashVer.gameObject);
         }
     }
 

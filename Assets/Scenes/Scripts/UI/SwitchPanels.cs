@@ -19,7 +19,7 @@ public class SwitchPanels : MonoBehaviour
 
     Switch currSwt;
 
-    void Start()
+    void Awake()
     {
         foreach (Switch sw in switchs)
         {

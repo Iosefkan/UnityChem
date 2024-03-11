@@ -7,9 +7,10 @@ public class EntryValuePanel : MonoBehaviour
     public delegate void ChangeVal(TMP_Text message);
     public event ChangeVal OnChangeVal;
 
-    Regex inReg = new Regex("^(\\d?){0,3}(,(\\d?){0,2})?$");
+    Regex inReg = new Regex("^-?(\\d){0,3}(,(\\d){0,2})?$");
 
     [SerializeField] VrButton[] valBtns = new VrButton[10];
+    [SerializeField] VrButton minusBtn;
     [SerializeField] VrButton commaBtn;
     [SerializeField] VrButton delBtn;
     [SerializeField] VrButton entrBtn;
@@ -33,6 +34,14 @@ public class EntryValuePanel : MonoBehaviour
             });
         }
 
+        minusBtn.down.AddListener(() =>
+        {
+            if (valText.text.Length == 0)
+            {
+                valText.text = "-";
+            }
+        });
+
         commaBtn.down.AddListener(() =>
         {
             string resStr = valText.text + ",";
@@ -50,7 +59,16 @@ public class EntryValuePanel : MonoBehaviour
 
         entrBtn.down.AddListener(() =>
         {
-            targetField.text = string.Format("{0:f}", double.Parse(valText.text));
+            if (valText.text.Length == 0 ||
+                (valText.text.Length == 1 && valText.text == "-"))
+            {
+                targetField.text = "0";
+            }
+            else
+            {
+                targetField.text = string.Format("{0:f}", double.Parse(valText.text));
+            }
+
             OnChangeVal?.Invoke(targetField);
             gameObject.SetActive(false);
         });
