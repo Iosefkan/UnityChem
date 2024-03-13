@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class VrButton : MonoBehaviour
 {
     public bool isChangeColor = false;
-    private bool _active;
     private Color _color_start;
     private Image _button;
     [Serializable] public class ButtonEvent : UnityEvent { }
@@ -25,7 +24,6 @@ public class VrButton : MonoBehaviour
 
     private void OnDisable()
     {
-        _active = false;
         if (_button && isChangeColor)
             _button.color = _color_start;
     }   
@@ -35,7 +33,6 @@ public class VrButton : MonoBehaviour
         if (other.tag == "hand")
         {
             down?.Invoke();
-            _active = true;
             if (_button && isChangeColor)
                 _button.color = Color.gray;
             StartCoroutine(Stay());
@@ -46,16 +43,16 @@ public class VrButton : MonoBehaviour
     {
         if (other.tag == "hand")
         {
-            _active = false;
             up?.Invoke();
             if (_button && isChangeColor)
                 _button.color = _color_start;
+            StopCoroutine(Stay());
         }
     }
 
     private IEnumerator Stay()
     {
-        while (_active)
+        while (true)
         {
             press?.Invoke();
             yield return new WaitForSeconds(0.1f);

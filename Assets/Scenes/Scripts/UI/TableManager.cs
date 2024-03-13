@@ -1,17 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using Unity.XR.CoreUtils;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TableManager : MonoBehaviour
 {
     private List<GameObject> gameObjectList = new List<GameObject>();
 
-    public List<string> headers = new List<string>() { "" };
-    public GameObject container;
+    [SerializeField] private GameObject container;
+    [SerializeField] private List<string> headers = new List<string>() { "" };
+    [SerializeField] private int numberPrecision = -1;
+
     private GameObject rowPrefab;
     private GameObject cellPrefab;
 
@@ -20,27 +18,26 @@ public class TableManager : MonoBehaviour
         rowPrefab = container.transform.GetChild(0)?.gameObject;
         cellPrefab = rowPrefab.transform.GetChild(0)?.gameObject;
 
-        GameObject newRow = Instantiate(rowPrefab);
-        newRow.transform.SetParent(container.transform, false);
-        newRow.SetActive(true);
-        foreach (var val in headers)
-        {
+        GameObject newRow = AddRow(headers);
+    }
 
-            GameObject newCell = Instantiate(cellPrefab);
-            newCell.transform.SetParent(newRow.transform, false);
-            newCell.SetActive(true);
-            newCell.GetComponentInChildren<TMP_Text>().text = val;
+    public void SetData<T>(List<List<T>> valueList)
+    {
+        ClearObjs();
+        AddData(valueList);
+    }
+
+    public void AddData<T>(List<List<T>> valueList)
+    {
+        foreach (var rowList in valueList)
+        {
+            gameObjectList.Add(AddRow(rowList));
         }
     }
 
-    public void Show(List<List<string>> valueList)
+    public void AddData<T>(List<T> valueList)
     {
-        ClearObjs();
-
-        foreach (var rowList in valueList)
-        {
-            AddRow(rowList);
-        }
+        gameObjectList.Add(AddRow(valueList));
     }
 
     GameObject AddElement(GameObject prefab, GameObject parent)
@@ -48,19 +45,27 @@ public class TableManager : MonoBehaviour
         GameObject newEl = Instantiate(prefab);
         newEl.transform.SetParent(parent.transform, false);
         newEl.SetActive(true);
-        gameObjectList.Add(newEl);
 
         return newEl;
     }
 
-    void AddRow(List<string> rowList)
+    GameObject AddRow<T>(List<T> rowList)
     {
         GameObject newRow = AddElement(rowPrefab, container);
         foreach (var val in rowList)
         {
             GameObject newCell = AddElement(cellPrefab, newRow);
-            newCell.GetComponentInChildren<TMP_Text>().text = val;
+            if (numberPrecision != -1 && (typeof(T).Name == "Double" || typeof(T).Name == "Single"))
+            {
+                newCell.GetComponentInChildren<TMP_Text>().text = string.Format("{0:f" + numberPrecision + "}", val);
+            }
+            else
+            {
+                newCell.GetComponentInChildren<TMP_Text>().text = val.ToString();
+            }
         }
+
+        return newRow;
     }
 
     void ClearObjs()

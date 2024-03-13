@@ -24,6 +24,9 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private WindowGraph _XGraph;
     [SerializeField] private WindowGraph _PGraph;
     [SerializeField] private WindowGraph _TGraph;
+    [SerializeField] private TableManager _XPTTabel;
+
+    [SerializeField] private TableManager _logTabel;
 
     private InitData initData = new InitData();
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
@@ -67,7 +70,6 @@ public class Recalculates : MonoBehaviour
     {
         initData.data.N_ = double.Parse(_shnekSpeed.text);
         _qdAdapter.init(initData);
-        //_resText.text = "QPT\n" + _qdAdapter.qpt.table + '\n' + "DIE\n" + _qdAdapter.die.table;
 
         _resText.text = string.Format("Показатели качества\n" +
                                       "G =  {0:f2} кг/ч - производительность\n" +
@@ -78,12 +80,34 @@ public class Recalculates : MonoBehaviour
                                       0,
                                       0,
                                       0);
-        //Debug.Log(_qdAdapter.qpt.XZ.Last());
-        //Debug.Log(_qdAdapter.qpt.XZ);
         
+        /// Show X P T Graphs
         _XGraph.Show(_qdAdapter.qpt.XZ.Last());
         _PGraph.Show(_qdAdapter.qpt.PZ.Last());
         _TGraph.Show(_qdAdapter.qpt.TZ.Last());
+         
+        ///Show X P T Table
+        List<List<double>> rows = new List<List<double>>();
+        for (int i = 0; i < _qdAdapter.qpt.XZ.Last().Count(); ++i)
+        {
+            rows.Add(new List<double>()
+            {
+                _qdAdapter.qpt.XZ.Last()[i].X,
+                _qdAdapter.qpt.XZ.Last()[i].Y,
+                _qdAdapter.qpt.PZ.Last()[i].Y,
+                _qdAdapter.qpt.TZ.Last()[i].Y,
+            });
+        }
+
+        _XPTTabel.SetData(rows);
+
+        ///Log 
+        _logTabel.AddData(new List<object>()
+        {
+            System.DateTime.Now.ToString("HH:mm:ss"),
+            double.Parse(_shnekSpeed.text),
+            _qdAdapter.qpt.XZ.Last().Last().Y
+        });
     }
 
     //////////////// RECALC PARAMS ON CONTROL PANEL //////////////// 

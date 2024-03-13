@@ -9,7 +9,7 @@ public class CurrTimeUpdate : MonoBehaviour
     TMP_Text text;
     private void Start()
     {
-        text = GetComponent<TMP_Text>();
+        text = transform.GetChild(0).GetComponent<TMP_Text>();
     }
 
     void Update()
