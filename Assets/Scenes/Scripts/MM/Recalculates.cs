@@ -102,12 +102,13 @@ public class Recalculates : MonoBehaviour
         _XPTTabel.SetData(rows);
 
         ///Log 
-        _logTabel.AddData(new List<object>()
+        List<object> data = new List<object>
         {
             System.DateTime.Now.ToString("HH:mm:ss"),
             double.Parse(_shnekSpeed.text),
-            _qdAdapter.qpt.XZ.Last().Last().Y
-        });
+            (double)_qdAdapter.qpt.XZ.Last().Last().Y
+        };
+        _logTabel.AddData(data);
     }
 
     //////////////// RECALC PARAMS ON CONTROL PANEL //////////////// 

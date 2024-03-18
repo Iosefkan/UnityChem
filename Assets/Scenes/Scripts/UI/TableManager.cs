@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,18 +7,17 @@ public class TableManager : MonoBehaviour
 {
     private List<GameObject> gameObjectList = new List<GameObject>();
 
-    [SerializeField] private GameObject container;
+    [SerializeField] private GameObject rowContainer;
+    [SerializeField] private GameObject rowPrefab;
+    [SerializeField] private GameObject cellPrefab;
+
     [SerializeField] private List<string> headers = new List<string>() { "" };
     [SerializeField] private int numberPrecision = -1;
 
-    private GameObject rowPrefab;
-    private GameObject cellPrefab;
-
     void Awake()
     {
-        rowPrefab = container.transform.GetChild(0)?.gameObject;
-        cellPrefab = rowPrefab.transform.GetChild(0)?.gameObject;
-
+        rowPrefab.SetActive(false);
+        cellPrefab.SetActive(false);
         GameObject newRow = AddRow(headers);
     }
 
@@ -51,11 +51,11 @@ public class TableManager : MonoBehaviour
 
     GameObject AddRow<T>(List<T> rowList)
     {
-        GameObject newRow = AddElement(rowPrefab, container);
+        GameObject newRow = AddElement(rowPrefab, rowContainer);
         foreach (var val in rowList)
         {
             GameObject newCell = AddElement(cellPrefab, newRow);
-            if (numberPrecision != -1 && (typeof(T).Name == "Double" || typeof(T).Name == "Single"))
+            if (numberPrecision != -1 && (val.GetType() == typeof(double) || val.GetType() == typeof(float)))
             {
                 newCell.GetComponentInChildren<TMP_Text>().text = string.Format("{0:f" + numberPrecision + "}", val);
             }
