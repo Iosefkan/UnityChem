@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class Conveirt : MonoBehaviour
 {
-    [SerializeField] private Rigidbody rb;
+    private Rigidbody rb;
     [SerializeField] private float speed;
     [SerializeField] private Material mt;
 
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
     private void FixedUpdate()
     {
-        mt.mainTextureOffset = new Vector2(Time.time * 10 * Time.deltaTime, 0f);
+        mt.mainTextureOffset = new Vector2(-speed * 100 * Time.time * Time.deltaTime, 0f);
         Vector3 pos = rb.position;
-        rb.position += Vector3.forward * speed * Time.fixedDeltaTime;
+        rb.position += Vector3.forward * -speed * Time.fixedDeltaTime;
         rb.MovePosition(pos);
     }
 }
