@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +12,7 @@ public class SwitchTabs : MonoBehaviour
         public GameObject panel;
     }
 
+    [SerializeField] private ScrollRect scrollRect;
     [SerializeField] Switch[] switchs;
 
     Switch currSwt;
@@ -24,8 +24,8 @@ public class SwitchTabs : MonoBehaviour
         {
             sw.btn.onClick.AddListener(() => ActivePanel(sw));
             //Необходимо активировать, чтобы вызвались скрипты скрытых панелей
+            HideTab(sw.panel);
             sw.panel.SetActive(true);
-            sw.panel.SetActive(false);
         }
 
         if (switchs.Length > 0) ActivePanel(switchs.First());
@@ -33,14 +33,20 @@ public class SwitchTabs : MonoBehaviour
 
     void ActivePanel(Switch sw)
     {
-        if (currSwt.panel) currSwt.panel.SetActive(false);
+        if (currSwt.panel) HideTab(currSwt.panel);
         if (currSwt.btn) currSwt.btn.GetComponent<Image>().color = prevBtnColor;
 
         currSwt = sw;
-
-        currSwt.panel.SetActive(true);
+        scrollRect.content = currSwt.panel.GetComponent<RectTransform>();
+        //currSwt.panel.SetActive(true);
         Image btnImage = currSwt.btn.GetComponent<Image>();
         prevBtnColor = btnImage.color;
         btnImage.color = currSwt.panel.GetComponent<Image>().color;
+    }
+
+    void HideTab(GameObject tab)
+    {
+        RectTransform rectTr = tab.GetComponent<RectTransform>();
+        rectTr.anchoredPosition = new UnityEngine.Vector2(0, -rectTr.rect.height);
     }
 }

@@ -6,7 +6,9 @@ using System;
 [Serializable]
 public class Value : MonoBehaviour
 {
-    public double Val
+    public string name;
+
+    public virtual double Val
     {
         get
         {
@@ -19,16 +21,8 @@ public class Value : MonoBehaviour
         }
     }
 
-    public int ValI
+    public static explicit operator Double(Value counter)
     {
-        get
-        {
-            throw new Exception("Метод не реализован");
-            return 0;
-        }
-        set
-        {
-            throw new Exception("Метод не реализован");
-        }
+        return counter.Val;
     }
 }

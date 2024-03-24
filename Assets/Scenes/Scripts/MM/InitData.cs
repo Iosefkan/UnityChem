@@ -2,7 +2,7 @@ using Types;
 
 namespace Program
 {
-    class InitData
+    public class InitData
     {
         ////////// QPT //////////
         public DATA_ data = new DATA_();
@@ -15,8 +15,10 @@ namespace Program
         public FluxData fluxData = new FluxData();
         public S_KG S_K = new S_KG();
 
-        public InitData()
+        public InitData(bool isInit = true)
         {
+            if (!isInit) return;
+
             ////////// QPT //////////
             
             // DATA

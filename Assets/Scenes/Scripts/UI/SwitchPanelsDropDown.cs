@@ -8,6 +8,7 @@ public class SwitchPanelsDropDown : MonoBehaviour
 {
     [SerializeField] private List<GameObject> panels;
     private GameObject currPanel;
+    public int currIndex;
 
     private void Start()
     {
@@ -28,5 +29,6 @@ public class SwitchPanelsDropDown : MonoBehaviour
 
         currPanel = panels[index];
         currPanel.SetActive(true);
+        currIndex = index;
     }
 }
