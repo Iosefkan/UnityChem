@@ -28,7 +28,7 @@ public class Recalculates : MonoBehaviour
 
     [SerializeField] private TableManager _logTabel;
 
-    private InitData initData = new InitData();
+    [SerializeField] private CollectData collectData;
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
 
     void Start()
@@ -68,8 +68,10 @@ public class Recalculates : MonoBehaviour
     //////////////// RECALC OUT DATA ////////////////
     void RecalcOutData()
     {
-        initData.data.N_ = double.Parse(_shnekSpeed.text);
-        _qdAdapter.init(initData);
+        collectData.SetInitData(new InitData());
+        InitData id = collectData.GetInitData();
+        id.data.N_ = double.Parse(_shnekSpeed.text);
+        _qdAdapter.init(id);
 
         _resText.text = string.Format("Показатели качества\n" +
                                       "G =  {0:f2} кг/ч - производительность\n" +

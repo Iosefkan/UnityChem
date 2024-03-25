@@ -1,25 +1,33 @@
+using UnityEngine;
 using TMPro;
 
 public class DoubleValue : Value
 {
     private TMP_InputField inputField;
-
-    private void Start()
+    
+    private void OnEnable()
     {
-        inputField = GetComponentInChildren<TMP_InputField>();
-        Val = 0;
+        init();
     }
 
     public override double Val
     {
         get
         {
-            if (inputField.text == string.Empty) return 0;
             return double.Parse(inputField.text);
         }
         set
         {
             inputField.text = value.ToString();
+        }
+    }
+
+    private void init()
+    {
+        if (inputField == null)
+        {
+            inputField = GetComponentInChildren<TMP_InputField>();
+            Val = 0;
         }
     }
 }

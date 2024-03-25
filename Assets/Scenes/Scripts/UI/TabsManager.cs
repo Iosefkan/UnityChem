@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -49,7 +50,6 @@ public class TabsManager : MonoBehaviour
     {
         GameObject newTab = Instantiate(tabPrefab);
         newTab.transform.SetParent(tabPrefab.transform.parent.transform, false);
-        HideTab(newTab);
         newTab.SetActive(true);
 
         GameObject newTabBtn = Instantiate(tabBtnPrefab.gameObject);
@@ -92,12 +92,9 @@ public class TabsManager : MonoBehaviour
         if (currTab != null)
         {
             HideTab(currTab.tab);
-            currTab.btn.GetComponent<Image>().color = Color.gray;
         }
 
-        currTab = tabs[index];
-        scrollRect.content = currTab.tab.GetComponent<RectTransform>();
-        currTab.btn.GetComponent<Image>().color = Color.white;
+        ShowTab(tabs[index]);
     }
 
     public int TabsCount()
@@ -108,6 +105,17 @@ public class TabsManager : MonoBehaviour
     void HideTab(GameObject tab)
     {
         RectTransform rectTr = tab.GetComponent<RectTransform>();
-        rectTr.anchoredPosition = new UnityEngine.Vector2(0, rectTr.rect.height);
+        rectTr.anchoredPosition = new Vector2(0, rectTr.rect.height);
+        currTab.btn.GetComponent<Image>().color = Color.gray;
+    }
+
+    void ShowTab(Tab tab)
+    {
+        currTab = tab;
+        scrollRect.content = currTab.tab.GetComponent<RectTransform>();
+        RectTransform rectTr = currTab.tab.GetComponent<RectTransform>();
+        rectTr.anchoredPosition = new Vector2(0, 0);
+
+        currTab.btn.GetComponent<Image>().color = Color.white;
     }
 }

@@ -1,11 +1,13 @@
 using Program;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CollectData : MonoBehaviour
 {
     private List<ValuesGroup> valuesGroups;
-    int counter = 1000;
+    //int counter = 200;
     public InitData GetInitData()
     {
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
@@ -16,6 +18,9 @@ public class CollectData : MonoBehaviour
         InitDataArrayGroup(ref initData.S_K.S);
         initData.S_K.Num_S = initData.S_K.S.Length;
         InitDataGroup(ref initData.data);
+        initData.data.nS_1 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 1);
+        initData.data.nS_2 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 2);
+        initData.data.nS_korp = initData.cyl.Count();
         InitDataGroup(ref initData.dop);
         InitDataGroup(ref initData.fluxData);
 
@@ -24,49 +29,45 @@ public class CollectData : MonoBehaviour
 
     public void SetInitData(InitData initData)
     {
-        valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
         List<ValuesGroupArray>  arrays = new List<ValuesGroupArray>(GetComponentsInChildren<ValuesGroupArray>());
+        AbjastValuesGroupArray(arrays, initData.cyl);
+        AbjastValuesGroupArray(arrays, initData.sect);
+        AbjastValuesGroupArray(arrays, initData.S_K.S);
 
-        AbjastValuesGroupArray(arrays, initData.cyl.GetType().ToString(), initData.cyl.Length);
+        valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
         SetInitDataArray(ref initData.cyl);
-        AbjastValuesGroupArray(arrays, initData.sect.GetType().ToString(), initData.sect.Length);
         SetInitDataArray(ref initData.sect);
-        AbjastValuesGroupArray(arrays, initData.S_K.S.GetType().ToString(), initData.S_K.S.Length);
         SetInitDataArray(ref initData.S_K.S);
         SetInitData(ref initData.data);
         SetInitData(ref initData.dop);
         SetInitData(ref initData.fluxData);
     }
 
-    private void Update()
+    //private void Update()
+    //{
+    //    if (counter > 0)
+    //    {
+    //       --counter;
+    //    }
+    //    if (counter == 0)
+    //    {
+    //        --counter;
+    //        InitData init = new InitData();
+    //        SetInitData(init);
+    //    }
+    //}
+
+    void AbjastValuesGroupArray<T>(List<ValuesGroupArray> arrays, T[] vals)
     {
-        if (counter > 0)
-        {
-            Debug.Log(--counter);
-        }
-        if (counter == 0)
-        {
-            InitData init = new InitData();
-            SetInitData(init);
-            --counter;
-        }
-    }
-    void AbjastValuesGroupArray(List<ValuesGroupArray> arrays, string name, int size)
-    {
+        var name = typeof(T).ToString();
         foreach (var arr in arrays)
         {
             if (arr.name == name)
             {
-                arr.SetSize(size);
+                arr.SetSize(vals.Length);
             }
         }
     }
-
-    //private void Update()
-    //{
-    //    InitData id = GetInitData();
-    //    Debug.Log(id.cyl[0].Var_T);
-    //}
 
     List<ValuesGroup> GetValuesGroup(string name)
     {
@@ -174,17 +175,22 @@ public class CollectData : MonoBehaviour
             return;
         }
 
-        dataGroup = new T[grs.Count];
         var filds = typeof(T).GetFields();
         for (int i = 0; i < grs.Count; ++i)
         {
             var vals = grs[i].GetVals();
             foreach (var fild in filds)
             {
-                if (!vals.ContainsKey(fild.Name))
+                if (vals.ContainsKey(fild.Name))
                 {
-                    vals[fild.Name].Val = (double)fild.GetValue(dataGroup[i]);
-                    continue;
+                    if (fild.FieldType == typeof(int))
+                    {
+                        vals[fild.Name].Val = (int)fild.GetValue(dataGroup[i]);
+                    }
+                    else
+                    {
+                        vals[fild.Name].Val = (double)fild.GetValue(dataGroup[i]);
+                    }
                 }
             }
         }
@@ -207,7 +213,14 @@ public class CollectData : MonoBehaviour
             {
                 if (vals.ContainsKey(fild.Name))
                 {
-                    vals[fild.Name].Val = (double)fild.GetValue(dataGroup);
+                    if (fild.FieldType == typeof(int))
+                    {
+                        vals[fild.Name].Val = (int)fild.GetValue(dataGroup);
+                    }
+                    else
+                    {
+                        vals[fild.Name].Val = (double)fild.GetValue(dataGroup);
+                    }
                 }
             }
         }

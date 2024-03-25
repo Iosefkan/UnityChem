@@ -6,7 +6,7 @@ namespace Program
     {
         ////////// QPT //////////
         public DATA_ data = new DATA_();
-        public SECT[] sect = new SECT[4];
+        public SECT[] sect = new SECT[3];
         public CYLINDER[] cyl = new CYLINDER[2];
         public DOP_DATA dop = new DOP_DATA();
         public RESULT res = new RESULT();
@@ -111,24 +111,24 @@ namespace Program
             sect[2].d_Fi        = 0;
             sect[2].W_a         = 0;
                                 
-            sect[3].S_Type      = 2;
-            sect[3].Order       = 3;
-            sect[3].Monolit     = 0;
-            sect[3].n_cykle     = 20;
-            sect[3].n_Line      = 0;
-            sect[3].R_or_L      = 0;
-            sect[3].p_W         = 0;
-            sect[3].D_st        = 120;
-            sect[3].D_fin       = 90;
-            sect[3].L_sect      = 80;
-            sect[3].step_       = 0;
-            sect[3].H_st        = 10;
-            sect[3].H_fin       = 10;
-            sect[3].e_st        = 0;
-            sect[3].e_fin       = 0;
-            sect[3].delta       = 0;
-            sect[3].d_Fi        = 0;
-            sect[3].W_a         = 0;
+            //sect[3].S_Type      = 2;
+            //sect[3].Order       = 3;
+            //sect[3].Monolit     = 0;
+            //sect[3].n_cykle     = 20;
+            //sect[3].n_Line      = 0;
+            //sect[3].R_or_L      = 0;
+            //sect[3].p_W         = 0;
+            //sect[3].D_st        = 120;
+            //sect[3].D_fin       = 90;
+            //sect[3].L_sect      = 80;
+            //sect[3].step_       = 0;
+            //sect[3].H_st        = 10;
+            //sect[3].H_fin       = 10;
+            //sect[3].e_st        = 0;
+            //sect[3].e_fin       = 0;
+            //sect[3].delta       = 0;
+            //sect[3].d_Fi        = 0;
+            //sect[3].W_a         = 0;
 
             //SCT_C
             cyl[0].Var_T        = 1;
@@ -159,25 +159,25 @@ namespace Program
             dop.n_Alfa          = 2;
 
             //QPT_R
-            res.Mu0 = 10000;
-            res.b = 0.01;
-            res.n = 0.505;
-            res.T0 = 135;
-            res.a = 0.00000008;
-            res.Lam = 0.16;
-            res.n_Q = 2;
-            res.MQ = new double[3];
-            res.MQ[0] = 6.4182761356;
-            res.MQ[1] = 6.819418394;
-            res.MQ[2] = 7.2205606525;
-            res.MP = new double[3];
-            res.MP[0] = 8.89566982;
-            res.MP[1] = 7.2073293496;
-            res.MP[2] = 5.6127581505;
-            res.MT = new double[3];
-            res.MT[0] = 156.20711721;
-            res.MT[1] = 154.6121707;
-            res.MT[2] = 153.11101985;
+            //res.Mu0 = 10000;
+            //res.b = 0.01;
+            //res.n = 0.505;
+            //res.T0 = 135;
+            //res.a = 0.00000008;
+            //res.Lam = 0.16;
+            //res.n_Q = 2;
+            //res.MQ = new double[3];
+            //res.MQ[0] = 6.4182761356;
+            //res.MQ[1] = 6.819418394;
+            //res.MQ[2] = 7.2205606525;
+            //res.MP = new double[3];
+            //res.MP[0] = 8.89566982;
+            //res.MP[1] = 7.2073293496;
+            //res.MP[2] = 5.6127581505;
+            //res.MT = new double[3];
+            //res.MT[0] = 156.20711721;
+            //res.MT[1] = 154.6121707;
+            //res.MT[2] = 153.11101985;
 
             ////////// DIE //////////
 
@@ -191,7 +191,7 @@ namespace Program
 
             //DIE_S
             S_K.Num_S           = 4;
-            S_K.S = new SECTIONS[4];
+            S_K.S = new SECTIONS[S_K.Num_S];
             S_K.S[0].PRIZNAK    = 1;
             S_K.S[0].Order      = 1;
             S_K.S[0].n_cykle    = 40;

@@ -108,7 +108,7 @@ namespace Types
     public struct CYLINDER //= ARRAY[1..14] of RECORD
     {
         public int
-            Var_T;    //{Род теплового граничного условия: 1 или 3}
+            Var_T;    //{Род теплового граничного условия: 1 или 2}
 
         public double
             L_sec,    //{Длина секции корпуса, мм}
