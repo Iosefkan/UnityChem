@@ -28,8 +28,19 @@ public class TabsManager : MonoBehaviour
     private List<Tab> tabs = new List<Tab>();
     private Tab currTab = null;
 
-    void Start()
+    private bool isInit = false;
+
+    void OnEnable()
     {
+        if (!isInit)
+        {
+            isInit = true;
+        }
+        else
+        {
+            return;
+        }
+
         tabPrefab.SetActive(false);
         tabBtnPrefab.gameObject.SetActive(false);
 

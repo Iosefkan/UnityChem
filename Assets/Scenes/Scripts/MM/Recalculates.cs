@@ -20,6 +20,11 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TMP_Text _knifeSpeedTarget;
     [SerializeField] private TMP_Text _knifeFr;
 
+    [SerializeField] private TMP_Text _temp1;
+    [SerializeField] private TMP_Text _tempTarget1;
+    [SerializeField] private TMP_Text _temp2;
+    [SerializeField] private TMP_Text _tempTarget2;
+
     [SerializeField] private TMP_Text _resText;
     [SerializeField] private WindowGraph _XGraph;
     [SerializeField] private WindowGraph _PGraph;
@@ -63,6 +68,16 @@ public class Recalculates : MonoBehaviour
         {
             RecalcKnifeSpeed();
         }
+        else if (valText == _temp1)
+        {
+            SetTempTarget1();
+            RecalcOutData();
+        }
+        else if (valText == _temp2)
+        {
+            SetTempTarget2();
+            RecalcOutData();
+        }
     }
 
     //////////////// RECALC OUT DATA ////////////////
@@ -71,6 +86,8 @@ public class Recalculates : MonoBehaviour
         collectData.SetInitData(new InitData());
         InitData id = collectData.GetInitData();
         id.data.N_ = double.Parse(_shnekSpeed.text);
+        id.cyl[0].T_W_k_ = double.Parse(_temp1.text);
+        //id.cyl[1].T_W_k_ = double.Parse(_temp2.text);
         _qdAdapter.init(id);
 
         _resText.text = string.Format("Показатели качества\n" +
@@ -150,5 +167,15 @@ public class Recalculates : MonoBehaviour
         double N = double.Parse(_shnekSpeed.text);
         double Nh = double.Parse(_knifeSpeed.text);
         _knifeFr.text = string.Format("{0:f}", (Nh / N - 1) * 100);
+    }
+
+    void SetTempTarget1()
+    {
+        _tempTarget1.text = _temp1.text;
+    }
+
+    void SetTempTarget2()
+    {
+        _tempTarget2.text = _temp2.text;
     }
 }

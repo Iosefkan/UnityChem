@@ -4,9 +4,10 @@ public class ValuesGroupArray : MonoBehaviour
 {
     public string name;
     private TabsManager tabsManager;
-    void Start()
+
+    void OnEnable()
     {
-        tabsManager = GetComponent<TabsManager>();
+        if (tabsManager == null) tabsManager = GetComponent<TabsManager>();
     }
 
     public void SetSize(int size)
