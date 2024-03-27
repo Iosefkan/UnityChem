@@ -2,12 +2,23 @@ using Program;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public class CollectData : MonoBehaviour
 {
     private List<ValuesGroup> valuesGroups;
-    //int counter = 200;
+    private bool isInit = false;
+
+    private void OnEnable()
+    {
+        if (!isInit)
+        {
+            SetInitData(new InitData());
+            isInit = true;
+        }
+    }
+
     public InitData GetInitData()
     {
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
@@ -42,20 +53,6 @@ public class CollectData : MonoBehaviour
         SetInitData(ref initData.dop);
         SetInitData(ref initData.fluxData);
     }
-
-    //private void Update()
-    //{
-    //    if (counter > 0)
-    //    {
-    //       --counter;
-    //    }
-    //    if (counter == 0)
-    //    {
-    //        --counter;
-    //        InitData init = new InitData();
-    //        SetInitData(init);
-    //    }
-    //}
 
     void AbjastValuesGroupArray<T>(List<ValuesGroupArray> arrays, T[] vals)
     {
