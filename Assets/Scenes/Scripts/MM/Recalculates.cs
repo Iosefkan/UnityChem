@@ -27,6 +27,9 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TMP_Text _tempTarget2;
 
     [SerializeField] private TMP_Text _resText;
+    [SerializeField] private WindowGraph _GTrendGraph;
+    private List<System.Numerics.Vector2> _GTrends;
+
     [SerializeField] private WindowGraph _XGraph;
     [SerializeField] private WindowGraph _PGraph;
     [SerializeField] private WindowGraph _TGraph;
@@ -46,6 +49,14 @@ public class Recalculates : MonoBehaviour
     public void SetInitData()
     {
         _qdAdapter.initData = collectData.GetInitData();
+
+        _shnekSpeed.text = _qdAdapter.initData.data.N_.ToString();
+        RecalcShnekSpeed();
+        _temp1.text = _qdAdapter.initData.cyl[0].T_W_k_.ToString();
+        SetTempTarget1();
+        _temp2.text = _qdAdapter.initData.cyl[1].T_W_k_.ToString();
+        SetTempTarget2();
+
         RecalcOutData();
     }
 
@@ -94,15 +105,13 @@ public class Recalculates : MonoBehaviour
         _qdAdapter.initData.cyl[1].T_W_k_ = double.Parse(_temp2.text);
         _qdAdapter.init();
 
-        _resText.text = string.Format("Показатели качества\n" +
-                                      "G =  {0:f2} кг/ч - производительность\n" +
-                                      "Id = {1:f2} % - индекс деструкции\n" +
-                                      "Фs = {2:f2} - доля нерасплавленных включений\n" +
-                                      "Y =  {3:f2} - степень смешения",                    
+        _resText.text = string.Format("Выходные параметры процесса экструзии:\n" +
+                                      "Производительность - {0:f2} кг/ч\n" +
+                                      "Индекс термической деструкции экструдате - {1:f2} %\n" +
+                                      "Доля твердой фазы в экструдате - {2:f2}\n",          
                                       G(),
                                       Id(),
-                                      fs(),
-                                      0);
+                                      fs());
         
         /// Show X P T Graphs
         _XGraph.Show(_qdAdapter.qpt.XZ.Last());
@@ -115,7 +124,7 @@ public class Recalculates : MonoBehaviour
         {
             rows.Add(new List<double>()
             {
-                _qdAdapter.qpt.XZ.Last()[i].X,
+                _qdAdapter.qpt.PZ.Last()[i].X,
                 _qdAdapter.qpt.XZ.Last()[i].Y,
                 _qdAdapter.qpt.PZ.Last()[i].Y,
                 _qdAdapter.qpt.TZ.Last()[i].Y,
@@ -129,7 +138,9 @@ public class Recalculates : MonoBehaviour
         {
             System.DateTime.Now.ToString("HH:mm:ss"),
             double.Parse(_shnekSpeed.text),
-            (double)_qdAdapter.qpt.XZ.Last().Last().Y
+            G(),
+            Id(),
+            fs()
         };
         _logTabel.AddData(data);
     }
@@ -147,7 +158,7 @@ public class Recalculates : MonoBehaviour
             if (sect.S_Type == 1)
             {
                 double z = sect.L_sect / _qdAdapter.qpt.sn;
-                V += z * _qdAdapter.qpt.W * ((sect.H_st + sect.H_fin) / 2);
+                V += z * _qdAdapter.qpt.W * 1e3 * ((sect.H_st + sect.H_fin) / 2);
             }
             else
             {
@@ -156,25 +167,27 @@ public class Recalculates : MonoBehaviour
             }
         }
 
-        double t_av = V / (_qdAdapter.die.RES_f.Q_fin * 1e6);
+        double t_av = V / (_qdAdapter.die.RES_f.Q_fin * 1e3);
 
         const double T_kel = 273.15;
         const double R = 8.31;
 
-        // t_d = 600 с, T_d = 220 град. С, E_d = 165000 Дж/моль.
-        const double t_d = 600;
-        const double E_d = 165000;
-        const double T_d = 220 + T_kel;
+        //const double t_d = 600;
+        //const double E_d = 165000;
+        //const double T_d = 220 + T_kel;
+        const double t_d = 300;
+        const double E_d = 80000;
+        const double T_d = 200 + T_kel;
 
         double T_ext = _qdAdapter.qpt.T + T_kel;
-
         return t_av / t_d * Math.Exp(E_d / (R * T_ext * T_d) * (T_ext - T_d)) * 100;
     }
 
     private double fs()
     {
-        double Q = _qdAdapter.initData.dop.Q;
-        double Q_s = _qdAdapter.initData.sect.Last().H_fin * _qdAdapter.qpt.X_PL * _qdAdapter.qpt.v_SZ;
+        double Q = _qdAdapter.die.RES_f.Q_fin * 1e3;
+        double Q_s = _qdAdapter.initData.sect.Last().H_fin * _qdAdapter.qpt.X_PL * 1e3 * _qdAdapter.qpt.v_SZ * 1e3;
+
         if (Q == 0) return 0;
 
         return Q_s / Q;

@@ -201,7 +201,9 @@ namespace Program
                 T = DataRec.T_PL_;
                 Start_PL = true;
                 pr_T = false;
-                
+
+                X_PL_LIST.Add(new List<double>());
+
                 for (iSect = 0; iSect < nSect; iSect++) //{Циклы по секциям}
                 {
                     if (SCT[iSect].S_Type == 1)
@@ -465,6 +467,7 @@ namespace Program
                                 TM[k] = T;
                                 PM[k] = p * 1E-6;
                                 X_OTN[k] = X_PL / W;
+                                X_PL_LIST.Last().Add(X_PL);
                             }
                             ic++;
                         }
@@ -577,6 +580,7 @@ namespace Program
                                 TM[k] = T;
                                 PM[k] = p * 1E-6;
                                 X_OTN[k] = X_PL / W;
+                                X_PL_LIST.Last().Add(X_PL);
                             }
 
                             ic++;
@@ -597,7 +601,7 @@ namespace Program
                 {
                     PZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)PM[i]));
                     TZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)TM[i]));
-                    XZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)X_OTN[i] * 100));
+                    XZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)X_PL_LIST.Last()[i] * 1000));
                 }
 
                 T_Min = fMin;
@@ -996,6 +1000,7 @@ namespace Program
         public List<double[]> PM_LIST = new List<double[]>();
         public List<double[]> TM_LIST = new List<double[]>();
         public List<double[]> X_OTN_LIST = new List<double[]>();
+        public List<List<double>> X_PL_LIST = new List<List<double>>();
         public List<double[]> ZM_LIST = new List<double[]>();
 
         public List<List<Vector2>> PZ = new List<List<Vector2>>();
