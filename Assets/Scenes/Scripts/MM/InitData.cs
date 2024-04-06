@@ -15,6 +15,9 @@ namespace Program
         public FluxData fluxData = new FluxData();
         public S_KG S_K = new S_KG();
 
+        ////////// Train //////////
+        public Train train = new Train();
+
         public InitData(bool isInit = true)
         {
             if (!isInit) return;
@@ -235,6 +238,13 @@ namespace Program
             S_K.S[3].L_sect     = 20;
             S_K.S[3].T_st       = 120;
             S_K.S[3].T_B        = 120;
-        }
+
+            ////////// Train //////////
+            train.Time = 30;
+            train.G_max = 50;
+            train.G_min = 10;
+            train.Id_max = 5;
+            train.Fs_max = 0.1;
+    }
     }
 }

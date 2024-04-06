@@ -1,16 +1,17 @@
 ﻿using Extruder;
 using Program;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
+using Types;
 using UnityEngine;
+using Vector = System.Numerics.Vector2;
 
 public class Recalculates : MonoBehaviour
 {
     [SerializeField] private EntryValuePanel _entrPanel;
+    [SerializeField] private CurrTimeUpdate _operTime;
 
     [SerializeField] private TMP_Text _shnekSpeed;
     [SerializeField] private TMP_Text _shnekSpeedTarget;
@@ -27,8 +28,10 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TMP_Text _tempTarget2;
 
     [SerializeField] private TMP_Text _resText;
+
     [SerializeField] private WindowGraph _GTrendGraph;
-    private List<System.Numerics.Vector2> _GTrends;
+    [SerializeField] private WindowGraph _IdTrendGraph;
+    [SerializeField] private WindowGraph _FsTrendGraph;
 
     [SerializeField] private WindowGraph _XGraph;
     [SerializeField] private WindowGraph _PGraph;
@@ -44,17 +47,30 @@ public class Recalculates : MonoBehaviour
     void Start()
     {
         _entrPanel.OnChangeVal += EntrPanelOnChangeVal;
+
+        /// Show G Id Fs Trend Graphs
+        _GTrendGraph .AddData(new Vector(0, 0));
+        _IdTrendGraph.AddData(new Vector(0, 0));
+        _FsTrendGraph.AddData(new Vector(0, 0));
     }
 
     public void SetInitData()
     {
         _qdAdapter.initData = collectData.GetInitData();
+        InitData initData = _qdAdapter.initData;
+        Train train = initData.train;
 
-        _shnekSpeed.text = _qdAdapter.initData.data.N_.ToString();
+        _operTime.trainTime = TimeSpan.FromMinutes(train.Time);
+
+        _GTrendGraph.SetYMaxMinLine((float)train.G_max, (float)train.G_min);
+        _IdTrendGraph.SetYMaxLine((float)train.Id_max);
+        _FsTrendGraph.SetYMaxLine((float)train.Fs_max);
+
+        _shnekSpeed.text = initData.data.N_.ToString();
         RecalcShnekSpeed();
-        _temp1.text = _qdAdapter.initData.cyl[0].T_W_k_.ToString();
+        _temp1.text = initData.cyl[0].T_W_k_.ToString();
         SetTempTarget1();
-        _temp2.text = _qdAdapter.initData.cyl[1].T_W_k_.ToString();
+        _temp2.text = initData.cyl[1].T_W_k_.ToString();
         SetTempTarget2();
 
         RecalcOutData();
@@ -100,57 +116,60 @@ public class Recalculates : MonoBehaviour
     //////////////// RECALC OUT DATA ////////////////
     void RecalcOutData()
     {
-        _qdAdapter.initData.data.N_ =       double.Parse(_shnekSpeed.text);
+        _qdAdapter.initData.data.N_       = Math.Max(double.Parse(_shnekSpeed.text), 0.1);
         _qdAdapter.initData.cyl[0].T_W_k_ = double.Parse(_temp1.text);
         _qdAdapter.initData.cyl[1].T_W_k_ = double.Parse(_temp2.text);
         _qdAdapter.init();
 
-        _resText.text = string.Format("Выходные параметры процесса экструзии:\n" +
-                                      "Производительность - {0:f2} кг/ч\n" +
-                                      "Индекс термической деструкции экструдате - {1:f2} %\n" +
-                                      "Доля твердой фазы в экструдате - {2:f2}\n",          
-                                      G(),
-                                      Id(),
-                                      fs());
+        Train train = _qdAdapter.initData.train;
+        float g = G();
+        float dG = g / (float)train.G_max * 100 - 100;
+        if (dG <= 0) dG = Math.Min(g / (float)train.G_min * 100 - 100, 0);
+        float id = Id();
+        float dId = Math.Max(id / (float)train.Id_max * 100 - 100, 0);
+        float fs = Fs();
+        float dFs = Math.Max(fs / (float)train.Fs_max * 100 - 100, 0);
+
+        /// Show res
+        _resText.text = $"{g:f2}\n" +
+                        $"{id:f2}\n" +
+                        $"{fs:f2}\n";
         
         /// Show X P T Graphs
-        _XGraph.Show(_qdAdapter.qpt.XZ.Last());
-        _PGraph.Show(_qdAdapter.qpt.PZ.Last());
-        _TGraph.Show(_qdAdapter.qpt.TZ.Last());
+        _XGraph.SetData(_qdAdapter.qpt.XZ.Last());
+        _PGraph.SetData(_qdAdapter.qpt.PZ.Last());
+        _TGraph.SetData(_qdAdapter.qpt.TZ.Last());
         
-        ///Show X P T Table
-        List<List<double>> rows = new List<List<double>>();
-        for (int i = 0; i < _qdAdapter.qpt.XZ.Last().Count(); ++i)
-        {
-            rows.Add(new List<double>()
-            {
-                _qdAdapter.qpt.PZ.Last()[i].X,
-                _qdAdapter.qpt.XZ.Last()[i].Y,
-                _qdAdapter.qpt.PZ.Last()[i].Y,
-                _qdAdapter.qpt.TZ.Last()[i].Y,
-            });
-        }
+        /// Show X P T Table
+        _XPTTabel.SetData(_qdAdapter.qpt.ZXPT.Last());
 
-        _XPTTabel.SetData(rows);
+        /// Show G Id Fs Trend Graphs
+        _GTrendGraph .AddData(new Vector((float)_operTime.GetMin(), g));
+        _IdTrendGraph.AddData(new Vector((float)_operTime.GetMin(), id));
+        _FsTrendGraph.AddData(new Vector((float)_operTime.GetMin(), fs));
 
-        ///Log 
-        List<object> data = new List<object>
+        /// Log 
+        _logTabel.AddData(new List<object>
         {
-            System.DateTime.Now.ToString("HH:mm:ss"),
-            double.Parse(_shnekSpeed.text),
-            G(),
-            Id(),
-            fs()
-        };
-        _logTabel.AddData(data);
+            _operTime.GetTimeStr(),
+            _qdAdapter.initData.data.N_,
+            _qdAdapter.initData.cyl[0].T_W_k_,
+            _qdAdapter.initData.cyl[1].T_W_k_,
+            g,
+            dG,
+            id,
+            dId,
+            fs,
+            dFs
+        });
     }
 
-    private double G()
+    private float G()
     {
-        return _qdAdapter.die.RES_f.Q_fin * (_qdAdapter.qpt.DataRec.Ro_* 3600 * 1e-6);
+        return (float)(_qdAdapter.die.RES_f.Q_fin * (_qdAdapter.qpt.DataRec.Ro_* 3600 * 1e-6));
     }
      
-    private double Id()
+    private float Id()
     {
         double V = 0;
         foreach (var sect in _qdAdapter.initData.sect)
@@ -180,17 +199,17 @@ public class Recalculates : MonoBehaviour
         const double T_d = 200 + T_kel;
 
         double T_ext = _qdAdapter.qpt.T + T_kel;
-        return t_av / t_d * Math.Exp(E_d / (R * T_ext * T_d) * (T_ext - T_d)) * 100;
+        return (float)(t_av / t_d * Math.Exp(E_d / (R * T_ext * T_d) * (T_ext - T_d)) * 100);
     }
 
-    private double fs()
+    private float Fs()
     {
         double Q = _qdAdapter.die.RES_f.Q_fin * 1e3;
         double Q_s = _qdAdapter.initData.sect.Last().H_fin * _qdAdapter.qpt.X_PL * 1e3 * _qdAdapter.qpt.v_SZ * 1e3;
 
         if (Q == 0) return 0;
 
-        return Q_s / Q;
+        return (float)(Q_s / Q);
     }
 
     //////////////// RECALC PARAMS ON CONTROL PANEL //////////////// 

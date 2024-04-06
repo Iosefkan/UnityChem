@@ -116,7 +116,7 @@ public class TabsManager : MonoBehaviour
     void HideTab(GameObject tab)
     {
         RectTransform rectTr = tab.GetComponent<RectTransform>();
-        rectTr.anchoredPosition = new Vector2(0, rectTr.rect.height);
+        rectTr.anchoredPosition = new Vector2(0, 1000);
         currTab.btn.GetComponent<Image>().color = Color.gray;
     }
 

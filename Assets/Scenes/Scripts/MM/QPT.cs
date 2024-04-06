@@ -597,11 +597,19 @@ namespace Program
                 PZ.Add(new List<Vector2>());
                 TZ.Add(new List<Vector2>());
                 XZ.Add(new List<Vector2>());
+                ZXPT.Add(new List<List<double>>());
                 for (int i = 0; i < k; ++i)
                 {
                     PZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)PM[i]));
                     TZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)TM[i]));
                     XZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)X_PL_LIST.Last()[i] * 1000));
+                    ZXPT.Last().Add(new List<double>
+                    {
+                        XZ.Last().Last().X,
+                        XZ.Last().Last().Y,
+                        PZ.Last().Last().Y,
+                        TZ.Last().Last().Y,
+                    }) ;
                 }
 
                 T_Min = fMin;
@@ -1006,5 +1014,6 @@ namespace Program
         public List<List<Vector2>> PZ = new List<List<Vector2>>();
         public List<List<Vector2>> TZ = new List<List<Vector2>>();
         public List<List<Vector2>> XZ = new List<List<Vector2>>();
+        public List<List<List<double>>> ZXPT = new List<List<List<double>>>();
     }
 }

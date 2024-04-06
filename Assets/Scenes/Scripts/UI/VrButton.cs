@@ -35,7 +35,7 @@ public class VrButton : MonoBehaviour
             down?.Invoke();
             if (_button && isChangeColor)
                 _button.color = Color.gray;
-            StartCoroutine(Stay());
+            if (gameObject.active) StartCoroutine(Stay());
         }
     }
 

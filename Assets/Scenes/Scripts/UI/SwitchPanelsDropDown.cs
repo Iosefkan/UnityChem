@@ -16,6 +16,8 @@ public class SwitchPanelsDropDown : MonoBehaviour
 
         foreach (GameObject panel in panels)
         {
+            if (panel == null) continue;
+
             panel.SetActive(true);
             panel.GetComponent<Image>().enabled = true;
             if (panel.GetComponent<ContentSizeFitter>() == null)
@@ -36,14 +38,11 @@ public class SwitchPanelsDropDown : MonoBehaviour
 
     public void Switch(int index)
     {
-        if (currPanel != null)
-        {
-            HidePanel(currPanel);
-        }
+        if (currPanel != null) HidePanel(currPanel); 
 
         currPanel = panels[index];
-        ShowPanel(currPanel);
         currIndex = index;
+        if (currPanel != null) ShowPanel(currPanel);
     }
 
     public int CurrIndex()

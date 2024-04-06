@@ -34,6 +34,7 @@ public class CollectData : MonoBehaviour
         initData.data.nS_korp = initData.cyl.Count();
         InitDataGroup(ref initData.dop);
         InitDataGroup(ref initData.fluxData);
+        InitDataGroup(ref initData.train);
 
         return initData;
     }
@@ -52,6 +53,7 @@ public class CollectData : MonoBehaviour
         SetInitData(ref initData.data);
         SetInitData(ref initData.dop);
         SetInitData(ref initData.fluxData);
+        SetInitData(ref initData.train);
     }
 
     void AbjastValuesGroupArray<T>(List<ValuesGroupArray> arrays, T[] vals)
@@ -133,7 +135,7 @@ public class CollectData : MonoBehaviour
         List<ValuesGroup> grs = GetValuesGroup(typeof(T).ToString());
         if (grs.Count == 0)
         {
-            //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
+            Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
             return;
         }
 
@@ -214,7 +216,7 @@ public class CollectData : MonoBehaviour
                     {
                         vals[fild.Name].Val = (int)fild.GetValue(dataGroup);
                     }
-                    else
+                    else if (fild.FieldType == typeof(double))
                     {
                         vals[fild.Name].Val = (double)fild.GetValue(dataGroup);
                     }

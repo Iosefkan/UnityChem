@@ -1,7 +1,9 @@
-﻿using System;
+﻿using UnityEngine;
+using Vector = System.Numerics.Vector2;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class WindowGraph : MonoBehaviour
 {
@@ -16,6 +18,13 @@ public class WindowGraph : MonoBehaviour
     private RectTransform dashTemplateHor;
     private RectTransform dashTemplateVer;
     private List<GameObject> gameObjectList;
+
+    private bool isMaxMin = false;
+
+    private List<Vector> values = new List<Vector>();
+
+    private float? yMaxLineVal = null;
+    private float? yMinLineVal = null;
 
     private void Awake()
     {
@@ -32,8 +41,35 @@ public class WindowGraph : MonoBehaviour
         }
     }
 
-    public void Show(List<System.Numerics.Vector2> valueList)
+    public void SetYMaxMinLine(float max, float min)
     {
+        SetYMaxLine(max);
+        SetYMinLine(min);
+    }
+    public void SetYMaxLine(float val)
+    {
+        yMaxLineVal = val;
+    }
+    public void SetYMinLine(float val)
+    {
+        yMinLineVal = val;
+    }
+
+    public void AddData(Vector value)
+    {
+        values.Add(value);
+        SetData(values);
+    }
+
+    public void AddData(List<Vector> valueList)
+    {
+        values.AddRange(valueList);
+        SetData(values);
+    }
+
+    public void SetData(List<Vector> valueList)
+    {
+        values = valueList;
         foreach (GameObject gameObject in gameObjectList) 
         {
             Destroy(gameObject);
@@ -41,97 +77,43 @@ public class WindowGraph : MonoBehaviour
         gameObjectList.Clear();
 
         if (valueList.Count == 0) return;
-        
-        float graphWidth = graphContainer.rect.width;
-        float graphHeight = graphContainer.rect.height;
 
-        float yMaximum = valueList[0].X;
-        float yMinimum = valueList[0].Y;
-        float xMaximum = valueList[0].X;
-        float xMinimum = valueList[0].X;
+        float yMax = valueList.Max((Vector vec) => { return vec.Y; });
+        float yMin = valueList.Min((Vector vec) => { return vec.Y; });
+        float xMax = valueList.Max((Vector vec) => { return vec.X; });
+        float xMin = valueList.Min((Vector vec) => { return vec.X; });
 
+        Vector2? lastCircle = null;
         for (int i = 0; i < valueList.Count; i++)
         {
-            float value = valueList[i].Y;
-            if (value > yMaximum)       yMaximum = value; 
-            else if (value < yMinimum)  yMinimum = value;
-
-            value = valueList[i].X;
-            if (value > xMaximum)       xMaximum = value;
-            else if (value < xMinimum)  xMinimum = value;
+            lastCircle = ShowValue(valueList[i], lastCircle, xMax, xMin, yMax, yMin);
         }
 
-        //float yDifference = yMaximum - yMinimum;
-        //if (yDifference <= 0)
-        //{
-        //    yDifference = 5f;
-        //}
-        //yMaximum = yMaximum + (yDifference * 0.2f);
-        //yMinimum = yMinimum - (yDifference * 0.2f);
-
-        //yMinimum = 0f; // Start the graph at zero
-
-        //float xDifference = xMaximum - xMinimum;
-        //if (xDifference <= 0)
-        //{
-        //    xDifference = 5f;
-        //}
-        //xMaximum = xMaximum + (xDifference * 0.2f);
-        //yMinimum = yMinimum - (yDifference * 0.2f);
-
-        //xMinimum = 0f; // Start the graph at zero
-
-        int xIndex = 0;
-
-        GameObject lastCircleGameObject = null;
-        for (int i = 0; i < valueList.Count; i++)
+        if (yMaxLineVal.HasValue && yMax > yMaxLineVal)
         {
-            float xPosition = ((valueList[i].X - xMinimum) / (xMaximum - xMinimum)) * graphWidth;
-            float yPosition = ((valueList[i].Y - yMinimum) / (yMaximum - yMinimum)) * graphHeight;
-            GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition));
-            gameObjectList.Add(circleGameObject);
-            if (lastCircleGameObject != null) 
-            {
-                GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, 
-                                                                            circleGameObject.GetComponent<RectTransform>().anchoredPosition);
-                gameObjectList.Add(dotConnectionGameObject);
-            }
-            lastCircleGameObject = circleGameObject;
-
-            //RectTransform labelX = Instantiate(labelTemplateX);
-            //labelX.SetParent(graphContainer, false);
-            //labelX.gameObject.SetActive(true);
-            //labelX.anchoredPosition = new Vector2(xPosition, -7f);
-            //labelX.GetComponent<Text>().text = getAxisLabelX(i);
-            //gameObjectList.Add(labelX.gameObject);
-
-            //RectTransform dashX = Instantiate(dashTemplateX);
-            //dashX.SetParent(graphContainer, false);
-            //dashX.gameObject.SetActive(true);
-            //dashX.anchoredPosition = new Vector2(xPosition, -3f); 
-            //gameObjectList.Add(dashX.gameObject);
-
-            xIndex++;
+            isMaxMin = true;
+            lastCircle = ShowValue(new Vector(xMin, yMaxLineVal.Value), null, xMax, xMin, yMax, yMin);
+            lastCircle = ShowValue(new Vector(xMax, yMaxLineVal.Value), lastCircle, xMax, xMin, yMax, yMin);
+            isMaxMin = false;
+        }
+        if (yMinLineVal.HasValue && yMax > yMaxLineVal)
+        {
+            isMaxMin = true;
+            lastCircle = ShowValue(new Vector(xMin, yMinLineVal.Value), null, xMax, xMin, yMax, yMin);
+            lastCircle = ShowValue(new Vector(xMax, yMinLineVal.Value), lastCircle, xMax, xMin, yMax, yMin);
+            isMaxMin = false;
         }
 
         int separatorCount = 10;
         for (int i = 0; i <= separatorCount; i++) 
         {
-            RectTransform labelY = Instantiate(labelTemplateY);
-            labelY.SetParent(graphContainer, false);
-            labelY.gameObject.SetActive(true);
             float normalizedValue = i * 1f / separatorCount;
-            labelY.anchoredPosition = new Vector2(-10f, normalizedValue * graphHeight);
-            labelY.GetComponent<Text>().text = string.Format("{0:f2}", (yMinimum + (normalizedValue * (yMaximum - yMinimum))));
-            gameObjectList.Add(labelY.gameObject);
 
-            RectTransform labelX = Instantiate(labelTemplateX);
-            labelX.SetParent(graphContainer, false);
-            labelX.gameObject.SetActive(true);
-            normalizedValue = i * 1f / separatorCount;
-            labelX.anchoredPosition = new Vector2(normalizedValue * graphWidth, -15f);
-            labelX.GetComponent<Text>().text = string.Format("{0:f2}",(xMinimum + (normalizedValue * (xMaximum - xMinimum))));
-            gameObjectList.Add(labelX.gameObject);
+            RectTransform labelY = CreateLabel(labelTemplateY, -10f, normalizedValue * Height());
+            labelY.GetComponent<Text>().text = $"{yMin + (normalizedValue * (yMax - yMin)):f2}";
+
+            RectTransform labelX = CreateLabel(labelTemplateX, normalizedValue * Width(), -15f);
+            labelX.GetComponent<Text>().text = $"{xMin + (normalizedValue * (xMax - xMin)):f2}";
 
             if (i == separatorCount)
             {
@@ -141,38 +123,55 @@ public class WindowGraph : MonoBehaviour
 
             if (i == 0) continue;
 
-            RectTransform dashHor = Instantiate(dashTemplateHor);
-            dashHor.SetParent(graphContainer, false);
-            dashHor.gameObject.SetActive(true);
-            dashHor.anchoredPosition = new Vector2(-4f, normalizedValue * graphHeight);
-            gameObjectList.Add(dashHor.gameObject);
-
-            RectTransform dashVer = Instantiate(dashTemplateVer);
-            dashVer.SetParent(graphContainer, false);
-            dashVer.gameObject.SetActive(true);
-            dashVer.anchoredPosition = new Vector2(normalizedValue * graphWidth, -4f);
-            gameObjectList.Add(dashVer.gameObject);
+            RectTransform dashHor = CreateLabel(dashTemplateHor, -4f, normalizedValue * Height());
+            RectTransform dashVer = CreateLabel(dashTemplateVer, normalizedValue * Width(), -4f);
         }
     }
 
-    private GameObject CreateCircle(Vector2 anchoredPosition)
+    private Vector2 ShowValue(Vector val, Vector2? lastPos, float xMax, float xMin, float yMax, float yMin)
+    {
+        float xPos = ((val.X - xMin) / (xMax - xMin)) * Width();
+        float yPos = ((val.Y - yMin) / (yMax - yMin)) * Height();
+        RectTransform circle = CreateCircle(new Vector2(xPos, yPos));
+        gameObjectList.Add(circle.gameObject);
+        if (lastPos.HasValue)
+        {
+            GameObject connection = CreateConnection(lastPos.Value, circle.anchoredPosition);
+            gameObjectList.Add(connection);
+        }
+
+        return circle.anchoredPosition;
+    }
+
+    private float Height()
+    {
+        return graphContainer.rect.height;
+    }
+
+    private float Width()
+    {
+        return graphContainer.rect.width;
+    }
+
+    private RectTransform CreateCircle(Vector2 anchoredPosition)
     {
         GameObject gameObject = new GameObject("circle", typeof(Image));
         gameObject.transform.SetParent(graphContainer, false);
-        gameObject.GetComponent<Image>().sprite = circleSprite;
+        if (!isMaxMin) gameObject.GetComponent<Image>().sprite = circleSprite;
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = anchoredPosition;
         rectTransform.sizeDelta = new Vector2(11, 11);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
-        return gameObject;
+
+        return rectTransform;
     }
 
-    private GameObject CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB)
+    private GameObject CreateConnection(Vector2 dotPositionA, Vector2 dotPositionB)
     {
         GameObject gameObject = new GameObject("dotConnection", typeof(Image));
         gameObject.transform.SetParent(graphContainer, false);
-        gameObject.GetComponent<Image>().color = Color.black;
+        gameObject.GetComponent<Image>().color = isMaxMin ? Color.red : Color.black;
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         Vector2 dir = (dotPositionB - dotPositionA).normalized;
         float distance = Vector2.Distance(dotPositionA, dotPositionB);
@@ -181,10 +180,22 @@ public class WindowGraph : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(distance, 3f);
         rectTransform.anchoredPosition = dotPositionA + dir * distance * .5f;
         rectTransform.localEulerAngles = new Vector3(0, 0, GetAngleFromVectorFloat(dir));
+
         return gameObject;
     }
 
-    public static float GetAngleFromVectorFloat(Vector3 dir)
+    private RectTransform CreateLabel(RectTransform tr, float x, float y)
+    {
+        RectTransform dashVer = Instantiate(tr);
+        dashVer.SetParent(graphContainer, false);
+        dashVer.gameObject.SetActive(true);
+        dashVer.anchoredPosition = new Vector2(x, y);
+        gameObjectList.Add(dashVer.gameObject);
+
+        return dashVer;
+    }
+
+    private static float GetAngleFromVectorFloat(Vector3 dir)
     {
         dir = dir.normalized;
         float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
