@@ -7,62 +7,28 @@ using UnityEngine.UI;
 
 public class DropdownCustom : MonoBehaviour
 {
-    private enum TypeEdit
-    {
-        Edit,
-        Add
-    }
-
     bool isInit = false;
-    [SerializeField] private TMP_Dropdown dropdown;
-    [SerializeField] private TMP_InputField field;
-    [SerializeField] private Button addBtn;
-    //[SerializeField] private Button remBtn;
-    [SerializeField] private Button editBtn;
 
-    private TypeEdit typeEdit;
-    
+    [SerializeField] private string newOptionText = string.Empty;
+
+    [SerializeField] private TMP_Dropdown dropdown;
+    [SerializeField] private Button addBtn;
+    [SerializeField] private Button saveBtn;
+
     void OnEnable()
     {
         if (isInit) return;
         isInit = true;
 
-        //remBtn.onClick.AddListener(()=>RemoveOption(remBtn));
-        addBtn.onClick.AddListener(() => StartEdit(TypeEdit.Add));
-        editBtn.onClick.AddListener(() => StartEdit(TypeEdit.Edit));
-        field.onEndEdit.AddListener(EndEdit);
+        addBtn.onClick.AddListener(() => AddOption(newOptionText));
     }
 
-    private void StartEdit(TypeEdit type)
-    {
-        if (type == TypeEdit.Edit && dropdown.options.Count == 0)
-        {
-            return;
-        }
-
-        typeEdit = type;
-        field.text = dropdown.captionText.text;
-        field.gameObject.SetActive(true);
-        field.Select();
-    }
-
-    private void EndEdit(string val)
+    private void AddOption(string val)
     {
         if (val != string.Empty)
         {
-            if (typeEdit == TypeEdit.Edit)
-            {
-                dropdown.captionText.text = val;
-                dropdown.options[dropdown.value].text = val;
-            }
-            else if (typeEdit == TypeEdit.Add)
-            {
-                dropdown.AddOptions(new List<string> { val });
-                dropdown.value = dropdown.options.Count - 1;
-            }
+            dropdown.AddOptions(new List<string> { val });
         }
-
-        field.gameObject.SetActive(false);
     }
 
     public void RemoveOption(Button remBtn)
