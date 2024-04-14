@@ -24,9 +24,9 @@ public class CollectData : MonoBehaviour
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
 
         InitData initData = new InitData(false);
-        InitDataArrayGroup(ref initData.cyl);
-        InitDataArrayGroup(ref initData.sect);
-        InitDataArrayGroup(ref initData.S_K.S);
+        InitDataGroup(ref initData.cyl);
+        InitDataGroup(ref initData.sect);
+        InitDataGroup(ref initData.S_K.S);
         initData.S_K.Num_S = initData.S_K.S.Length;
         InitDataGroup(ref initData.data);
         initData.data.nS_1 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 1);
@@ -47,13 +47,13 @@ public class CollectData : MonoBehaviour
         AbjastValuesGroupArray(arrays, initData.S_K.S);
 
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
-        SetInitDataArray(ref initData.cyl);
-        SetInitDataArray(ref initData.sect);
-        SetInitDataArray(ref initData.S_K.S);
-        SetInitData(ref initData.data);
-        SetInitData(ref initData.dop);
-        SetInitData(ref initData.fluxData);
-        SetInitData(ref initData.train);
+        SetInitData(initData.cyl);
+        SetInitData(initData.sect);
+        SetInitData(initData.S_K.S);
+        SetInitData(initData.data);
+        SetInitData(initData.dop);
+        SetInitData(initData.fluxData);
+        SetInitData(initData.train);
     }
 
     void AbjastValuesGroupArray<T>(List<ValuesGroupArray> arrays, T[] vals)
@@ -87,52 +87,20 @@ public class CollectData : MonoBehaviour
         return grs;
     }
 
-    void InitDataArrayGroup<T>(ref T[] dataGroup)
+    void InitDataGroup<T>(ref T[] dataGroup)
     {
         List<ValuesGroup> grs = GetValuesGroup(typeof(T).ToString());
-        if (grs.Count == 0)
-        {
-            //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
-            return;
-        }
-
         dataGroup = new T[grs.Count];
-        var filds = typeof(T).GetFields();
         for (int i = 0; i < grs.Count; ++i)
         {
-            var vals = grs[i].GetVals();
-            foreach (var fild in filds)
-            {
-                if (fild.Name == "Order")
-                {
-                    object obj1 = dataGroup[i];
-                    fild.SetValue(obj1, i + 1);
-                    dataGroup[i] = (T)obj1;
-                }
-
-                if (!vals.ContainsKey(fild.Name))
-                {
-                    //Debug.Log($"В группе {typeof(T)}[{i}] нет поля {fild.Name}");
-                    continue;
-                }
-
-                object obj = dataGroup[i];
-                if (fild.FieldType == typeof(int))
-                {
-                    fild.SetValue(obj, (int)vals[fild.Name].Val);
-                }
-                else
-                {
-                    fild.SetValue(obj, vals[fild.Name].Val);
-                }
-                dataGroup[i] = (T)obj;
-            }
+            InitDataGroup(ref dataGroup[i], i);
         }
     }
 
-    void InitDataGroup<T>(ref T dataGroup)
+    void InitDataGroup<T>(ref T dataGroup, int index = -1)
     {
-        List<ValuesGroup> grs = GetValuesGroup(typeof(T).ToString());
+        List<ValuesGroup> grs = index == -1 ? GetValuesGroup(typeof(T).ToString()) :
+                                              GetValuesGroup(typeof(T).ToString()).GetRange(index, 1);
         if (grs.Count == 0)
         {
             Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
@@ -145,6 +113,13 @@ public class CollectData : MonoBehaviour
             var vals = grs[i].GetVals();
             foreach (var fild in filds)
             {
+                if (fild.Name == "Order")
+                {
+                    object obj1 = dataGroup;
+                    fild.SetValue(obj1, i + 1);
+                    dataGroup = (T)obj1;
+                }
+
                 if (!vals.ContainsKey(fild.Name))
                 {
                     //Debug.Log($"В группе {typeof(T)}[{i}] нет поля {fild.Name}");
@@ -165,39 +140,18 @@ public class CollectData : MonoBehaviour
         }
     }
 
-    void SetInitDataArray<T>(ref T[] dataGroup)
+    void SetInitData<T>(T[] dataGroup)
     {
-        List<ValuesGroup> grs = GetValuesGroup(typeof(T).ToString());
-        if (grs.Count == 0)
+        for (int i = 0; i < dataGroup.Count(); ++i)
         {
-            //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
-            return;
-        }
-
-        var filds = typeof(T).GetFields();
-        for (int i = 0; i < grs.Count; ++i)
-        {
-            var vals = grs[i].GetVals();
-            foreach (var fild in filds)
-            {
-                if (vals.ContainsKey(fild.Name))
-                {
-                    if (fild.FieldType == typeof(int))
-                    {
-                        vals[fild.Name].Val = (int)fild.GetValue(dataGroup[i]);
-                    }
-                    else
-                    {
-                        vals[fild.Name].Val = (double)fild.GetValue(dataGroup[i]);
-                    }
-                }
-            }
+            SetInitData(dataGroup[i], i);
         }
     }
 
-    void SetInitData<T>(ref T dataGroup)
+    void SetInitData<T>(T dataGroup, int index = -1)
     {
-        List<ValuesGroup> grs = GetValuesGroup(typeof(T).ToString());
+        List<ValuesGroup> grs = index == -1 ? GetValuesGroup(typeof(T).ToString()) :
+                                              GetValuesGroup(typeof(T).ToString()).GetRange(index, 1);
         if (grs.Count == 0)
         {
             //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());

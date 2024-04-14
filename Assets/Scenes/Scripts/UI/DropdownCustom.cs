@@ -1,13 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Types;
 using UnityEngine;
-using UnityEngine.tvOS;
 using UnityEngine.UI;
 
 public class DropdownCustom : MonoBehaviour
 {
     bool isInit = false;
+    CollectData collectData;
 
     [SerializeField] private string newOptionText = string.Empty;
 
@@ -20,6 +20,8 @@ public class DropdownCustom : MonoBehaviour
         if (isInit) return;
         isInit = true;
 
+        collectData = GetComponentInParent<CollectData>();
+
         addBtn.onClick.AddListener(() => AddOption(newOptionText));
     }
 
@@ -28,6 +30,9 @@ public class DropdownCustom : MonoBehaviour
         if (val != string.Empty)
         {
             dropdown.AddOptions(new List<string> { val });
+
+            //CYLINDER
+            //collectData.SetInitDataArray
         }
     }
 
