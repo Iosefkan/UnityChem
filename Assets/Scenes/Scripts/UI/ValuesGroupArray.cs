@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ValuesGroupArray : MonoBehaviour
@@ -8,6 +10,11 @@ public class ValuesGroupArray : MonoBehaviour
     void OnEnable()
     {
         if (tabsManager == null) tabsManager = GetComponent<TabsManager>();
+    }
+
+    public List<ValuesGroup> GetGroups()
+    {
+        return GetComponentsInChildren<ValuesGroup>().ToList();
     }
 
     public void SetSize(int size)

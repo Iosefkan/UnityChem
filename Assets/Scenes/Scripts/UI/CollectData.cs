@@ -1,13 +1,13 @@
 using Program;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
 using UnityEngine;
 
 public class CollectData : MonoBehaviour
 {
     private List<ValuesGroup> valuesGroups;
+    private List<ValuesGroupArray> valuesGroupArrays;
     private bool isInit = false;
 
     private void OnEnable()
@@ -22,19 +22,20 @@ public class CollectData : MonoBehaviour
     public InitData GetInitData()
     {
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
+        valuesGroupArrays = new List<ValuesGroupArray>(GetComponentsInChildren<ValuesGroupArray>());
 
         InitData initData = new InitData(false);
-        InitDataGroup(ref initData.cyl);
-        InitDataGroup(ref initData.sect);
-        InitDataGroup(ref initData.S_K.S);
+        InitValuesGroupArray(ref initData.cyl);
+        InitValuesGroupArray(ref initData.sect);
+        InitValuesGroupArray(ref initData.S_K.S);
         initData.S_K.Num_S = initData.S_K.S.Length;
-        InitDataGroup(ref initData.data);
+        InitValuesGroup(ref initData.data);
         initData.data.nS_1 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 1);
         initData.data.nS_2 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 2);
         initData.data.nS_korp = initData.cyl.Count();
-        InitDataGroup(ref initData.dop);
-        InitDataGroup(ref initData.fluxData);
-        InitDataGroup(ref initData.train);
+        InitValuesGroup(ref initData.dop);
+        InitValuesGroup(ref initData.fluxData);
+        InitValuesGroup(ref initData.train);
 
         return initData;
     }
@@ -47,13 +48,15 @@ public class CollectData : MonoBehaviour
         AbjastValuesGroupArray(arrays, initData.S_K.S);
 
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
-        SetInitData(initData.cyl);
-        SetInitData(initData.sect);
-        SetInitData(initData.S_K.S);
-        SetInitData(initData.data);
-        SetInitData(initData.dop);
-        SetInitData(initData.fluxData);
-        SetInitData(initData.train);
+        valuesGroupArrays = new List<ValuesGroupArray>(GetComponentsInChildren<ValuesGroupArray>());
+
+        SetValuesGroupArrays(initData.cyl);
+        SetValuesGroupArrays(initData.sect);
+        SetValuesGroupArrays(initData.S_K.S);
+        SetValuesGroup(initData.data);
+        SetValuesGroup(initData.dop);
+        SetValuesGroup(initData.fluxData);
+        SetValuesGroup(initData.train);
     }
 
     void AbjastValuesGroupArray<T>(List<ValuesGroupArray> arrays, T[] vals)
@@ -68,12 +71,13 @@ public class CollectData : MonoBehaviour
         }
     }
 
-    List<ValuesGroup> GetValuesGroup(string name)
+    List<ValuesGroup> GetValuesGroups(string name)
     {
         List<ValuesGroup> grs = new List<ValuesGroup>();
         for (int i = 0; i < valuesGroups.Count; ++i)
         {
-            if (valuesGroups[i].name == name)
+            if (valuesGroups[i] is ValuesGroup &&
+                valuesGroups[i].name == name)
             {
                 grs.Add(valuesGroups[i]);
             }
@@ -87,26 +91,50 @@ public class CollectData : MonoBehaviour
         return grs;
     }
 
-    void InitDataGroup<T>(ref T[] dataGroup)
+    ValuesGroupArray GetValuesGroupArray(string name)
     {
-        List<ValuesGroup> grs = GetValuesGroup(typeof(T).ToString());
-        dataGroup = new T[grs.Count];
+        for (int i = 0; i < valuesGroupArrays.Count; ++i)
+        {
+            if (valuesGroupArrays[i].name == name)
+            {
+                return valuesGroupArrays[i];
+            }
+        }
+
+        return null;
+    }
+
+    void InitValuesGroupArray<T>(ref T[] valuesGroup)
+    {
+        ValuesGroupArray grArrs = GetValuesGroupArray(typeof(T).ToString());
+        List<ValuesGroup> grs = grArrs.GetGroups();
+        if (grs.Count == 0)
+        {
+            //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
+            return;
+        }
+
+        valuesGroup = new T[grs.Count];
         for (int i = 0; i < grs.Count; ++i)
         {
-            InitDataGroup(ref dataGroup[i], i);
+            InitValuesGroupFromGroup(ref valuesGroup[i], grs.GetRange(i, 1));
         }
     }
 
-    void InitDataGroup<T>(ref T dataGroup, int index = -1)
+    void InitValuesGroup<T>(ref T valuesGroup)
     {
-        List<ValuesGroup> grs = index == -1 ? GetValuesGroup(typeof(T).ToString()) :
-                                              GetValuesGroup(typeof(T).ToString()).GetRange(index, 1);
+        List<ValuesGroup> grs = GetValuesGroups(typeof(T).ToString());
         if (grs.Count == 0)
         {
             Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
             return;
         }
 
+        InitValuesGroupFromGroup(ref valuesGroup, grs);
+    }
+
+    void InitValuesGroupFromGroup<T>(ref T valuesGroup, List<ValuesGroup> grs)
+    {
         var filds = typeof(T).GetFields();
         for (int i = 0; i < grs.Count; ++i)
         {
@@ -115,9 +143,9 @@ public class CollectData : MonoBehaviour
             {
                 if (fild.Name == "Order")
                 {
-                    object obj1 = dataGroup;
+                    object obj1 = valuesGroup;
                     fild.SetValue(obj1, i + 1);
-                    dataGroup = (T)obj1;
+                    valuesGroup = (T)obj1;
                 }
 
                 if (!vals.ContainsKey(fild.Name))
@@ -126,7 +154,7 @@ public class CollectData : MonoBehaviour
                     continue;
                 }
 
-                object obj = dataGroup;
+                object obj = valuesGroup;
                 if (fild.FieldType == typeof(int))
                 {
                     fild.SetValue(obj, (int)vals[fild.Name].Val);
@@ -135,29 +163,41 @@ public class CollectData : MonoBehaviour
                 {
                     fild.SetValue(obj, vals[fild.Name].Val);
                 }
-                dataGroup = (T)obj;
+                valuesGroup = (T)obj;
             }
         }
     }
 
-    void SetInitData<T>(T[] dataGroup)
+    void SetValuesGroupArrays<T>(T[] valuesGroup)
     {
-        for (int i = 0; i < dataGroup.Count(); ++i)
-        {
-            SetInitData(dataGroup[i], i);
-        }
-    }
-
-    void SetInitData<T>(T dataGroup, int index = -1)
-    {
-        List<ValuesGroup> grs = index == -1 ? GetValuesGroup(typeof(T).ToString()) :
-                                              GetValuesGroup(typeof(T).ToString()).GetRange(index, 1);
+        ValuesGroupArray grArrs = GetValuesGroupArray(typeof(T).ToString());
+        List<ValuesGroup> grs = grArrs.GetGroups();
         if (grs.Count == 0)
         {
             //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
             return;
         }
 
+        for (int i = 0; i < grs.Count(); ++i)
+        {
+            SetValuesGroupFromGroup(valuesGroup[i], grs.GetRange(i, 1));
+        }
+    }
+
+    void SetValuesGroup<T>(T valuesGroup)
+    {
+        List<ValuesGroup> grs = GetValuesGroups(typeof(T).ToString());
+        if (grs.Count == 0)
+        {
+            //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
+            return;
+        }
+
+        SetValuesGroupFromGroup(valuesGroup, grs);
+    }
+
+    void SetValuesGroupFromGroup<T>(T valuesGroup, List<ValuesGroup> grs)
+    {
         var filds = typeof(T).GetFields();
         for (int i = 0; i < grs.Count; ++i)
         {
@@ -168,11 +208,11 @@ public class CollectData : MonoBehaviour
                 {
                     if (fild.FieldType == typeof(int))
                     {
-                        vals[fild.Name].Val = (int)fild.GetValue(dataGroup);
+                        vals[fild.Name].Val = (int)fild.GetValue(valuesGroup);
                     }
                     else if (fild.FieldType == typeof(double))
                     {
-                        vals[fild.Name].Val = (double)fild.GetValue(dataGroup);
+                        vals[fild.Name].Val = (double)fild.GetValue(valuesGroup);
                     }
                 }
             }
