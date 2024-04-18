@@ -1,6 +1,6 @@
 using TMPro;
 
-public class DoubleValue : Value
+public class IntValue : Value
 {
     private TMP_InputField inputField;
     
@@ -13,7 +13,7 @@ public class DoubleValue : Value
     {
         get
         {
-            return double.Parse(inputField.text);
+            return int.Parse(inputField.text);
         }
         set
         {

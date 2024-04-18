@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class TabsManager : MonoBehaviour
 {
-    class Tab
+    public class Tab
     {
         public Tab(Button btn, GameObject tab)
         {
@@ -111,6 +111,11 @@ public class TabsManager : MonoBehaviour
     public int TabsCount()
     {
         return tabs.Count;
+    }
+
+    public Tab GetCurrentTab()
+    {
+        return currTab;
     }
 
     void HideTab(GameObject tab)

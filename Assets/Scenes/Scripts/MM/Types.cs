@@ -108,7 +108,8 @@ namespace Types
     public struct CYLINDER //= ARRAY[1..14] of RECORD
     {
         public string
-            name;
+            Designation;
+
         public int
             Var_T;    //{–од теплового граничного услови€: 1 или 2}
 

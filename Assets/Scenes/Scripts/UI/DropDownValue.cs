@@ -10,7 +10,7 @@ public class DropDownValue : Value
         init();
     }
 
-    public override double Val
+    public override object Val
     {
         get
         {
@@ -18,7 +18,9 @@ public class DropDownValue : Value
         }
         set
         {
-            ddc.SetVal((int)value - 1);
+            int val = (int)value - 1;
+
+            ddc.SetVal(val >= 0 ? val : 0);
         }
     }
 

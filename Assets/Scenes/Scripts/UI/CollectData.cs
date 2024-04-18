@@ -19,6 +19,28 @@ public class CollectData : MonoBehaviour
         }
     }
 
+    public List<Dictionary<string, object>> GetData()
+    {
+        var l = new List<Dictionary<string, object>>()
+        {
+            new(), new()
+        };
+
+        InitData initData = new InitData();
+        var filds = initData.cyl[0].GetType().GetFields();
+        foreach (var fild in filds)
+        {
+            l[0][fild.Name] = fild.GetValue(initData.cyl[0]);
+            l[1][fild.Name] = fild.GetValue(initData.cyl[1]);
+        }
+        l[0]["Designation"] = "1";
+        l[1]["Designation"] = "2";
+
+        //GetComponentInChildren<DropdownDatas>().SetData(l);
+
+        return l;
+    }
+
     public InitData GetInitData()
     {
         valuesGroups = new List<ValuesGroup>(GetComponentsInChildren<ValuesGroup>());
@@ -42,7 +64,7 @@ public class CollectData : MonoBehaviour
 
     public void SetInitData(InitData initData)
     {
-        List<ValuesGroupArray>  arrays = new List<ValuesGroupArray>(GetComponentsInChildren<ValuesGroupArray>());
+        List<ValuesGroupArray> arrays = new List<ValuesGroupArray>(GetComponentsInChildren<ValuesGroupArray>());
         AbjastValuesGroupArray(arrays, initData.cyl);
         AbjastValuesGroupArray(arrays, initData.sect);
         AbjastValuesGroupArray(arrays, initData.S_K.S);
@@ -104,7 +126,7 @@ public class CollectData : MonoBehaviour
         return null;
     }
 
-    void InitValuesGroupArray<T>(ref T[] valuesGroup)
+    public void InitValuesGroupArray<T>(ref T[] valuesGroup)
     {
         ValuesGroupArray grArrs = GetValuesGroupArray(typeof(T).ToString());
         List<ValuesGroup> grs = grArrs.GetGroups();
@@ -121,7 +143,7 @@ public class CollectData : MonoBehaviour
         }
     }
 
-    void InitValuesGroup<T>(ref T valuesGroup)
+    public void InitValuesGroup<T>(ref T valuesGroup)
     {
         List<ValuesGroup> grs = GetValuesGroups(typeof(T).ToString());
         if (grs.Count == 0)
@@ -133,7 +155,7 @@ public class CollectData : MonoBehaviour
         InitValuesGroupFromGroup(ref valuesGroup, grs);
     }
 
-    void InitValuesGroupFromGroup<T>(ref T valuesGroup, List<ValuesGroup> grs)
+    public void InitValuesGroupFromGroup<T>(ref T valuesGroup, List<ValuesGroup> grs)
     {
         var filds = typeof(T).GetFields();
         for (int i = 0; i < grs.Count; ++i)
@@ -148,27 +170,17 @@ public class CollectData : MonoBehaviour
                     valuesGroup = (T)obj1;
                 }
 
-                if (!vals.ContainsKey(fild.Name))
+                if (vals.ContainsKey(fild.Name))
                 {
-                    //Debug.Log($"В группе {typeof(T)}[{i}] нет поля {fild.Name}");
-                    continue;
-                }
-
-                object obj = valuesGroup;
-                if (fild.FieldType == typeof(int))
-                {
-                    fild.SetValue(obj, (int)vals[fild.Name].Val);
-                }
-                else
-                {
+                    object obj = valuesGroup;
                     fild.SetValue(obj, vals[fild.Name].Val);
+                    valuesGroup = (T)obj;
                 }
-                valuesGroup = (T)obj;
             }
         }
     }
 
-    void SetValuesGroupArrays<T>(T[] valuesGroup)
+    public void SetValuesGroupArrays<T>(T[] valuesGroup)
     {
         ValuesGroupArray grArrs = GetValuesGroupArray(typeof(T).ToString());
         List<ValuesGroup> grs = grArrs.GetGroups();
@@ -184,7 +196,7 @@ public class CollectData : MonoBehaviour
         }
     }
 
-    void SetValuesGroup<T>(T valuesGroup)
+    public void SetValuesGroup<T>(T valuesGroup)
     {
         List<ValuesGroup> grs = GetValuesGroups(typeof(T).ToString());
         if (grs.Count == 0)
@@ -196,7 +208,20 @@ public class CollectData : MonoBehaviour
         SetValuesGroupFromGroup(valuesGroup, grs);
     }
 
-    void SetValuesGroupFromGroup<T>(T valuesGroup, List<ValuesGroup> grs)
+    public void SetCurrentValuesGroup<T>(T valuesGroup)
+    {
+        ValuesGroupArray grArrs = GetValuesGroupArray(typeof(T).ToString());
+        List<ValuesGroup> grs = grArrs.GetCurrentGroups();
+        if (grs.Count == 0)
+        {
+            //Debug.Log("На форме не найден тип массива" + typeof(T).ToString());
+            return;
+        }
+
+        SetValuesGroupFromGroup(valuesGroup, grs);
+    }
+
+    public void SetValuesGroupFromGroup<T>(T valuesGroup, List<ValuesGroup> grs)
     {
         var filds = typeof(T).GetFields();
         for (int i = 0; i < grs.Count; ++i)
@@ -206,14 +231,7 @@ public class CollectData : MonoBehaviour
             {
                 if (vals.ContainsKey(fild.Name))
                 {
-                    if (fild.FieldType == typeof(int))
-                    {
-                        vals[fild.Name].Val = (int)fild.GetValue(valuesGroup);
-                    }
-                    else if (fild.FieldType == typeof(double))
-                    {
-                        vals[fild.Name].Val = (double)fild.GetValue(valuesGroup);
-                    }
+                    vals[fild.Name].Val = fild.GetValue(valuesGroup);
                 }
             }
         }

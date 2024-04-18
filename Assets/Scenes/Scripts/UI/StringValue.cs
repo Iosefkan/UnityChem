@@ -1,9 +1,9 @@
-using TMPro;
+﻿using TMPro;
 
-public class DoubleValue : Value
+public class StringValue : Value
 {
     private TMP_InputField inputField;
-    
+
     private void OnEnable()
     {
         init();
@@ -13,11 +13,11 @@ public class DoubleValue : Value
     {
         get
         {
-            return double.Parse(inputField.text);
+            return inputField.text;
         }
         set
         {
-            inputField.text = value.ToString();
+            inputField.text = (string)value;
         }
     }
 
@@ -26,7 +26,7 @@ public class DoubleValue : Value
         if (inputField == null)
         {
             inputField = GetComponentInChildren<TMP_InputField>();
-            Val = 0;
+            Val = string.Empty;
         }
     }
 }

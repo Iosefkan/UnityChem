@@ -17,6 +17,11 @@ public class ValuesGroupArray : MonoBehaviour
         return GetComponentsInChildren<ValuesGroup>().ToList();
     }
 
+    public List<ValuesGroup> GetCurrentGroups()
+    {
+        return tabsManager.GetCurrentTab().tab.GetComponents<ValuesGroup>().ToList();
+    }
+
     public void SetSize(int size)
     {
         while (tabsManager.TabsCount() < size)
