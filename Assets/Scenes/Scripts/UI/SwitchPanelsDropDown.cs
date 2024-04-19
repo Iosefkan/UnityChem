@@ -7,13 +7,9 @@ public class SwitchPanelsDropDown : MonoBehaviour
     [SerializeField] private List<GameObject> panels;
     private GameObject currPanel;
     private int currIndex;
-    private bool isInit = false;
 
-    private void OnEnable()
+    private void Awake()
     {
-        if (isInit) return;
-        isInit = true;
-
         foreach (GameObject panel in panels)
         {
             if (panel == null) continue;
@@ -32,7 +28,10 @@ public class SwitchPanelsDropDown : MonoBehaviour
 
             HidePanel(panel);
         }
+    }
 
+    private void Start()
+    {
         Switch(0);
     }
 

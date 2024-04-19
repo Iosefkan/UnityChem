@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class DropdownDatas : MonoBehaviour
 {
-    private bool isInit = false;
-
     private int currOptIndex = 0;
     private string CurrOptText
     {
@@ -39,11 +37,8 @@ public class DropdownDatas : MonoBehaviour
     [SerializeField] private Button addBtn;
     [SerializeField] private Button saveBtn;
 
-    void OnEnable()
+    void Awake()
     {
-        if (isInit) return;
-        isInit = true;
-
         StringValue strVal = inputField.GetComponentInParent<StringValue>();
         designValName = strVal.name;
 
@@ -55,7 +50,10 @@ public class DropdownDatas : MonoBehaviour
 
         dropdown.onValueChanged.AddListener((int _) => InitVals());
         dropdown.ClearOptions();
+    }
 
+    private void Start()
+    {
         SetData(GetComponentInParent<CollectData>().GetData());
     }
 

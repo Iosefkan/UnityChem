@@ -1,13 +1,10 @@
-using UnityEngine;
-using TMPro;
-
 public class DropDownValue : Value
 {
     private DropDownControl ddc;
     
-    private void OnEnable()
+    private void Awake()
     {
-        init();
+        ddc = GetComponentInChildren<DropDownControl>();
     }
 
     public override object Val
@@ -22,11 +19,5 @@ public class DropDownValue : Value
 
             ddc.SetVal(val >= 0 ? val : 0);
         }
-    }
-
-    private void init()
-    {
-        if (ddc == null)
-            ddc = GetComponentInChildren<DropDownControl>();
     }
 }

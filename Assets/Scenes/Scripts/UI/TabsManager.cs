@@ -28,22 +28,8 @@ public class TabsManager : MonoBehaviour
     private List<Tab> tabs = new List<Tab>();
     private Tab currTab = null;
 
-    private bool isInit = false;
-
-    void OnEnable()
+    void Awake()
     {
-        if (!isInit)
-        {
-            isInit = true;
-        }
-        else
-        {
-            return;
-        }
-
-        tabPrefab.SetActive(false);
-        tabBtnPrefab.gameObject.SetActive(false);
-
         addBtn.onClick.AddListener(() =>
         {
             AddTab();
@@ -53,6 +39,12 @@ public class TabsManager : MonoBehaviour
         {
             RemoveLast();
         });
+    }
+
+    private void Start()
+    {
+        tabPrefab.SetActive(false);
+        tabBtnPrefab.gameObject.SetActive(false);
 
         AddTab();
     }

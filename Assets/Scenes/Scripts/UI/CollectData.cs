@@ -8,15 +8,10 @@ public class CollectData : MonoBehaviour
 {
     private List<ValuesGroup> valuesGroups;
     private List<ValuesGroupArray> valuesGroupArrays;
-    private bool isInit = false;
 
-    private void OnEnable()
+    private void Start()
     {
-        if (!isInit)
-        {
-            SetInitData(new InitData());
-            isInit = true;
-        }
+        SetInitData(new InitData());
     }
 
     public List<Dictionary<string, object>> GetData()

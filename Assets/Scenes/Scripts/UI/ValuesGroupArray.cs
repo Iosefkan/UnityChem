@@ -7,9 +7,9 @@ public class ValuesGroupArray : MonoBehaviour
     public string name;
     private TabsManager tabsManager;
 
-    void OnEnable()
+    void Awake()
     {
-        if (tabsManager == null) tabsManager = GetComponent<TabsManager>();
+        tabsManager = GetComponent<TabsManager>();
     }
 
     public List<ValuesGroup> GetGroups()

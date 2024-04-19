@@ -9,7 +9,7 @@ public class CurrTimeUpdate : MonoBehaviour
     TMP_Text _text;
     DateTime _startTime;
 
-    private void Start()
+    private void Awake()
     {
         _text = transform.GetChild(0).GetComponent<TMP_Text>();
         _startTime = DateTime.Now;

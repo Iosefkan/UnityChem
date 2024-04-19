@@ -4,29 +4,25 @@ public class DoubleValue : Value
 {
     private TMP_InputField inputField;
     
-    private void OnEnable()
+    private void Awake()
     {
-        init();
+        inputField = GetComponentInChildren<TMP_InputField>();
+        Val = 0;
     }
 
     public override object Val
     {
         get
         {
-            return double.Parse(inputField.text);
+            if (!double.TryParse(inputField.text, out double v))
+            {
+                v = 0;
+            }
+            return v;
         }
         set
         {
             inputField.text = value.ToString();
-        }
-    }
-
-    private void init()
-    {
-        if (inputField == null)
-        {
-            inputField = GetComponentInChildren<TMP_InputField>();
-            Val = 0;
         }
     }
 }

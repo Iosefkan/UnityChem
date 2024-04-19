@@ -4,29 +4,25 @@ public class IntValue : Value
 {
     private TMP_InputField inputField;
     
-    private void OnEnable()
+    private void Awake()
     {
-        init();
+        inputField = GetComponentInChildren<TMP_InputField>();
+        Val = 0;
     }
 
     public override object Val
     {
         get
         {
-            return int.Parse(inputField.text);
+            if (!int.TryParse(inputField.text, out int v))
+            {
+                v = 0;
+            }
+            return v;
         }
         set
         {
             inputField.text = value.ToString();
-        }
-    }
-
-    private void init()
-    {
-        if (inputField == null)
-        {
-            inputField = GetComponentInChildren<TMP_InputField>();
-            Val = 0;
         }
     }
 }

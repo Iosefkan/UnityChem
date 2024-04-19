@@ -4,9 +4,14 @@ public class StringValue : Value
 {
     private TMP_InputField inputField;
 
-    private void OnEnable()
+    private void Awake()
     {
-        init();
+        inputField = GetComponentInChildren<TMP_InputField>();
+        if (inputField == null)
+        {
+            inputField = GetComponent<TMP_InputField>();
+        }
+        Val = string.Empty;
     }
 
     public override object Val
@@ -18,15 +23,6 @@ public class StringValue : Value
         set
         {
             inputField.text = (string)value;
-        }
-    }
-
-    private void init()
-    {
-        if (inputField == null)
-        {
-            inputField = GetComponentInChildren<TMP_InputField>();
-            Val = string.Empty;
         }
     }
 }
