@@ -26,16 +26,15 @@ public class DropdownDatas : MonoBehaviour
             }
         }
     }
-    
+
+    private string designValName = string.Empty;
+
     private Dictionary<string, Value> currVals;
     [SerializeField] private Dictionary<string, Dictionary<string, object>> optVals = new();
-
-    private const string DesignationValueName = "Designation";
-
-    [SerializeField] private string Name = string.Empty;
     
     [SerializeField] private string newOptionText = "Новый";
 
+    [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TMP_Dropdown dropdown;
     [SerializeField] private Button addBtn;
     [SerializeField] private Button saveBtn;
@@ -45,7 +44,11 @@ public class DropdownDatas : MonoBehaviour
         if (isInit) return;
         isInit = true;
 
+        StringValue strVal = inputField.GetComponentInParent<StringValue>();
+        designValName = strVal.name;
+
         currVals = GetComponentInParent<ValuesGroup>().GetVals();
+        currVals[designValName] = strVal;
 
         addBtn.onClick.AddListener(() => AddOption(newOptionText));
         saveBtn.onClick.AddListener(() => SaveVals(dropdown.captionText.text));
@@ -60,7 +63,7 @@ public class DropdownDatas : MonoBehaviour
     {
         foreach (var vals in data)
         {
-            string designName = (string)vals[DesignationValueName];
+            string designName = (string)vals[designValName];
             AddOption(designName);
             var optVal = optVals[designName];
             foreach (var item in vals)
@@ -87,7 +90,7 @@ public class DropdownDatas : MonoBehaviour
                     return;
                 }
             }
-            
+                
             name = ValidName(name);
             dropdown.AddOptions(new List<string> { name });
 
@@ -97,6 +100,8 @@ public class DropdownDatas : MonoBehaviour
             {
                 InitVals();
             }
+
+            inputField.Select();
         }
     }
 
@@ -132,7 +137,7 @@ public class DropdownDatas : MonoBehaviour
 
     private void SaveVals(string optName)
     {
-        string newOptName = (string)currVals[DesignationValueName].Val;
+        string newOptName = (string)currVals[designValName].Val;
         if (newOptName != optName && optVals.ContainsKey(newOptName))
         {
             EditorUtility.DisplayDialog("Предупреждение", $"Название {newOptName} уже используется!\n Попробуйте другое.", "Хорошо");
@@ -184,7 +189,7 @@ public class DropdownDatas : MonoBehaviour
             }
         }
 
-        optVal[DesignationValueName] = optName;
+        optVal[designValName] = optName;
     }
 
     private void ResetChanges()
