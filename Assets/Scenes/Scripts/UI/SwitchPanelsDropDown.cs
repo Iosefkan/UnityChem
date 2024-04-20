@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,5 +60,21 @@ public class SwitchPanelsDropDown : MonoBehaviour
     void ShowPanel(GameObject panel)
     {
         panel.GetComponent<ContentSizeFitter>().enabled = true;
+
+        //VerticalLayoutGroup layout = panel.GetComponent<VerticalLayoutGroup>();
+        //int counter = 0;
+        //Debug.Log(.Count());
+        //while (layout != null && counter < 5)
+        //{
+        //    LayoutRebuilder.ForceRebuildLayoutImmediate(layout.transform.GetComponent<RectTransform>());
+        //    layout = panel.GetComponentInParent<VerticalLayoutGroup>();
+        //    ++counter;
+        //}
+
+        VerticalLayoutGroup[] pl = panel.GetComponentsInParent<VerticalLayoutGroup>();
+        foreach(var p in  pl)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(p.transform.GetComponent<RectTransform>());
+        }
     }
 }

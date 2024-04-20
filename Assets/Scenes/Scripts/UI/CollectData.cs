@@ -28,8 +28,8 @@ public class CollectData : MonoBehaviour
             var filds = typeof(CYLINDER).GetFields();
             CYLINDER[] cyl = new CYLINDER[4];
             cyl[0].Var_T = 1;
-            cyl[1].Var_T = 1;
-            cyl[2].Var_T = 1;
+            cyl[1].Var_T = 2;
+            cyl[2].Var_T = 2;
             cyl[3].Var_T = 1;
             cyl[0].L_sec = 123;
             cyl[1].L_sec = 432;
