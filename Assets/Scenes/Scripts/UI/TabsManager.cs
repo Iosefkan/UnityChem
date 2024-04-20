@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +30,9 @@ public class TabsManager : MonoBehaviour
 
     void Awake()
     {
+        tabPrefab.SetActive(false);
+        tabBtnPrefab.gameObject.SetActive(false);
+
         addBtn.onClick.AddListener(() =>
         {
             AddTab();
@@ -43,9 +46,6 @@ public class TabsManager : MonoBehaviour
 
     private void Start()
     {
-        tabPrefab.SetActive(false);
-        tabBtnPrefab.gameObject.SetActive(false);
-
         AddTab();
     }
 
@@ -74,8 +74,9 @@ public class TabsManager : MonoBehaviour
 
     public void RemoveLast()
     {
-        RemoveTab(tabs.Count - 1);
+        if (tabs.Count > 0) RemoveTab(tabs.Count - 1);
     }
+
     public void RemoveTab(int index)
     {
         if (index <= 0) return;
@@ -85,6 +86,8 @@ public class TabsManager : MonoBehaviour
             SetActiveTab(index - 1);
         }
 
+        tabs[index].tab.SetActive(false);
+        tabs[index].btn.gameObject.SetActive(false);
         Destroy(tabs[index].tab);
         Destroy(tabs[index].btn.gameObject);
         tabs.RemoveAt(index);
@@ -96,8 +99,15 @@ public class TabsManager : MonoBehaviour
         {
             HideTab(currTab.tab);
         }
+        if (tabs.Count > index && index >= 0)
+        {
+            ShowTab(tabs[index]);
+        }
+    }
 
-        ShowTab(tabs[index]);
+    public List<Tab> GetTabs()
+    {
+        return tabs;
     }
 
     public int TabsCount()
@@ -112,6 +122,9 @@ public class TabsManager : MonoBehaviour
 
     void HideTab(GameObject tab)
     {
+        if (tab == null)
+            return;
+
         RectTransform rectTr = tab.GetComponent<RectTransform>();
         rectTr.anchoredPosition = new Vector2(0, 1000);
         currTab.btn.GetComponent<Image>().color = Color.gray;

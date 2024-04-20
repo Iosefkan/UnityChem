@@ -25,4 +25,9 @@ public class StringValue : Value
             inputField.text = (string)value;
         }
     }
+
+    public override object DefaultVal
+    {
+        get { return string.Empty; }
+    }
 }

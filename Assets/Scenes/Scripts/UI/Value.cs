@@ -4,17 +4,26 @@ using System;
 [Serializable]
 public class Value : MonoBehaviour
 {
-    public string name;
+    public string name = string.Empty;
+    public object val;
 
     public virtual object Val
     {
         get
         {
-            throw new Exception("Метод не реализован");
+            return val;
         }
         set
         {
-            throw new Exception("Метод не реализован");
+            val = value;
+        }
+    }
+
+    public virtual object DefaultVal 
+    {
+        get
+        {
+            return 0;
         }
     }
 }

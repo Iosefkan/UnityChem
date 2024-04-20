@@ -20,4 +20,9 @@ public class DropDownValue : Value
             ddc.SetVal(val >= 0 ? val : 0);
         }
     }
+
+    public override object DefaultVal
+    {
+        get { return 1; }
+    }
 }

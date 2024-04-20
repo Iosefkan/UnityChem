@@ -25,4 +25,9 @@ public class IntValue : Value
             inputField.text = value.ToString();
         }
     }
+
+    public override object DefaultVal
+    {
+        get { return 0; }
+    }
 }

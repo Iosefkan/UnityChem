@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
+using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DropdownDatas : MonoBehaviour
+public class DropdownDatas : Value
 {
+    private bool isInit = false;
+
     private int currOptIndex = 0;
     private string CurrOptText
     {
@@ -27,8 +32,8 @@ public class DropdownDatas : MonoBehaviour
 
     private string designValName = string.Empty;
 
-    private Dictionary<string, Value> currVals;
-    [SerializeField] private Dictionary<string, Dictionary<string, object>> optVals = new();
+    private Dictionary<string, Value> currVals = new();
+    private Dictionary<string, Dictionary<string, object>> optVals = new();
     
     [SerializeField] private string newOptionText = "Новый";
 
@@ -37,15 +42,56 @@ public class DropdownDatas : MonoBehaviour
     [SerializeField] private Button addBtn;
     [SerializeField] private Button saveBtn;
 
+    [SerializeField] private List<ValuesGroup> valGrps;
+    [SerializeField] private List<ValuesGroupArray> valGrpsArr;
+    [SerializeField] private List<DropdownDatas> valDropdowns;
+
     void Awake()
     {
         StringValue strVal = inputField.GetComponentInParent<StringValue>();
         designValName = strVal.name;
 
-        currVals = GetComponentInParent<ValuesGroup>().GetVals();
         currVals[designValName] = strVal;
 
-        addBtn.onClick.AddListener(() => AddOption(newOptionText));
+        foreach (var valGrp in valGrps)
+        {
+            currVals.AddRange(valGrp.GetVals());
+        }
+
+        foreach (var valArrGrp in valGrpsArr)
+        {
+            currVals[valArrGrp.name] = valArrGrp;
+        }
+
+        foreach (var dd in valDropdowns)
+        {
+            currVals[dd.name] = dd;
+        }
+
+        addBtn.onClick.AddListener(() =>
+        {
+            if (IsValsChanged())
+            {
+                if (ResetChangesMsg())
+                {
+                    ResetChanges();
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            AddOption(newOptionText);
+
+            dropdown.value = dropdown.options.Count - 1;
+            if (dropdown.options.Count == 1)
+            {
+                InitVals();
+            }
+
+            inputField.Select();
+        });
         saveBtn.onClick.AddListener(() => SaveVals(dropdown.captionText.text));
 
         dropdown.onValueChanged.AddListener((int _) => InitVals());
@@ -54,7 +100,32 @@ public class DropdownDatas : MonoBehaviour
 
     private void Start()
     {
-        SetData(GetComponentInParent<CollectData>().GetData());
+        Init();
+    }
+
+    private void Init()
+    {
+        if (!isInit)
+        {
+            SetData(GetComponentInParent<CollectData>().GetData(name));
+            isInit = true;
+        }
+    }
+
+    public override object Val
+    {
+        get
+        {
+            Init();
+            if (IsValsChanged())
+                return -1;
+            return dropdown.value;
+        }
+        set
+        {
+            Init();
+            dropdown.value = (int)value;
+        }
     }
 
     public void SetData(List<Dictionary<string, object>> data)
@@ -68,8 +139,11 @@ public class DropdownDatas : MonoBehaviour
             {
                 optVal[item.Key] = item.Value;
             }
+        }
 
-            SetVals(optVal);
+        if (optVals.Count > 0)
+        {
+            SetVals(optVals.First().Value);
         }
     }
 
@@ -77,29 +151,10 @@ public class DropdownDatas : MonoBehaviour
     {
         if (name != string.Empty)
         {
-            if (IsValsChanged())
-            {
-                if (ResetChangesMsg())
-                {
-                    ResetChanges();
-                }
-                else
-                {
-                    return;
-                }
-            }
-                
             name = ValidName(name);
             dropdown.AddOptions(new List<string> { name });
 
             ResetOptVals(name);
-            dropdown.value = dropdown.options.Count - 1;
-            if (dropdown.options.Count == 1)
-            {
-                InitVals();
-            }
-
-            inputField.Select();
         }
     }
 
@@ -118,7 +173,7 @@ public class DropdownDatas : MonoBehaviour
         SetVals(optVals[dropdown.captionText.text]);
     }
 
-    private bool IsValsChanged()
+    public bool IsValsChanged()
     {
         if (!optVals.ContainsKey(CurrOptText))
             return false;
@@ -126,7 +181,7 @@ public class DropdownDatas : MonoBehaviour
         var optVal = optVals[CurrOptText];
         foreach (var val in currVals)
         {
-            if (!optVal[val.Key].Equals(val.Value.Val))
+            if (!val.Value.Val.Equals(optVal[val.Key]))
                 return true;
         }
 
@@ -169,22 +224,7 @@ public class DropdownDatas : MonoBehaviour
         List<string> keys = new List<string>(currVals.Keys);
         foreach (var valKey in keys)
         {
-            if (currVals[valKey] is StringValue)
-            {
-                optVal[valKey] = "";
-            }
-            else if (currVals[valKey] is DropDownValue)
-            {
-                optVal[valKey] = 1;
-            }
-            else if (currVals[valKey] is DoubleValue)
-            {
-                optVal[valKey] = 0d;
-            }
-            else
-            {
-                optVal[valKey] = 0;
-            }
+            optVal[valKey] = currVals[valKey].DefaultVal;
         }
 
         optVal[designValName] = optName;
