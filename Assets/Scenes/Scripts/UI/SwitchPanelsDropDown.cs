@@ -8,7 +8,7 @@ public class SwitchPanelsDropDown : MonoBehaviour
 {
     [SerializeField] private List<GameObject> panels;
     private GameObject currPanel;
-    private int currIndex;
+    public  int currIndex;
 
     private void Awake()
     {
@@ -30,10 +30,7 @@ public class SwitchPanelsDropDown : MonoBehaviour
 
             HidePanel(panel);
         }
-    }
 
-    private void Start()
-    {
         Switch(0);
     }
 
@@ -60,16 +57,6 @@ public class SwitchPanelsDropDown : MonoBehaviour
     void ShowPanel(GameObject panel)
     {
         panel.GetComponent<ContentSizeFitter>().enabled = true;
-
-        //VerticalLayoutGroup layout = panel.GetComponent<VerticalLayoutGroup>();
-        //int counter = 0;
-        //Debug.Log(.Count());
-        //while (layout != null && counter < 5)
-        //{
-        //    LayoutRebuilder.ForceRebuildLayoutImmediate(layout.transform.GetComponent<RectTransform>());
-        //    layout = panel.GetComponentInParent<VerticalLayoutGroup>();
-        //    ++counter;
-        //}
 
         VerticalLayoutGroup[] pl = panel.GetComponentsInParent<VerticalLayoutGroup>();
         foreach(var p in  pl)
