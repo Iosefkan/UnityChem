@@ -1,3 +1,4 @@
+using Assets.Scenes.Scripts.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,13 @@ using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class DropdownDatas : Value
 {
     private bool isInit = false;
+
+    static DatabaseCollectData DB = new();
 
     private int currOptIndex = 0;
     private string CurrOptText
@@ -34,7 +38,9 @@ public class DropdownDatas : Value
 
     private Dictionary<string, Value> currVals = new();
     private Dictionary<string, Dictionary<string, object>> optVals = new();
-    
+
+    private List<string> dataNames = new();
+
     [SerializeField] private string newOptionText = "Новый";
 
     [SerializeField] private TMP_InputField inputField;
@@ -56,16 +62,19 @@ public class DropdownDatas : Value
         foreach (var valGrp in valGrps)
         {
             currVals.AddRange(valGrp.GetVals());
+            dataNames.Add(valGrp.name);
         }
 
         foreach (var valArrGrp in valGrpsArr)
         {
             currVals[valArrGrp.name] = valArrGrp;
+            dataNames.Add(valArrGrp.name);
         }
 
         foreach (var dd in valDropdowns)
         {
             currVals[dd.name] = dd;
+            dataNames.Add(dd.name);
         }
 
         addBtn.onClick.AddListener(() =>
@@ -107,7 +116,7 @@ public class DropdownDatas : Value
     {
         if (!isInit)
         {
-            SetData(GetComponentInParent<CollectData>().GetData(name));
+            SetData(DB.GetDatas(name));
             isInit = true;
         }
     }
@@ -135,9 +144,12 @@ public class DropdownDatas : Value
             string designName = (string)vals[designValName];
             AddOption(designName);
             var optVal = optVals[designName];
-            foreach (var item in vals)
+            foreach (var key in currVals.Keys)
             {
-                optVal[item.Key] = item.Value;
+                if (vals.ContainsKey(key))
+                {
+                    optVal[key] = vals[key];
+                }
             }
         }
 
@@ -270,7 +282,7 @@ public class DropdownDatas : Value
 
         if (dropdown.options.Count == 0)
         {
-            AddOption(newOptionText);
+            addBtn.onClick.Invoke();
         }
 
         RefreshOptions();

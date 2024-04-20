@@ -62,6 +62,9 @@ namespace Types
 
     public struct DATA_
     {
+        public string
+            Designation;
+
         public int
             nS_1,     //{ Число секций c нарезкой червяка }
             nS_2,     //{ Число гладких секций червяка }

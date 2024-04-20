@@ -23,8 +23,9 @@ namespace Program
             if (!isInit) return;
 
             ////////// QPT //////////
-            
+
             // DATA
+            data.Designation = "data1";
             data.nS_1           = 2;
             data.nS_2           = 1;
             data.nS_korp        = 2;
@@ -113,7 +114,7 @@ namespace Program
             sect[2].delta       = 0;
             sect[2].d_Fi        = 0;
             sect[2].W_a         = 0;
-                                
+
             //sect[3].S_Type      = 2;
             //sect[3].Order       = 3;
             //sect[3].Monolit     = 0;
@@ -134,6 +135,7 @@ namespace Program
             //sect[3].W_a         = 0;
 
             //SCT_C
+            cyl[0].Designation = "cyl1";
             cyl[0].Var_T        = 1;
             cyl[0].L_sec        = 450;
             cyl[0].Del_k_       = 10;
@@ -145,6 +147,7 @@ namespace Program
             cyl[0].q_int_k      = 0;
             cyl[0].dT_W_k       = 0;
                                 
+            cyl[1].Designation = "cyl2";
             cyl[1].Var_T        = 1;
             cyl[1].L_sec        = 480;
             cyl[1].Del_k_       = 10;

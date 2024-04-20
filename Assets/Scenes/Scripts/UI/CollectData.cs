@@ -1,71 +1,71 @@
 using Assets.Scenes.Scripts.UI;
 using Program;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Types;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class CollectData : MonoBehaviour
 {
     private List<ValuesGroup> valuesGroups;
     private List<ValuesGroupArray> valuesGroupArrays;
 
+    private Dictionary<string, Dictionary<string, object>> datas = new();
+
     private void Start()
     {
         //SetInitData(new InitData());
     }
 
-    public List<Dictionary<string, object>> GetData(string name)
-    {
-        var l = new List<Dictionary<string, object>>()
-        {
-            new(), new(), new(), new()
-        };
-        if (name == "BodySection")
-        {
-            var filds = typeof(CYLINDER).GetFields();
-            CYLINDER[] cyl = new CYLINDER[4];
-            cyl[0].Var_T = 2;
-            cyl[1].Var_T = 1;
-            cyl[2].Var_T = 2;
-            cyl[3].Var_T = 1;
-            cyl[0].L_sec = 123;
-            cyl[1].L_sec = 432;
-            cyl[2].L_sec = 67583456;
-            cyl[3].L_sec = 234532452356;
-            foreach (var fild in filds)
-            {
-                l[0][fild.Name] = fild.GetValue(cyl[0]);
-                l[1][fild.Name] = fild.GetValue(cyl[1]);
-                l[2][fild.Name] = fild.GetValue(cyl[2]);
-                l[3][fild.Name] = fild.GetValue(cyl[3]);
-            }
+    //public List<Dictionary<string, object>> GetData(string name)
+    //{
+    //    var l = new List<Dictionary<string, object>>()
+    //    {
+    //        new(), new(), new(), new()
+    //    };
+    //    if (name == "BodySection")
+    //    {
+    //        var filds = typeof(CYLINDER).GetFields();
+    //        CYLINDER[] cyl = new CYLINDER[4];
+    //        cyl[0].Var_T = 2;
+    //        cyl[1].Var_T = 1;
+    //        cyl[2].Var_T = 2;
+    //        cyl[3].Var_T = 1;
+    //        cyl[0].L_sec = 123;
+    //        cyl[1].L_sec = 432;
+    //        cyl[2].L_sec = 67583456;
+    //        cyl[3].L_sec = 234532452356;
+    //        foreach (var fild in filds)
+    //        {
+    //            l[0][fild.Name] = fild.GetValue(cyl[0]);
+    //            l[1][fild.Name] = fild.GetValue(cyl[1]);
+    //            l[2][fild.Name] = fild.GetValue(cyl[2]);
+    //            l[3][fild.Name] = fild.GetValue(cyl[3]);
+    //        }
 
-            l[0]["Designation"] = "1";
-            l[1]["Designation"] = "2";
-            l[2]["Designation"] = "3";
-            l[3]["Designation"] = "4";
-        }
-        else if (name == "Body")
-        {
-            l[0]["Lam_k"] = 1111d;
-            l[0]["Types.CYLINDER"] = new MyList<int>() { 0, 1, 0, 1 };
-            l[0]["Designation"] = "sec1";
-            l[1]["Lam_k"] = 2222d;
-            l[1]["Types.CYLINDER"] = new MyList<int>() { 1, 0, 0, 0 };
-            l[1]["Designation"] = "sec2";
-            l[2]["Lam_k"] = 3333d;
-            l[2]["Types.CYLINDER"] = new MyList<int>() { 1, 1, 1, 1 };
-            l[2]["Designation"] = "sec3";
-            l[3]["Lam_k"] = 44444d;
-            l[3]["Types.CYLINDER"] = new MyList<int>() { 1,0,2,1 };
-            l[3]["Designation"] = "sec4";
-        }
+    //        l[0]["Designation"] = "1";
+    //        l[1]["Designation"] = "2";
+    //        l[2]["Designation"] = "3";
+    //        l[3]["Designation"] = "4";
+    //    }
+    //    else if (name == "Body")
+    //    {
+    //        l[0]["Lam_k"] = 1111d;
+    //        l[0]["Types.CYLINDER"] = new MyList<int>() { 0, 1, 0, 1 };
+    //        l[0]["Designation"] = "sec1";
+    //        l[1]["Lam_k"] = 2222d;
+    //        l[1]["Types.CYLINDER"] = new MyList<int>() { 1, 0, 0, 0 };
+    //        l[1]["Designation"] = "sec2";
+    //        l[2]["Lam_k"] = 3333d;
+    //        l[2]["Types.CYLINDER"] = new MyList<int>() { 1, 1, 1, 1 };
+    //        l[2]["Designation"] = "sec3";
+    //        l[3]["Lam_k"] = 44444d;
+    //        l[3]["Types.CYLINDER"] = new MyList<int>() { 1,0,2,1 };
+    //        l[3]["Designation"] = "sec4";
+    //    }
 
-        return l;
-    }
+    //    return l;
+    //}
 
     public InitData GetInitData()
     {
