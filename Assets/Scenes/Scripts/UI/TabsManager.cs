@@ -46,7 +46,10 @@ public class TabsManager : MonoBehaviour
 
     private void Start()
     {
-        AddTab();
+        if (tabs.Count == 0)
+        {
+            AddTab();
+        }
     }
 
     public void AddTab()

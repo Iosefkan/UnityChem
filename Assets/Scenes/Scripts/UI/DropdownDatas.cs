@@ -39,7 +39,7 @@ public class DropdownDatas : Value
     private Dictionary<string, Value> currVals = new();
     private Dictionary<string, Dictionary<string, object>> optVals = new();
 
-    private List<string> dataNames = new();
+    private Dictionary<string, List<string>> dataFields = new();
 
     [SerializeField] private string newOptionText = "Новый";
 
@@ -61,20 +61,23 @@ public class DropdownDatas : Value
 
         foreach (var valGrp in valGrps)
         {
-            currVals.AddRange(valGrp.GetVals());
-            dataNames.Add(valGrp.name);
+            var vals = valGrp.GetVals();
+            currVals.AddRange(vals);
+            dataFields[valGrp.name] = vals.Keys.ToList();
+            dataFields[valGrp.name].Add(designValName);
         }
 
         foreach (var valArrGrp in valGrpsArr)
         {
             currVals[valArrGrp.name] = valArrGrp;
-            dataNames.Add(valArrGrp.name);
+            dataFields[valArrGrp.name] = new List<string> { "Designation", valArrGrp.name };
         }
 
         foreach (var dd in valDropdowns)
         {
             currVals[dd.name] = dd;
-            dataNames.Add(dd.name);
+            //dataNames.Add(dd.name);
+            Debug.Log("В этом цикле надо дописать инициалицазию dataNames, чтобы он читал данные с БД");
         }
 
         addBtn.onClick.AddListener(() =>
@@ -116,7 +119,7 @@ public class DropdownDatas : Value
     {
         if (!isInit)
         {
-            SetData(DB.GetDatas(name));
+            SetData(DB.GetDatas(dataFields));
             isInit = true;
         }
     }

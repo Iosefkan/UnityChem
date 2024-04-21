@@ -73,13 +73,13 @@ public class CollectData : MonoBehaviour
         valuesGroupArrays = new List<ValuesGroupArray>(GetComponentsInChildren<ValuesGroupArray>());
 
         InitData initData = new InitData(false);
-        InitValuesGroupArray(ref initData.cyl);
-        InitValuesGroupArray(ref initData.sect);
-        InitValuesGroupArray(ref initData.S_K.S);
+        InitValuesGroupArray(ref initData.cyl, "CYLINDER_CONF");
+        InitValuesGroupArray(ref initData.sect, "SECT_CONF");
+        InitValuesGroupArray(ref initData.S_K.S, "SECTIONS_CONF");
         initData.S_K.Num_S = initData.S_K.S.Length;
         InitValuesGroup(ref initData.data);
-        initData.data.nS_1 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 1);
-        initData.data.nS_2 = initData.sect.Count((Types.SECT sec) => sec.S_Type == 2);
+        initData.data.nS_1 = initData.sect.Count((SECT sec) => sec.S_Type == 1);
+        initData.data.nS_2 = initData.sect.Count((SECT sec) => sec.S_Type == 2);
         initData.data.nS_korp = initData.cyl.Count();
         InitValuesGroup(ref initData.dop);
         InitValuesGroup(ref initData.fluxData);
@@ -152,9 +152,9 @@ public class CollectData : MonoBehaviour
         return null;
     }
 
-    public void InitValuesGroupArray<T>(ref T[] valuesGroup)
+    public void InitValuesGroupArray<T>(ref T[] valuesGroup, string name)
     {
-        ValuesGroupArray grArrs = GetValuesGroupArray(typeof(T).ToString());
+        ValuesGroupArray grArrs = GetValuesGroupArray(name);
         List<ValuesGroup> grs = grArrs.GetGroups();
         if (grs.Count == 0)
         {
@@ -171,7 +171,7 @@ public class CollectData : MonoBehaviour
 
     public void InitValuesGroup<T>(ref T valuesGroup)
     {
-        List<ValuesGroup> grs = GetValuesGroups(typeof(T).ToString());
+        List<ValuesGroup> grs = GetValuesGroups(typeof(T).ToString()[6..]);
         if (grs.Count == 0)
         {
             Debug.Log("На форме не найден тип массива" + typeof(T).ToString());

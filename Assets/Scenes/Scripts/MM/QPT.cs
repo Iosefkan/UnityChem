@@ -19,6 +19,11 @@ namespace Program
 
         public void init(DATA_ data, SECT[] sect, CYLINDER[] cyl, DOP_DATA dop, bool isAloneQ = false)
         {
+            for (int i = 0; i < sect.Length; ++i)
+            {
+                sect[i].Order = i + 1;
+            }
+
             table = "";
 
             DataRec = data;

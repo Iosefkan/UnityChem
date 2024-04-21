@@ -1,5 +1,6 @@
 using System;
 using Types;
+using UnityEngine;
 
 namespace Program
 {
@@ -14,6 +15,12 @@ namespace Program
 
         public void init(RESULT res, FluxData dat, S_KG s_kg)
         {
+            s_kg.Num_S = s_kg.S.Length;
+            for (int i = 0; i < s_kg.Num_S; ++i)
+            {
+                s_kg.S[i].Order = i + 1;
+            }
+
             table = "";
 
             Res = res;

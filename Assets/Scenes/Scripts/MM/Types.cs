@@ -2,6 +2,9 @@ namespace Types
 {
     public struct RESULT
     {
+        public string
+            Designation;
+
         public double
             // { Параметры степенного реологического уравнения }
             Mu0,
@@ -24,6 +27,9 @@ namespace Types
     //QPT Types
     public struct DOP_DATA
     {
+        public string
+            Designation;
+
         public double 
             Q; //Если Q известен
         public double
@@ -35,6 +41,9 @@ namespace Types
 
     public struct SECT //= ARRAY[1..29] of RECORD          { ГЕОМЕТРИЯ СЕКЦИЙ ЧЕРВЯКА }
     {
+        public string
+            Designation;
+
         public int
             S_Type,                 //{ Тип секции: 1 - с нарезкой, 2 - гладкая }
             Order,                   //{ П о р я д к о в ы й  н о м е р  секции }
@@ -151,6 +160,9 @@ namespace Types
     //DIE Types
     public struct FluxData
     {
+        public string
+            Designation;
+
         public int
             N, //{ Число сопряженных материальных концентрических слоев }
             iR;  //{    Число регулярных шагов по r/R для построения v(r) }
@@ -162,6 +174,9 @@ namespace Types
     //{ ГЕОМЕТРИЯ СЕКЦИЙ КАНАЛА }
     public struct SECTIONS // ARRAY[1..29] Of Record
     {
+        public string
+            Designation;
+
         public int
             PRIZNAK,
             Order, //{   П о р я д к о в ы й  н о м е р  секции }
@@ -180,6 +195,9 @@ namespace Types
     //{ ГЕОМЕТРИЯ СЕКЦИЙ КАНАЛА ГОЛОВКИ }
     public struct S_KG
     {
+        public string
+            Designation;
+
         public int Num_S;
         public SECTIONS[] S;
     }
@@ -213,6 +231,9 @@ namespace Types
     // Тренировка
     public struct Train
     {
+        public string
+            Designation;
+
         public double
             Time,
             G_max,

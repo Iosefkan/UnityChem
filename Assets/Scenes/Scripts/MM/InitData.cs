@@ -58,6 +58,7 @@ namespace Program
             data.T_scr          = 140;
 
             //SCT
+            sect[0].Designation = "sect1";
             sect[0].S_Type      = 1;
             sect[0].Order       = 1;
             sect[0].Monolit     = 0;
@@ -76,7 +77,8 @@ namespace Program
             sect[0].delta       = 0.05;
             sect[0].d_Fi        = 0;
             sect[0].W_a         = 0;
-                                
+
+            sect[1].Designation = "sect2";
             sect[1].S_Type      = 1;
             sect[1].Order       = 2;
             sect[1].Monolit     = 0;
@@ -95,7 +97,8 @@ namespace Program
             sect[1].delta       = 0.1;
             sect[1].d_Fi        = 0;
             sect[1].W_a         = 0;
-                                
+
+            sect[2].Designation = "sect3";
             sect[2].S_Type      = 2;
             sect[2].Order       = 3;
             sect[2].Monolit     = 0;
@@ -158,8 +161,9 @@ namespace Program
             cyl[1].Q_W_k_       = 2;
             cyl[1].q_int_k      = 0;
             cyl[1].dT_W_k       = 0;
-        
+
             //QPT
+            dop.Designation = "dop1";
             dop.Alfa_min        = 0.8;
             dop.Alfa_max        = 0.9;
             dop.n_Alfa          = 2;
@@ -188,16 +192,19 @@ namespace Program
             ////////// DIE //////////
 
             //DIE
+            fluxData.Designation = "fluxData1";
             fluxData.N          = 14; 
             fluxData.iR         = 28;  
             fluxData.AH         = 1.04;
             fluxData.AB         = 1.02; 
             fluxData.kH         = 1.02;
-            fluxData.kB         = 1.01; 
+            fluxData.kB         = 1.01;
 
             //DIE_S
+            S_K.Designation = "S_K1";
             S_K.Num_S           = 4;
             S_K.S = new SECTIONS[S_K.Num_S];
+            S_K.S[0].Designation = "S_K.S1";
             S_K.S[0].PRIZNAK    = 1;
             S_K.S[0].Order      = 1;
             S_K.S[0].n_cykle    = 40;
@@ -207,8 +214,9 @@ namespace Program
             S_K.S[0].D_B_fin    = 0;
             S_K.S[0].L_sect     = 80;
             S_K.S[0].T_st       = 120;
-            S_K.S[0].T_B        = 0;   
+            S_K.S[0].T_B        = 0;
 
+            S_K.S[1].Designation = "S_K.S2";
             S_K.S[1].PRIZNAK    = 1;
             S_K.S[1].Order      = 2;
             S_K.S[1].n_cykle    = 10;
@@ -220,6 +228,7 @@ namespace Program
             S_K.S[1].T_st       = 120;
             S_K.S[1].T_B        = 0;
 
+            S_K.S[2].Designation = "S_K.S3";
             S_K.S[2].PRIZNAK    = 2;
             S_K.S[2].Order      = 3;
             S_K.S[2].n_cykle    = 50;
@@ -231,6 +240,7 @@ namespace Program
             S_K.S[2].T_st       = 120;
             S_K.S[2].T_B        = 120;
 
+            S_K.S[3].Designation = "S_K.S4";
             S_K.S[3].PRIZNAK    = 2;
             S_K.S[3].Order      = 4;
             S_K.S[3].n_cykle    = 20;
@@ -243,6 +253,7 @@ namespace Program
             S_K.S[3].T_B        = 120;
 
             ////////// Train //////////
+            train.Designation = "train1";
             train.Time = 30;
             train.G_max = 50;
             train.G_min = 10;
