@@ -30,6 +30,7 @@ public class CreateDuplicates : MonoBehaviour
         while (true)
         {
             CreateObj();
+            CreateObj();
             yield return new WaitForSeconds(dilay);
         }
     }
