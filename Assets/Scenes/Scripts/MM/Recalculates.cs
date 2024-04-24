@@ -36,6 +36,7 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private WindowGraph _XGraph;
     [SerializeField] private WindowGraph _PGraph;
     [SerializeField] private WindowGraph _TGraph;
+    [SerializeField] private WindowGraph _WorkDotGraph;
     [SerializeField] private TableManager _XPTTabel;
 
     [SerializeField] private TableManager _logTabel;
@@ -135,11 +136,20 @@ public class Recalculates : MonoBehaviour
                         $"{id:f2}\n" +
                         $"{fs:f2}\n";
         
-        /// Show X P T Graphs
+        /// Show X P T WorkDot Graphs
         _XGraph.SetData(_qdAdapter.qpt.XZ.Last());
         _PGraph.SetData(_qdAdapter.qpt.PZ.Last());
         _TGraph.SetData(_qdAdapter.qpt.TZ.Last());
-        
+
+        List<Vector> mt = new List<Vector>();
+        List<Vector> tout = new List<Vector>();
+        for (int i = 0; i <= _qdAdapter.die.Res.n_Q; i++)
+        {
+            mt.Add(  new((float)(_qdAdapter.die.M_Q[i] * 1e2), (float)_qdAdapter.die.Res.MP[i]));
+            tout.Add(new((float)(_qdAdapter.die.M_Q[i] * 1e2), (float)_qdAdapter.die.M_P[i]));
+        }
+        _WorkDotGraph.SetData(mt, tout);
+
         /// Show X P T Table
         _XPTTabel.SetData(_qdAdapter.qpt.ZXPT.Last());
 

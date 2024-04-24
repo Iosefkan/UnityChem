@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class TableManager : MonoBehaviour
 {
+    private bool isInit = false;
+
     private List<GameObject> gameObjectList = new List<GameObject>();
 
     [SerializeField] private GameObject rowContainer;
@@ -16,19 +18,30 @@ public class TableManager : MonoBehaviour
 
     void Awake()
     {
-        rowPrefab.SetActive(false);
-        cellPrefab.SetActive(false);
-        GameObject newRow = AddRow(headers);
+        Init();
+    }
+
+    void Init()
+    {
+        if (!isInit)
+        {
+            isInit = true;
+            rowPrefab.SetActive(false);
+            cellPrefab.SetActive(false);
+            GameObject newRow = AddRow(headers);
+        }
     }
 
     public void SetData<T>(List<List<T>> valueList)
     {
+        Init();
         ClearObjs();
         AddData(valueList);
     }
 
     public void AddData<T>(List<List<T>> valueList)
     {
+        Init();
         foreach (var rowList in valueList)
         {
             gameObjectList.Add(AddRow(rowList));
@@ -37,6 +50,7 @@ public class TableManager : MonoBehaviour
 
     public void AddData<T>(List<T> valueList)
     {
+        Init();
         gameObjectList.Add(AddRow(valueList));
     }
 

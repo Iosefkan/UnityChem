@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System;
 
 public class WindowGraph : MonoBehaviour
 {
@@ -89,23 +90,82 @@ public class WindowGraph : MonoBehaviour
             lastCircle = ShowValue(valueList[i], lastCircle, xMax, xMin, yMax, yMin);
         }
 
+        ShowMinMaxLines(xMax, xMin, yMax, yMin);
+        ShowLabels(xMax, xMin, yMax, yMin);
+    }
+
+    public void SetData(List<Vector> valueList, List<Vector> valueList2)
+    {
+        values = valueList;
+        foreach (GameObject gameObject in gameObjectList)
+        {
+            Destroy(gameObject);
+        }
+        gameObjectList.Clear();
+
+        if (valueList.Count == 0) return;
+        
+        float yMax = Math.Max(valueList.Max((Vector vec) => { return vec.Y; }), 
+                              valueList2.Max((Vector vec) => { return vec.Y; }));
+        float yMin = Math.Min(valueList.Min((Vector vec) => { return vec.Y; }), 
+                              valueList2.Min((Vector vec) => { return vec.Y; }));
+        float xMax = Math.Max(valueList.Max((Vector vec) => { return vec.X; }), 
+                              valueList2.Max((Vector vec) => { return vec.X; }));
+        float xMin = Math.Min(valueList.Min((Vector vec) => { return vec.X; }), 
+                              valueList2.Min((Vector vec) => { return vec.X; }));
+
+        Vector2? lastCircle = null;
+        for (int i = 0; i < valueList.Count; i++)
+        {
+            lastCircle = ShowValue(valueList[i], lastCircle, xMax, xMin, yMax, yMin);
+        }
+        Vector2? lastCircle2 = null;
+        for (int i = 0; i < valueList2.Count; i++)
+        {
+            lastCircle2 = ShowValue(valueList2[i], lastCircle2, xMax, xMin, yMax, yMin);
+        }
+
+        ShowMinMaxLines(xMax, xMin, yMax, yMin);
+        ShowLabels(xMax, xMin, yMax, yMin);
+    }
+
+    private Vector2 ShowValue(Vector val, Vector2? lastPos, float xMax, float xMin, float yMax, float yMin)
+    {
+        float xPos = ((val.X - xMin) / (xMax - xMin)) * Width();
+        float yPos = ((val.Y - yMin) / (yMax - yMin)) * Height();
+        RectTransform circle = CreateCircle(new Vector2(xPos, yPos));
+        gameObjectList.Add(circle.gameObject);
+        if (lastPos.HasValue)
+        {
+            GameObject connection = CreateConnection(lastPos.Value, circle.anchoredPosition);
+            gameObjectList.Add(connection);
+        }
+
+        return circle.anchoredPosition;
+    }
+
+    private void ShowMinMaxLines(float xMax, float xMin, float yMax, float yMin)
+    {        
         if (yMaxLineVal.HasValue && yMax > yMaxLineVal)
         {
             isMaxMin = true;
-            lastCircle = ShowValue(new Vector(xMin, yMaxLineVal.Value), null, xMax, xMin, yMax, yMin);
+            Vector2 lastCircle = ShowValue(new Vector(xMin, yMaxLineVal.Value), null, xMax, xMin, yMax, yMin);
             lastCircle = ShowValue(new Vector(xMax, yMaxLineVal.Value), lastCircle, xMax, xMin, yMax, yMin);
             isMaxMin = false;
         }
         if (yMinLineVal.HasValue && yMax > yMaxLineVal)
         {
             isMaxMin = true;
-            lastCircle = ShowValue(new Vector(xMin, yMinLineVal.Value), null, xMax, xMin, yMax, yMin);
+            Vector2 lastCircle = ShowValue(new Vector(xMin, yMinLineVal.Value), null, xMax, xMin, yMax, yMin);
             lastCircle = ShowValue(new Vector(xMax, yMinLineVal.Value), lastCircle, xMax, xMin, yMax, yMin);
             isMaxMin = false;
         }
+    }
 
+    private void ShowLabels(float xMax, float xMin, float yMax, float yMin)
+    {
         int separatorCount = 10;
-        for (int i = 0; i <= separatorCount; i++) 
+        for (int i = 0; i <= separatorCount; i++)
         {
             float normalizedValue = i * 1f / separatorCount;
 
@@ -126,21 +186,6 @@ public class WindowGraph : MonoBehaviour
             RectTransform dashHor = CreateLabel(dashTemplateHor, -4f, normalizedValue * Height());
             RectTransform dashVer = CreateLabel(dashTemplateVer, normalizedValue * Width(), -4f);
         }
-    }
-
-    private Vector2 ShowValue(Vector val, Vector2? lastPos, float xMax, float xMin, float yMax, float yMin)
-    {
-        float xPos = ((val.X - xMin) / (xMax - xMin)) * Width();
-        float yPos = ((val.Y - yMin) / (yMax - yMin)) * Height();
-        RectTransform circle = CreateCircle(new Vector2(xPos, yPos));
-        gameObjectList.Add(circle.gameObject);
-        if (lastPos.HasValue)
-        {
-            GameObject connection = CreateConnection(lastPos.Value, circle.anchoredPosition);
-            gameObjectList.Add(connection);
-        }
-
-        return circle.anchoredPosition;
     }
 
     private float Height()
