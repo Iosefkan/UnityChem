@@ -30,9 +30,19 @@ public class CreateDuplicates : MonoBehaviour
         while (true)
         {
             CreateObj();
-            CreateObj();
+
+            if (Random.Range(0, 2) == 0)
+            {
+                StartCoroutine(Wait());
+                CreateObj();
+            }
             yield return new WaitForSeconds(dilay);
         }
+    }
+
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds((float)(1.0 / 1e3));
     }
 
     GameObject CreateObj()
