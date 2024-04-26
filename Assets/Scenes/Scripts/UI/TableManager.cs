@@ -29,6 +29,11 @@ public class TableManager : MonoBehaviour
             rowPrefab.SetActive(false);
             cellPrefab.SetActive(false);
             GameObject newRow = AddRow(headers);
+            TMP_Text[] texts = newRow.GetComponentsInChildren<TMP_Text>();
+            foreach(var text in texts)
+            {
+                text.fontStyle = FontStyles.Bold;
+            }
         }
     }
 
