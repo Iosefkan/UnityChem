@@ -15,6 +15,7 @@ public class DropdownDatas : Value
     private bool isInit = false;
 
     static DatabaseCollectData DB = new();
+    static DropdownDatasEvents ddDatasEvents = new();
 
     private int currOptIndex = 0;
     private string CurrOptText
@@ -80,31 +81,9 @@ public class DropdownDatas : Value
             Debug.Log("В этом цикле надо дописать инициалицазию dataNames, чтобы он читал данные с БД");
         }
 
-        addBtn.onClick.AddListener(() =>
-        {
-            if (IsValsChanged())
-            {
-                if (ResetChangesMsg())
-                {
-                    ResetChanges();
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-            AddOption(newOptionText);
-
-            dropdown.value = dropdown.options.Count - 1;
-            if (dropdown.options.Count == 1)
-            {
-                InitVals();
-            }
-
-            inputField.Select();
-        });
+        addBtn.onClick.AddListener(() => AddData());
         saveBtn.onClick.AddListener(() => SaveVals(dropdown.captionText.text));
+        SubscribeDDEvents();
 
         dropdown.onValueChanged.AddListener((int _) => InitVals());
         dropdown.ClearOptions();
@@ -162,15 +141,51 @@ public class DropdownDatas : Value
         }
     }
 
-    private void AddOption(string name)
+    private void AddData()
+    {
+        if (IsValsChanged())
+        {
+            if (ResetChangesMsg())
+            {
+                ResetChanges();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        var newOpt = AddOption(newOptionText);
+
+        dropdown.value = dropdown.options.Count - 1;
+        if (dropdown.options.Count == 1)
+        {
+            InitVals();
+        }
+
+        inputField.Select();
+
+        if (newOpt != null)
+        {
+            ddDatasEvents.AddDataEvent.Invoke(this, name, newOpt);
+        }
+        else
+        {
+            Debug.Log("При AddData не получилось добавить option, скорее всего переданное в AddOption имя empty");
+        }
+    }
+
+    private Dictionary<string, object> AddOption(string name)
     {
         if (name != string.Empty)
         {
             name = ValidName(name);
             dropdown.AddOptions(new List<string> { name });
 
-            ResetOptVals(name);
+            return ResetOptVals(name);
         }
+
+        return null;
     }
 
     private void InitVals()
@@ -226,9 +241,11 @@ public class DropdownDatas : Value
 
         dropdown.options[dropdown.value].text = newOptName;
         dropdown.captionText.text = newOptName;
+
+        ddDatasEvents.SaveDataEvent.Invoke(this, name, optName, optVal);
     }
 
-    private void ResetOptVals(string optName)
+    private Dictionary<string, object> ResetOptVals(string optName)
     {
         if (!optVals.ContainsKey(optName))
         {
@@ -243,6 +260,8 @@ public class DropdownDatas : Value
         }
 
         optVal[designValName] = optName;
+        
+        return optVal;
     }
 
     private void ResetChanges()
@@ -266,13 +285,30 @@ public class DropdownDatas : Value
         }
     }
 
-    public void RemoveOption(Button remBtn)
+    public void RemoveData(Button remBtn)
     {
         string optText = remBtn.transform.parent.GetComponentInChildren<TMP_Text>().text;
         int index = dropdown.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == optText);
+        RemoveData(index);
+    }
 
+    public void RemoveData(int index)
+    {
+        RemoveOption(index);
+        if (dropdown.options.Count == 0)
+        {
+            addBtn.onClick.Invoke();
+        }
+
+        RefreshOptions();
+
+        ddDatasEvents.RemoveDataEvent.Invoke(this, name, index);
+    }
+
+    public void RemoveOption(int index)
+    {
+        optVals.Remove(dropdown.options[index].text);
         dropdown.options.RemoveAt(index);
-        optVals.Remove(optText);
 
         if (index <= currOptIndex)
         {
@@ -282,13 +318,56 @@ public class DropdownDatas : Value
         {
             dropdown.value -= 1;
         }
+    }
 
-        if (dropdown.options.Count == 0)
+    private void SubscribeDDEvents()
+    {
+        ddDatasEvents.SaveDataEvent += SaveDataEvent;
+        ddDatasEvents.AddDataEvent += AddDataEvent;
+        ddDatasEvents.RemoveDataEvent += RemoveDataEvent;
+    }
+
+    private void SaveDataEvent(object sender, string nameDataGroup, string oldDataName, Dictionary<string, object> dataFields)
+    {
+        if (name != nameDataGroup || sender == this || !gameObject.activeInHierarchy)
+            return;
+
+        string designName = dataFields[designValName].ToString();
+        if (oldDataName != designName)
         {
-            addBtn.onClick.Invoke();
+            optVals.Remove(oldDataName);
+            dropdown.options.Find((TMP_Dropdown.OptionData data) => data.text == oldDataName).text = designName;
         }
 
-        RefreshOptions();
+        optVals[designName] = dataFields;
+        if (currVals[designValName].Val.ToString() == oldDataName)
+        {
+            dropdown.captionText.text = designName;
+            SetVals(dataFields);
+        }
+    }
+
+    private void AddDataEvent(object sender, string nameDataGroup, Dictionary<string, object> dataFields)
+    {
+        if (name == nameDataGroup && sender != this && gameObject.activeInHierarchy)
+        {
+            AddOption(dataFields[designValName].ToString());
+        }
+    }
+
+    private void RemoveDataEvent(object sender, string nameDataGroup, int index)
+    {
+        if (name == nameDataGroup && sender != this && gameObject.activeInHierarchy)
+        {
+            RemoveOption(index);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        ddDatasEvents.SaveDataEvent -= SaveDataEvent;
+        ddDatasEvents.AddDataEvent -= AddDataEvent;
+        ddDatasEvents.RemoveDataEvent -= RemoveDataEvent;
     }
 
     public void RefreshOptions()

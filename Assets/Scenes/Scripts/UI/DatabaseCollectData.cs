@@ -24,39 +24,6 @@ namespace Assets.Scenes.Scripts.UI
             InitDatas(initData.fluxData);
             InitDatas(initData.train);
 
-            //var initFields = typeof(InitData).GetFields();
-            //foreach (var initF in initFields)
-            //{
-            //    string fieldName = initF.FieldType.Name;
-            //    datas[fieldName] = new();
-            //    if (initF.FieldType.IsArray)
-            //    {
-            //        var propValArray = (Array)initF.GetValue(initData);
-            //        foreach (var propVal in propValArray)
-            //        {
-            //            var vals = new Dictionary<string, object>();
-            //            var filds = propVal.GetType().GetFields();
-            //            foreach (var fild in filds)
-            //            {
-            //                vals[fild.Name] = fild.GetValue(propVal);
-            //            }
-
-            //            datas[fieldName].Add(vals);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        var fieldVal = initF.GetValue(initData);
-            //        var vals = new Dictionary<string, object>();
-            //        var filds = fieldVal.GetType().GetFields();
-            //        foreach (var fild in filds)
-            //        {
-            //            vals[fild.Name] = fild.GetValue(fieldVal);
-            //        }
-            //        datas[fieldName].Add(vals);
-            //    }
-            //}
-
             //datas["BodySection"] = datas["CYLINDER[]"];
             //datas["HeadSection"] = datas["SECTIONS[]"];
             //datas["ShnekSection"] = datas["SECT[]"];
