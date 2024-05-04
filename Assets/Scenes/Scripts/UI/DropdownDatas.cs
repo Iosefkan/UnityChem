@@ -8,7 +8,6 @@ using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class DropdownDatas : Value
 {
@@ -102,20 +101,25 @@ public class DropdownDatas : Value
             isInit = true;
         }
     }
-
+    // Надо привязать Val к id в БД
     public override object Val
     {
         get
         {
             Init();
             if (IsValsChanged())
-                return -1;
-            return dropdown.value;
+                return "";
+            return dropdown.captionText.text;
         }
         set
         {
             Init();
-            dropdown.value = (int)value;
+            string v = value.ToString();
+            int i = dropdown.options.FindIndex((TMP_Dropdown.OptionData o) => o.text == v);
+            if (i > -1)
+            {
+                dropdown.value = i;
+            }
         }
     }
 

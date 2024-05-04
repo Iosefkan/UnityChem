@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Npgsql.EntityFrameworkCore.PostgreSQL</id>
+    <version>5.0.10</version>
+    <authors>Shay Rojansky,Austin Drenski,Yoh Deadfall</authors>
+    <license type="expression">PostgreSQL</license>
+    <licenseUrl>https://licenses.nuget.org/PostgreSQL</licenseUrl>
+    <icon>postgresql.png</icon>
+    <projectUrl>https://github.com/npgsql/efcore.pg</projectUrl>
+    <description>PostgreSQL/Npgsql provider for Entity Framework Core.</description>
+    <copyright>Copyright 2021 © The Npgsql Development Team</copyright>
+    <tags>npgsql postgresql postgres Entity Framework Core entity-framework-core ef efcore orm sql</tags>
+    <repository type="git" url="https://github.com/npgsql/efcore.pg" commit="f8d97230391135e3dfc2f9e8a0d48f92f0f74dcb" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Microsoft.EntityFrameworkCore" version="5.0.10" include="All" />
+        <dependency id="Microsoft.EntityFrameworkCore.Abstractions" version="5.0.10" include="All" />
+        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="5.0.10" include="All" />
+        <dependency id="Npgsql" version="5.0.10" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

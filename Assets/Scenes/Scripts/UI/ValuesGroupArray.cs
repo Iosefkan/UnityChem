@@ -17,20 +17,20 @@ public class ValuesGroupArray : Value
         get
         {
             var arr = GetDropdownDatasVal();
-            MyList<int> vals = new MyList<int>();
+            MyList<string> vals = new MyList<string>();
             foreach (var item in arr)
             {
-                vals.Add((int)item.Val);
+                vals.Add(item.Val.ToString());
             }
             return vals;
         }
         set
         {
-            SetVal(value as MyList<int>);
+            SetVal(value as MyList<string>);
         }
     }
 
-    private void SetVal(MyList<int> otherDDs)
+    private void SetVal(MyList<string> otherDDs)
     {
         //if (otherDDs == null)
         //{
@@ -47,7 +47,7 @@ public class ValuesGroupArray : Value
 
     public override object DefaultVal
     {
-        get { return new MyList<int>() { 0 }; }
+        get { return new MyList<string>() { "" }; }
     }
 
     public List<ValuesGroup> GetGroups()
