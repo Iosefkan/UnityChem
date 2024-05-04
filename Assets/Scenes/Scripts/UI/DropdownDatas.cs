@@ -101,7 +101,7 @@ public class DropdownDatas : Value
             isInit = true;
         }
     }
-    // Надо привязать Val к id в БД
+
     public override object Val
     {
         get
@@ -291,14 +291,13 @@ public class DropdownDatas : Value
 
     public void RemoveData(Button remBtn)
     {
-        string optText = remBtn.transform.parent.GetComponentInChildren<TMP_Text>().text;
-        int index = dropdown.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == optText);
-        RemoveData(index);
+        string optText = remBtn.transform.parent.GetComponentInChildren<TMP_Text>().text;        
+        RemoveData(optText);
     }
 
-    public void RemoveData(int index)
+    public void RemoveData(string optText)
     {
-        RemoveOption(index);
+        RemoveOption(optText);
         if (dropdown.options.Count == 0)
         {
             addBtn.onClick.Invoke();
@@ -306,12 +305,13 @@ public class DropdownDatas : Value
 
         RefreshOptions();
 
-        ddDatasEvents.RemoveDataEvent.Invoke(this, name, index);
+        ddDatasEvents.RemoveDataEvent.Invoke(this, name, optText);
     }
 
-    public void RemoveOption(int index)
+    public void RemoveOption(string optText)
     {
-        optVals.Remove(dropdown.options[index].text);
+        int index = dropdown.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == optText);
+        optVals.Remove(optText);
         dropdown.options.RemoveAt(index);
 
         if (index <= currOptIndex)
@@ -359,11 +359,11 @@ public class DropdownDatas : Value
         }
     }
 
-    private void RemoveDataEvent(object sender, string nameDataGroup, int index)
+    private void RemoveDataEvent(object sender, string nameDataGroup, string optText)
     {
         if (name == nameDataGroup && sender != this && gameObject.activeInHierarchy)
         {
-            RemoveOption(index);
+            RemoveOption(optText);
         }
     }
 

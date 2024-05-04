@@ -9,6 +9,6 @@ public class DropdownDatasEvents : MonoBehaviour
     public delegate void AddData(object sender, string nameDataGroup, Dictionary<string, object> dataFields);
     public AddData? AddDataEvent;
 
-    public delegate void RemoveData(object sender, string nameDataGroup, int index);
+    public delegate void RemoveData(object sender, string nameDataGroup, string dataName);
     public RemoveData? RemoveDataEvent;
 }
