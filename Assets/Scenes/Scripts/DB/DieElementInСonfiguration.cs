@@ -9,7 +9,7 @@ namespace Database
     public partial class DieElementInСonfiguration : IConfigElement
     {
         public long Id { get; set; }
-        public long IdDie { get; set; }
+        public long IdConfiguration { get; set; }
         public long IdElement { get; set; }
         public long Number { get; set; }
 

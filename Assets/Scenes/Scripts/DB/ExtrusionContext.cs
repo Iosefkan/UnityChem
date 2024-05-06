@@ -104,7 +104,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.BarrelParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("Unit");
             });
 
@@ -123,13 +123,13 @@ namespace Database
                 entity.HasOne(d => d.IdBarrelNavigation)
                     .WithMany(p => p.BarrelParametrValues)
                     .HasForeignKey(d => d.IdBarrel)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Barrel");
 
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.BarrelParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
             });
 
@@ -152,7 +152,7 @@ namespace Database
                 entity.HasOne(d => d.IdBodyNavigation)
                     .WithMany(p => p.BarrelPossibleСonfigurations)
                     .HasForeignKey(d => d.IdBody)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Barrel");
 
                 entity.HasOne(d => d.IdConfigurationNavigation)
@@ -192,13 +192,13 @@ namespace Database
                 entity.HasOne(d => d.IdConfigurationNavigation)
                     .WithMany(p => p.BarrelSectionInСonfigurations)
                     .HasForeignKey(d => d.IdConfiguration)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Сonfiguration");
 
                 entity.HasOne(d => d.IdElementNavigation)
                     .WithMany(p => p.BarrelSectionInСonfigurations)
                     .HasForeignKey(d => d.IdElement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Section");
             });
 
@@ -225,7 +225,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.BarrelSectionParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -244,13 +244,13 @@ namespace Database
                 entity.HasOne(d => d.IdElementNavigation)
                     .WithMany(p => p.BarrelSectionParametrValues)
                     .HasForeignKey(d => d.IdElement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Section");
 
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.BarrelSectionParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
             });
 
@@ -304,20 +304,20 @@ namespace Database
 
                 entity.Property(e => e.IdElement).HasColumnName("id_element");
 
-                entity.Property(e => e.IdDie).HasColumnName("id_die");
+                entity.Property(e => e.IdConfiguration).HasColumnName("id_die");
 
                 entity.Property(e => e.Number).HasColumnName("number");
 
                 entity.HasOne(d => d.IdDieNavigation)
                     .WithMany(p => p.DieElementInСonfigurations)
-                    .HasForeignKey(d => d.IdDie)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasForeignKey(d => d.IdConfiguration)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Die");
 
                 entity.HasOne(d => d.IdElementNavigation)
                     .WithMany(p => p.DieElementInСonfigurations)
                     .HasForeignKey(d => d.IdElement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Element");
             });
 
@@ -344,7 +344,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.DieElementParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -363,13 +363,13 @@ namespace Database
                 entity.HasOne(d => d.IdElementNavigation)
                     .WithMany(p => p.DieElementParametrValues)
                     .HasForeignKey(d => d.IdElement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Element");
 
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.DieElementParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
             });
 
@@ -408,19 +408,19 @@ namespace Database
                 entity.HasOne(d => d.IdBarrelNavigation)
                     .WithMany(p => p.Extruders)
                     .HasForeignKey(d => d.IdBarrel)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("BodyConfiguration");
 
                 entity.HasOne(d => d.IdDieNavigation)
                     .WithMany(p => p.Extruders)
                     .HasForeignKey(d => d.IdDie)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("HeadConfiguration");
 
                 entity.HasOne(d => d.IdScrew1Navigation)
                     .WithMany(p => p.ExtruderIdScrew1Navigations)
                     .HasForeignKey(d => d.IdScrew1)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("ScreConfiguration");
 
                 entity.HasOne(d => d.IdScrew2Navigation)
@@ -431,7 +431,7 @@ namespace Database
                 entity.HasOne(d => d.IdTypeNavigation)
                     .WithMany(p => p.Extruders)
                     .HasForeignKey(d => d.IdType)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Type");
             });
 
@@ -513,7 +513,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.MathModelCoefficients)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -534,19 +534,19 @@ namespace Database
                 entity.HasOne(d => d.IdCoefficientNavigation)
                     .WithMany(p => p.MathModelCoefficientValues)
                     .HasForeignKey(d => d.IdCoefficient)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
 
                 entity.HasOne(d => d.IdModelNavigation)
                     .WithMany(p => p.MathModelCoefficientValues)
                     .HasForeignKey(d => d.IdModel)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("MathModel");
 
                 entity.HasOne(d => d.IdPolymerNavigation)
                     .WithMany(p => p.MathModelCoefficientValues)
                     .HasForeignKey(d => d.IdPolymer)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Polymer");
             });
 
@@ -586,7 +586,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.PolymerParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -605,13 +605,13 @@ namespace Database
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.PolymerParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
 
                 entity.HasOne(d => d.IdPolymerNavigation)
                     .WithMany(p => p.PolymerParametrValues)
                     .HasForeignKey(d => d.IdPolymer)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Polymer");
             });
 
@@ -638,7 +638,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.ProcessParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -659,13 +659,13 @@ namespace Database
                 entity.HasOne(d => d.IdFilmNavigation)
                     .WithMany(p => p.ProcessParametrValues)
                     .HasForeignKey(d => d.IdFilm)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Film");
 
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.ProcessParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
             });
 
@@ -694,13 +694,13 @@ namespace Database
                 entity.HasOne(d => d.IdExtruderNavigation)
                     .WithMany(p => p.Scenarios)
                     .HasForeignKey(d => d.IdExtruder)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Extruder");
 
                 entity.HasOne(d => d.IdFilmNavigation)
                     .WithMany(p => p.Scenarios)
                     .HasForeignKey(d => d.IdFilm)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Film");
             });
 
@@ -749,13 +749,13 @@ namespace Database
                 entity.HasOne(d => d.IdConfigurationNavigation)
                     .WithMany(p => p.ScrewElementInСonfigurations)
                     .HasForeignKey(d => d.IdConfiguration)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Сonfiguration");
 
                 entity.HasOne(d => d.IdElementNavigation)
                     .WithMany(p => p.ScrewElementInСonfigurations)
                     .HasForeignKey(d => d.IdElement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Element");
             });
 
@@ -782,7 +782,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.ScrewElementParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -801,13 +801,13 @@ namespace Database
                 entity.HasOne(d => d.IdElementNavigation)
                     .WithMany(p => p.ScrewElementParametrValues)
                     .HasForeignKey(d => d.IdElement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Element");
 
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.ScrewElementParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
             });
 
@@ -834,7 +834,7 @@ namespace Database
                 entity.HasOne(d => d.IdUnitNavigation)
                     .WithMany(p => p.ScrewParametrs)
                     .HasForeignKey(d => d.IdUnit)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Unit");
             });
 
@@ -853,13 +853,13 @@ namespace Database
                 entity.HasOne(d => d.IdParametrNavigation)
                     .WithMany(p => p.ScrewParametrValues)
                     .HasForeignKey(d => d.IdParametr)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Parametr");
 
                 entity.HasOne(d => d.IdScrewNavigation)
                     .WithMany(p => p.ScrewParametrValues)
                     .HasForeignKey(d => d.IdScrew)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Screw");
             });
 
@@ -882,13 +882,13 @@ namespace Database
                 entity.HasOne(d => d.IdConfigurationNavigation)
                     .WithMany(p => p.ScrewPossibleСonfigurations)
                     .HasForeignKey(d => d.IdConfiguration)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Сonfiguration");
 
                 entity.HasOne(d => d.IdScrewNavigation)
                     .WithMany(p => p.ScrewPossibleСonfigurations)
                     .HasForeignKey(d => d.IdScrew)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("Screw");
             });
 

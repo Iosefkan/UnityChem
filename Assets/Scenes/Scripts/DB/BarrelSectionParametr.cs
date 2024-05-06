@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Database
 {
-    public partial class BarrelSectionParametr
+    public partial class BarrelSectionParametr : IPar
     {
         public BarrelSectionParametr()
         {

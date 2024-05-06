@@ -15,8 +15,15 @@ public class DropDownValue : Value
         }
         set
         {
-            int val = (int)value - 1;
+            int val = 0;
+            if (value is double)
+                val = (int)(double)value;
+            if (value is int)
+                val = (int)value;
+            if (value is long)
+                val = (int)(long)value;
 
+            val -= 1;
             ddc.SetVal(val >= 0 ? val : 0);
         }
     }

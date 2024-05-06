@@ -23,9 +23,31 @@ namespace Database
         [NotMapped]
         public IConfig Config { get { return this; } set { Debug.Log("в Database.Die не реализован set для Config"); } }
 
-        public List<IConfigElement> GetConfigElements()
+        [NotMapped]
+        public List<IConfigElement> ConfigElements
         {
-            return DieElementInСonfigurations.ToList<IConfigElement>();
+            get
+            {
+                return DieElementInСonfigurations.ToList<IConfigElement>();
+            }
+            set
+            {
+                var collect = DieElementInСonfigurations;
+                while (collect.Count > value.Count)
+                {
+                    collect.Remove(collect.Last());
+                }
+                while (collect.Count < value.Count)
+                {
+                    collect.Add(new DieElementInСonfiguration() { IdDieNavigation = this });
+                }
+
+                int i = 0;
+                foreach (var element in collect)
+                {
+                    value[i++].CopyTo(element);
+                }
+            }
         }
 
         public virtual ICollection<DieElementInСonfiguration> DieElementInСonfigurations { get; set; }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Program;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using System.Linq;
 
 namespace Assets.Scenes.Scripts.UI
@@ -12,152 +13,330 @@ namespace Assets.Scenes.Scripts.UI
         ExtrusionContext ec = new();
 
         private static readonly string DesignName = "Designation";
-        private static readonly string ConfName = "CONFIGURATION";
+        private static readonly string ConfName = "Configuration";
 
         private Dictionary<string, List<Dictionary<string, object>>> datas = new();
-        private Dictionary<string, List<Dictionary<string, object>>> database = new();
+        private Dictionary<string, Dictionary<string, List<IValue>>> database = new();
 
-        private Dictionary<string, object> GetParametrs(IElement element)
+        private List<IValue> GetParametrs(IElement element)
         {
-            var pars = new Dictionary<string, object>() { { DesignName, element.Name } };
-            foreach (var pval in element.GetParametrs())
+            var pars = new List<IValue> { element };
+            foreach (var pval in element.Parametrs)
             {
-                pars[pval.Designation] = pval.Value;
+                pars.Add(pval);
             }
 
             return pars;
         }
 
-        private List<Dictionary<string, object>> GetParametrsList(List<IElement> element)
+        private Dictionary<string, List<IValue>> GetElemParametrs<T>(DbSet<T> element) where T : class, IElement, new()
         {
-            var valsConfs = new List<Dictionary<string, object>>();
+            var valsConfs = new Dictionary<string, List<IValue>>();
             foreach (var e in element)
             {
-                valsConfs.Add(GetParametrs(e));
+                valsConfs[e.Name] = GetParametrs(e);
             }
 
             return valsConfs;
         }
 
-        private List<Dictionary<string, object>> GetParametrsList(List<IPossibleConfig> possConf)
+        private Dictionary<string, List<IValue>> GetConfParametrs<T>(DbSet<T> possConf) where T : class, IPossibleConfig, new()
         {
-            var valsConfs = new List<Dictionary<string, object>>();
+            var valsConfs = new Dictionary<string, List<IValue>>();
             foreach (var e in possConf)
             {
-                var config = new MyList<string>();
-                config.AddRange(e.Config.GetConfig());
-
                 var pars = GetParametrs(e.Element);
-                pars[ConfName] = config;
+                pars.Add(e.Config);
 
-                valsConfs.Add(pars);
+                valsConfs[e.Name] = pars;
             }
 
             return valsConfs;
+        }
+
+        void RemoveData(object sender, string nameDataGroup, string dataName)
+        {
+            if (nameDataGroup == "BarrelSection")
+            {
+                RemoveElement(dataName, ec.BarrelSections);
+            }
+            else if (nameDataGroup == "BarrelConfiguration")
+            {
+                RemoveConfiguration(dataName, ec.BarrelPossibleСonfigurations, ec.Barrels);
+            }
+
+            ec.SaveChanges();
+        }
+
+        void RemoveElement<E>(string dataName, DbSet<E> els) where E : class, IElement, new()
+        {
+            foreach (var e in els)
+            {
+                if (e.Name == dataName)
+                {
+                    els.Remove(e);
+                    break;
+                }
+            }
+        }
+
+        void RemoveConfiguration<P, E>(string dataName, DbSet<P> confs, DbSet<E> els) where P : class, IPossibleConfig, new() 
+                                                                                    where E : class, IElement, new()
+        {
+            foreach (var b in confs)
+            {
+                if (b.Element.Name == dataName)
+                {
+                    confs.Remove(b);
+                    els.Remove(b.Element as E);
+                    break;
+                }
+            }
+        }
+
+        void SaveData(object sender, string nameDataGroup, string oldDataName, Dictionary<string, object> dataFields)
+        {
+            if (nameDataGroup == "BarrelSection")
+            {
+                SaveElement(dataFields, oldDataName, ec.BarrelSections);
+            }
+            else if (nameDataGroup == "BarrelConfiguration")
+            {
+                SaveConfiguration(dataFields, oldDataName, ec.BarrelPossibleСonfigurations, ec.BarrelSections);
+            }
+
+            ec.SaveChanges();
+        }
+
+        void SaveElement<E>(Dictionary<string, object> dataFields, string oldDataName, DbSet<E> els) where E : class, IElement, new()
+        {
+            foreach (var b in els)
+            {
+                if (b.Name == oldDataName)
+                {
+                    b.Name = dataFields[DesignName].ToString();
+                    foreach (var p in b.Parametrs)
+                    {
+                        var v = dataFields[p.ValName];
+                        if (v is int)
+                            p.Value = (int)v;
+                        if (v is double)
+                            p.Value = (double)v;
+                    }
+                    break;
+                }
+            }
+        }
+
+        void SaveConfiguration<P, EC>(Dictionary<string, object> dataFields, string oldDataName, DbSet<P> conf, DbSet<EC> confElem) where P : class, IPossibleConfig, new()
+                                                                                                                                    where EC : class, IElement, new()
+        {
+            P b = null;
+            foreach (var d in conf)
+            {
+                if (d.Element.Name == oldDataName)
+                {
+                    b = d;
+                    break;
+                }
+            }
+
+            if (b == null)
+            {
+                Debug.Log("Не была найдена возможная конфигурация для сохранения");
+                return;
+            }
+
+            b.Element.Name = dataFields[DesignName].ToString();
+            foreach (var p in b.Element.Parametrs)
+            {
+                var v = dataFields[p.ValName];
+                if (v is int)
+                    p.Value = (int)v;
+                if (v is double)
+                    p.Value = (double)v;
+            }
+
+            IConfig c = b.Config;
+            foreach (var data in dataFields)
+            {
+                if (data.Value is MyList<string>)
+                {
+                    c.ConfigElements = CreateConfigElements(data.Value as MyList<string>, confElem);
+                    break;
+                }
+            }
+        }
+
+        void AddData(object _, string nameDataGroup, Dictionary<string, object> dataFields)
+        {
+            if (nameDataGroup == "BarrelSection")
+            {
+                InitElement(dataFields, ec.BarrelSections, ec.BarrelSectionParametrs);
+            }
+            else if (nameDataGroup == "BarrelConfiguration")
+            {
+                InitConfig(dataFields, ec.BarrelPossibleСonfigurations, ec.BarrelСonfigurations, ec.BarrelSections, ec.Barrels, ec.BarrelParametrs);
+            }
+
+            ec.SaveChanges();
+        }
+
+        void InitConfig<P,C,EC,E,T>(Dictionary<string, object> datas, DbSet<P> conf, DbSet<C> _, DbSet<EC> elemsConf, DbSet<E> elems, DbSet<T> parms) 
+                                                                                                            where P : class, IPossibleConfig, new() where C : class, IConfig, new()
+                                                                                                            where EC : class, IElement, new() where E : class, IElement, new()
+                                                                                                            where T : class, IPar
+        {
+            var elem = CreateElement<E, T>(datas, parms);
+            elems.Add(elem);
+            conf.Add(CreateConfig<P, C, EC, E>(datas, elemsConf, elem));
+        }
+
+        void InitElement<E,T>(Dictionary<string, object> datas, DbSet<E> elems, DbSet<T> parms) where E : class, IElement, new() where T : class, IPar
+        {
+            elems.Add(CreateElement<E, T>(datas, parms));
+        }
+                                                                  
+        P CreateConfig<P, C, EC, E>(Dictionary<string, object> datas, DbSet<EC> elemsConf, E elem) where P : class, IPossibleConfig, new()
+                                                                                                    where C : class, IConfig, new()
+                                                                                                    where EC : class, IElement, new()
+                                                                                                    where E : class, IElement, new()
+        {
+            var confElems = new List<IConfigElement>();
+            foreach (var field in datas)
+            {
+                if (field.Value is MyList<string>)
+                {
+                    confElems = CreateConfigElements(field.Value as MyList<string>, elemsConf);
+                }
+            }
+
+            var conf = new C() { Name = ConfName, ConfigElements = confElems };
+
+            return new P() { Config = conf, Element = elem };
+        }
+
+        List<IConfigElement> CreateConfigElements<E>(MyList<string> conf, DbSet<E> elements) where E : class, IElement
+        {
+            var newConf = new List<IConfigElement>();
+            int i = 0;
+            foreach (var el in elements)
+            {
+                if (conf.Contains(el.Name))
+                {
+                    newConf.Add(new ConfigElementInstance() { Number = ++i, IdElement = el.Id });
+                    if (i == conf.Count) break;
+                }
+            }
+
+            if (i != conf.Count)
+            {
+                Debug.Log($"Не было найдено элементов конфигурации {conf.Count - i} шт");
+            }
+
+            return newConf;
+        }
+
+        E CreateElement<E, T>(Dictionary<string, object> datas, DbSet<T> parms) where E : class, IElement, new()
+                                                                                where T : class, IPar
+        {
+            E element = new E();
+            SetElementValues(element, datas, parms);
+
+            return element;
+        }
+
+        void SetElementValues<E, T>(E element, Dictionary<string, object> datas, DbSet<T> parms) where E : class, IElement, new()
+                                                                                                    where T : class, IPar
+        {
+            var parVals = new List<IParametr>();
+            foreach (var field in datas)
+            {
+                if (field.Value is double)
+                {
+                    parVals.Add(GetPar(parms, field.Key, (double)field.Value));
+                }
+                else if (field.Value is int)
+                {
+                    parVals.Add(GetPar(parms, field.Key, (int)field.Value));
+                }
+            }
+
+            element.Name = datas[DesignName].ToString();
+            element.Parametrs = parVals;
+        }
+
+        IParametr GetPar<T>(DbSet<T> parms, string des, double val) where T : class, IPar
+        {
+            foreach (var p in parms)
+            {
+                if (p.Designation == des)
+                {
+                    return new ParametrInstance() { IdParametr = p.Id, Value = val };
+                }
+            }
+
+            Debug.Log($"Не было найдено параметра {des}");
+            return new ParametrInstance();
         }
 
         public DatabaseCollectData()
         {
-            //var screwEls = ec.ScrewElements
-            //    .Include(sp => sp.ScrewElementParametrValues)
-            //    .ThenInclude(spv => spv.IdParametrNavigation).ToList<IElement>();
+            //var screwConfigs = ec.ScrewPossibleСonfigurations
+            //    .Include(s => s.IdScrewNavigation)
+            //        .ThenInclude(s => s.ScrewParametrValues)
+            //        .ThenInclude(s => s.IdParametrNavigation)
+            //    .Include(s => s.IdConfigurationNavigation)
+            //        .ThenInclude(s => s.ScrewElementInСonfigurations)
+            //        .ThenInclude(s =Waiting for pgAdmin 4> s.IdElementNavigation)
+            //        .ThenInclude(sp => sp.ScrewElementParametrValues)
+            //        .ThenInclude(spv => spv.IdParametrNavigation).ToList<IPossibleConfig>();
 
-            //database["ScrewElements"] = GetParametrs(screwEls);
 
-            var screwConfigs = ec.ScrewPossibleСonfigurations
-                .Include(s => s.IdScrewNavigation)
-                    .ThenInclude(s => s.ScrewParametrValues)
-                    .ThenInclude(s => s.IdParametrNavigation)
-                .Include(s => s.IdConfigurationNavigation)
-                    .ThenInclude(s => s.ScrewElementInСonfigurations)
-                    .ThenInclude(s => s.IdElementNavigation)
-                    .ThenInclude(sp => sp.ScrewElementParametrValues)
-                    .ThenInclude(spv => spv.IdParametrNavigation).ToList<IPossibleConfig>();
+            //var s = ec.BarrelPossibleСonfigurations
+            //    .Include(s => s.IdBodyNavigation)
+            //        .ThenInclude(s => s.BarrelParametrValues)
+            //        .ThenInclude(s => s.IdParametrNavigation)
+            //    .Include(s => s.IdConfigurationNavigation)
+            //        .ThenInclude(s => s.BarrelSectionInСonfigurations)
+            //        .ThenInclude(s => s.IdElementNavigation)
+            //        .ThenInclude(sp => sp.BarrelSectionParametrValues)
+            //        .ThenInclude(spv => spv.IdParametrNavigation).ToList<IPossibleConfig>();
 
-            //database["ScrewConfigs"] = GetParametrsList(screwConfigs);       
-            
-            //foreach (var confs in database["ScrewConfigs"])
-            //{
-            //    foreach (var pars in confs)
-            //    {
-            //        Debug.Log(pars.Key + " " + pars.Value);
-            //        if (pars.Value is MyList<string>)
-            //        {
-            //            var p = (MyList<string>)pars.Value;
-            //            foreach (var par in p)
-            //            {
-            //                Debug.Log(par);
-            //            }
-            //        }
-            //    }
-            //}
+            //var b = ec.BarrelSections
+            //    .Include(s => s.BarrelSectionParametrValues)
+            //        .ThenInclude(s => s.IdParametrNavigation).ToList<IElement>();
+            ec.Barrels.Load();
+            ec.BarrelParametrs.Load();
+            ec.BarrelParametrValues.Load();
+            ec.BarrelPossibleСonfigurations.Load();
+            ec.BarrelSections.Load();
+            ec.BarrelSectionInСonfigurations.Load();
+            ec.BarrelSectionParametrs.Load();
+            ec.BarrelSectionParametrValues.Load();
+            ec.BarrelСonfigurations.Load();
 
-            var initData = new InitData();
+            DropdownDatasEvents.AddDataEvent += AddData;
+            DropdownDatasEvents.SaveDataEvent += SaveData;
+            DropdownDatasEvents.RemoveDataEvent += RemoveData;
 
-            InitDatas(initData.cyl);
-            InitDatas(initData.sect);
-            InitDatas(initData.S_K.S);
-            InitDatas(initData.data);
-            InitDatas(initData.dop);
-            InitDatas(initData.fluxData);
-            InitDatas(initData.train);
+        }
 
-            //datas["BodySection"] = datas["CYLINDER[]"];
-            //datas["HeadSection"] = datas["SECTIONS[]"];
-            //datas["ShnekSection"] = datas["SECT[]"];
-            //datas["Pol"] = datas["DATA_"];
+        public Dictionary<string, List<IValue>> GetDatas(string name)
+        {
+            //if (database.ContainsKey(name))
+            //    return database[name];
 
-            datas["CYLINDER_CONF"] = new List<Dictionary<string, object>>()
+            if (name == "BarrelSection")
             {
-                new Dictionary<string, object>
-                {
-                    { DesignName, "cylConf1" }, { "CYLINDER_CONF", new MyList<string>() { "cyl1", "cyl2" } }
-                },
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "sec2" }, { "CYLINDER_CONF", new MyList<int>() { 1, 0, 0, 1, 0 } }
-                //},
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "sec3" }, { "CYLINDER_CONF", new MyList<int>() { 1, 0, 1, 1 } }
-                //},
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "sec4" }, { "CYLINDER_CONF", new MyList<int>() { 1, 0, 0 } }
-                //},
-            };
-
-            datas["SECTIONS_CONF"] = new List<Dictionary<string, object>>()
+                return GetElemParametrs(ec.BarrelSections);
+            }
+            if (name == "BarrelConfiguration")
             {
-                new Dictionary<string, object>
-                {
-                    { DesignName, "sectionConf1" }, { "SECTIONS_CONF", new MyList<string>() { "S_K.S1", "S_K.S2", "S_K.S3", "S_K.S4" } },
-                },
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "head2" }, { "SECTIONS_CONF", new MyList<int>() { 0, 1, 1 } },
-                //},
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "head2" }, { "SECTIONS_CONF", new MyList<int>() { 1, 0, 0 } },
-                //},
-            };
+                return GetConfParametrs(ec.BarrelPossibleСonfigurations);
+            }
 
-            datas["SECT_CONF"] = new List<Dictionary<string, object>>()
-            {
-                new Dictionary<string, object>
-                {
-                    { DesignName, "sectConf1" }, { "SECT_CONF", new MyList<string>() { "sect1", "sect2", "sect3" } },
-                },
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "s2" }, { "SECT_CONF", new MyList<int>() { 0, 1, 1 } },
-                //},
-                //new Dictionary<string, object>
-                //{
-                //    { DesignName, "s2" }, { "SECT_CONF", new MyList<int>() { 1, 0, 0 } },
-                //},
-            };
+            return null;
         }
 
         public List<Dictionary<string, object>> GetDatas(Dictionary<string, List<string>> needsData)

@@ -1,7 +1,7 @@
 using Assets.Scenes.Scripts.UI;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using UnityEngine;
 
 public class ValuesGroupArray : Value
 {
@@ -26,7 +26,12 @@ public class ValuesGroupArray : Value
         }
         set
         {
-            SetVal(value as MyList<string>);
+            if(value is List<string>)
+                SetVal(value as List<string>);
+            if (value is MyList<string>)
+                SetVal(value as MyList<string>);
+            //else
+            //    Debug.Log("В ValuesGroupArray был передан не правильный массив!");
         }
     }
 
@@ -45,9 +50,28 @@ public class ValuesGroupArray : Value
         }
     }
 
+    private void SetVal(List<string> otherDDs)
+    {
+        SetSize(otherDDs.Count);
+        MyList<Value> dds = GetDropdownDatasVal();
+        for (int i = 0; i < otherDDs.Count; i++)
+        {
+            dds[i].Val = otherDDs[i];
+        }
+    }
+
     public override object DefaultVal
     {
-        get { return new MyList<string>() { "" }; }
+        get
+        {
+            string def = "";
+            var arr = GetDropdownDatasVal();
+            if (arr.Count > 0)
+            {
+                def = arr.Last().Val.ToString();
+            }
+            return new MyList<string>() { def }; 
+        }
     }
 
     public List<ValuesGroup> GetGroups()

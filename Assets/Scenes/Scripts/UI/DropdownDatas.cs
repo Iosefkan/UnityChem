@@ -1,4 +1,5 @@
 using Assets.Scenes.Scripts.UI;
+using Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,6 @@ public class DropdownDatas : Value
     private bool isInit = false;
 
     static DatabaseCollectData DB = new();
-    static DropdownDatasEvents ddDatasEvents = new();
 
     private int currOptIndex = 0;
     private string CurrOptText
@@ -97,7 +97,8 @@ public class DropdownDatas : Value
     {
         if (!isInit)
         {
-            SetData(DB.GetDatas(dataFields));
+            //SetData(DB.GetDatas(dataFields));
+            SetData(DB.GetDatas(name));
             isInit = true;
         }
     }
@@ -109,7 +110,7 @@ public class DropdownDatas : Value
             Init();
             if (IsValsChanged())
                 return "";
-            return dropdown.captionText.text;
+            return inputField.text;
         }
         set
         {
@@ -123,18 +124,42 @@ public class DropdownDatas : Value
         }
     }
 
-    public void SetData(List<Dictionary<string, object>> data)
+    //public void SetData(List<Dictionary<string, object>> data)
+    //{
+    //    foreach (var vals in data)
+    //    {
+    //        string designName = (string)vals[designValName];
+    //        AddOption(designName);
+    //        var optVal = optVals[designName];
+    //        foreach (var key in currVals.Keys)
+    //        {
+    //            if (vals.ContainsKey(key))
+    //            {
+    //                optVal[key] = vals[key];
+    //            }
+    //        }
+    //    }
+
+    //    if (optVals.Count > 0)
+    //    {
+    //        SetVals(optVals.First().Value);
+    //    }
+    //}
+
+    public void SetData(Dictionary<string, List<IValue>> datas)
     {
-        foreach (var vals in data)
+        if (datas == null)
+            return;
+
+        foreach (var vals in datas)
         {
-            string designName = (string)vals[designValName];
-            AddOption(designName);
-            var optVal = optVals[designName];
-            foreach (var key in currVals.Keys)
+            AddOption(vals.Key);
+            var optVal = optVals[vals.Key];
+            foreach(var val in vals.Value)
             {
-                if (vals.ContainsKey(key))
+                if (currVals.ContainsKey(val.ValName))
                 {
-                    optVal[key] = vals[key];
+                    optVal[val.ValName] = val.Val;
                 }
             }
         }
@@ -171,7 +196,7 @@ public class DropdownDatas : Value
 
         if (newOpt != null)
         {
-            ddDatasEvents.AddDataEvent.Invoke(this, name, newOpt);
+            DropdownDatasEvents.AddDataEvent.Invoke(this, name, newOpt);
         }
         else
         {
@@ -206,7 +231,7 @@ public class DropdownDatas : Value
         currOptIndex = dropdown.value;
         SetVals(optVals[dropdown.captionText.text]);
     }
-
+    
     public bool IsValsChanged()
     {
         if (!optVals.ContainsKey(CurrOptText))
@@ -215,11 +240,41 @@ public class DropdownDatas : Value
         var optVal = optVals[CurrOptText];
         foreach (var val in currVals)
         {
-            if (!val.Value.Val.Equals(optVal[val.Key]))
+            if (!EqualsObjs(val.Value.Val, optVal[val.Key]))
                 return true;
         }
 
         return false;
+    }
+
+    bool EqualsObjs(object o1,  object o2)
+    {
+        if (o1 is string || o1 is MyList<string> || o1 is List<string>)
+        {
+            return o1.Equals(o2);
+        }
+
+        double v1 = 0;
+        double v2 = 0;
+        if (o1 is int)
+        {
+            v1 = (int)o1;
+        }
+        else if (o1 is double)
+        {
+            v1 = (double)o1;
+        }
+
+        if (o2 is int)
+        {
+            v2 = (int)o2;
+        }
+        else if (o2 is double)
+        {
+            v2 = (double)o2;
+        }
+
+        return v1 == v2;
     }
 
     private void SaveVals(string optName)
@@ -246,7 +301,7 @@ public class DropdownDatas : Value
         dropdown.options[dropdown.value].text = newOptName;
         dropdown.captionText.text = newOptName;
 
-        ddDatasEvents.SaveDataEvent.Invoke(this, name, optName, optVal);
+        DropdownDatasEvents.SaveDataEvent.Invoke(this, name, optName, optVal);
     }
 
     private Dictionary<string, object> ResetOptVals(string optName)
@@ -305,7 +360,7 @@ public class DropdownDatas : Value
 
         RefreshOptions();
 
-        ddDatasEvents.RemoveDataEvent.Invoke(this, name, optText);
+        DropdownDatasEvents.RemoveDataEvent.Invoke(this, name, optText);
     }
 
     public void RemoveOption(string optText)
@@ -326,9 +381,9 @@ public class DropdownDatas : Value
 
     private void SubscribeDDEvents()
     {
-        ddDatasEvents.SaveDataEvent += SaveDataEvent;
-        ddDatasEvents.AddDataEvent += AddDataEvent;
-        ddDatasEvents.RemoveDataEvent += RemoveDataEvent;
+        DropdownDatasEvents.SaveDataEvent += SaveDataEvent;
+        DropdownDatasEvents.AddDataEvent += AddDataEvent;
+        DropdownDatasEvents.RemoveDataEvent += RemoveDataEvent;
     }
 
     private void SaveDataEvent(object sender, string nameDataGroup, string oldDataName, Dictionary<string, object> dataFields)
@@ -369,9 +424,9 @@ public class DropdownDatas : Value
 
     private void OnDestroy()
     {
-        ddDatasEvents.SaveDataEvent -= SaveDataEvent;
-        ddDatasEvents.AddDataEvent -= AddDataEvent;
-        ddDatasEvents.RemoveDataEvent -= RemoveDataEvent;
+        DropdownDatasEvents.SaveDataEvent -= SaveDataEvent;
+        DropdownDatasEvents.AddDataEvent -= AddDataEvent;
+        DropdownDatasEvents.RemoveDataEvent -= RemoveDataEvent;
     }
 
     public void RefreshOptions()

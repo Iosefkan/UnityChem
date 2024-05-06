@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 #nullable disable
@@ -17,9 +19,31 @@ namespace Database
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public List<IConfigElement> GetConfigElements()
+        [NotMapped]
+        public List<IConfigElement> ConfigElements
         {
-            return ScrewElementInСonfigurations.ToList<IConfigElement>();
+            get
+            {
+                return ScrewElementInСonfigurations.ToList<IConfigElement>();
+            }
+            set
+            {
+                var collect = ScrewElementInСonfigurations;
+                while (collect.Count > value.Count)
+                {
+                    collect.Remove(collect.Last());
+                }
+                while (collect.Count < value.Count)
+                {
+                    collect.Add(new ScrewElementInСonfiguration() { IdConfigurationNavigation = this });
+                }
+
+                int i = 0;
+                foreach (var element in collect) 
+                {
+                    value[i++].CopyTo(element);
+                }
+            }
         }
 
         public virtual ICollection<ScrewElementInСonfiguration> ScrewElementInСonfigurations { get; set; }

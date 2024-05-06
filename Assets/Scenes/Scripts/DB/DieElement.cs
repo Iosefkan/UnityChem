@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 #nullable disable
@@ -17,9 +18,31 @@ namespace Database
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public List<IParametr> GetParametrs()
+        [NotMapped]
+        public List<IParametr> Parametrs
         {
-            return DieElementParametrValues.ToList<IParametr>();
+            get
+            {
+                return DieElementParametrValues.ToList<IParametr>();
+            }
+            set
+            {
+                var collect = DieElementParametrValues;
+                while (collect.Count > value.Count)
+                {
+                    collect.Remove(collect.Last());
+                }
+                while (collect.Count < value.Count)
+                {
+                    collect.Add(new DieElementParametrValue() { IdElementNavigation = this });
+                }
+
+                int i = 0;
+                foreach (var element in collect)
+                {
+                    value[i++].CopyTo(element);
+                }
+            }
         }
 
         public virtual ICollection<DieElementInСonfiguration> DieElementInСonfigurations { get; set; }
