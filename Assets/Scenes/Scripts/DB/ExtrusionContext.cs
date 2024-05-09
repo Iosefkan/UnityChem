@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using static UnityEngine.EventSystems.EventTrigger;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Database
 {
-    public partial class PolymerParametr
+    public partial class PolymerParametr : IPar
     {
         public PolymerParametr()
         {

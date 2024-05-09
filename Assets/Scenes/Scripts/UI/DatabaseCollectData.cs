@@ -14,35 +14,19 @@ namespace Assets.Scenes.Scripts.UI
         private static readonly string DesignName = "Designation";
         private static readonly string ConfName = "Configuration";
 
-        private Dictionary<string, List<Dictionary<string, object>>> datas = new();
+        private static readonly string BarrelSection = "BarrelSection";
+        private static readonly string BarrelConfiguration = "BarrelConfiguration";
+        private static readonly string ScrewElement = "ScrewElement";
+        private static readonly string ScrewConfiguration = "ScrewConfiguration";
+        private static readonly string DieElement = "DieElement";
+        private static readonly string DieConfiguration = "DieConfiguration";
+        private static readonly string Extruder = "Extruder";
+        private static readonly string Polymer = "Polymer";
+        private static readonly string Film = "Film";
+        private static readonly string Scenario = "Scenario";
 
         public DatabaseCollectData()
         {
-            //var screwConfigs = ec.ScrewPossibleСonfigurations
-            //    .Include(s => s.IdScrewNavigation)
-            //        .ThenInclude(s => s.ScrewParametrValues)
-            //        .ThenInclude(s => s.IdParametrNavigation)
-            //    .Include(s => s.IdConfigurationNavigation)
-            //        .ThenInclude(s => s.ScrewElementInСonfigurations)
-            //        .ThenInclude(s =Waiting for pgAdmin 4> s.IdElementNavigation)
-            //        .ThenInclude(sp => sp.ScrewElementParametrValues)
-            //        .ThenInclude(spv => spv.IdParametrNavigation).ToList<IPossibleConfig>();
-
-
-            //var s = ec.BarrelPossibleСonfigurations
-            //    .Include(s => s.IdBodyNavigation)
-            //        .ThenInclude(s => s.BarrelParametrValues)
-            //        .ThenInclude(s => s.IdParametrNavigation)
-            //    .Include(s => s.IdConfigurationNavigation)
-            //        .ThenInclude(s => s.BarrelSectionInСonfigurations)
-            //        .ThenInclude(s => s.IdElementNavigation)
-            //        .ThenInclude(sp => sp.BarrelSectionParametrValues)зы
-            //        .ThenInclude(spv => spv.IdParametrNavigation).ToList<IPossibleConfig>();
-
-            //var b = ec.BarrelSections
-            //    .Include(s => s.BarrelSectionParametrValues)
-            //        .ThenInclude(s => s.IdParametrNavigation).ToList<IElement>();
-
             ec.Barrels.Load();
             ec.BarrelParametrs.Load();
             ec.BarrelParametrValues.Load();
@@ -69,6 +53,23 @@ namespace Assets.Scenes.Scripts.UI
             ec.DieElementParametrs.Load();
             ec.DieElementParametrValues.Load();
 
+            ec.MathModels.Load();
+            ec.MathModelCoefficients.Load();
+            ec.MathModelCoefficientValues.Load();
+
+            ec.ExtruderTypes.Load();
+            ec.Extruders.Load();
+
+            ec.PolymerParametrs.Load();
+            ec.Polymers.Load();
+            ec.PolymerParametrValues.Load();
+
+            ec.ProcessParametrs.Load();
+            ec.Films.Load();
+            ec.ProcessParametrValues.Load();
+
+            ec.Scenarios.Load();
+
             DropdownDatasEvents.AddDataEvent += AddData;
             DropdownDatasEvents.SaveDataEvent += SaveData;
             DropdownDatasEvents.RemoveDataEvent += RemoveData;
@@ -76,32 +77,37 @@ namespace Assets.Scenes.Scripts.UI
 
         public Dictionary<string, List<IValue>> GetDatas(string name)
         {
-            //if (database.ContainsKey(name))
-            //    return database[name];
-
-            if (name == "BarrelSection")
+            if (name == BarrelSection)
             {
                 return GetElemParametrs(ec.BarrelSections);
             }
-            else if (name == "BarrelConfiguration")
+            else if (name == BarrelConfiguration)
             {
                 return GetConfParametrs(ec.BarrelPossibleСonfigurations);
             }
-            else if (name == "ScrewElement")
+            else if (name == ScrewElement)
             {
                 return GetElemParametrs(ec.ScrewElements);
             }
-            else if (name == "ScrewConfiguration")
+            else if (name == ScrewConfiguration)
             {
                 return GetConfParametrs(ec.ScrewPossibleСonfigurations);
             }
-            else if (name == "DieElement")
+            else if (name == DieElement)
             {
                 return GetElemParametrs(ec.DieElements);
             }
-            else if (name == "DieConfiguration")
+            else if (name == DieConfiguration)
             {
                 return GetConfParametrs(ec.Dies);
+            }
+            else if (name == Polymer)
+            {
+                return GetElemParametrs(ec.Polymers);
+            }
+            else if (name == Extruder)
+            {
+                return GetExtruderParametrs();
             }
 
             return null;
@@ -109,29 +115,37 @@ namespace Assets.Scenes.Scripts.UI
 
         void AddData(object _, string nameDataGroup, Dictionary<string, object> dataFields)
         {
-            if (nameDataGroup == "BarrelSection")
+            if (nameDataGroup == BarrelSection)
             {
                 InitElement(dataFields, ec.BarrelSections, ec.BarrelSectionParametrs);
             }
-            else if (nameDataGroup == "BarrelConfiguration")
+            else if (nameDataGroup == BarrelConfiguration)
             {
                 InitConfig(dataFields, ec.BarrelPossibleСonfigurations, ec.BarrelСonfigurations, ec.BarrelSections, ec.Barrels, ec.BarrelParametrs);
             }
-            else if (nameDataGroup == "ScrewElement")
+            else if (nameDataGroup == ScrewElement)
             {
                 InitElement(dataFields, ec.ScrewElements, ec.ScrewElementParametrs);
             }
-            else if (nameDataGroup == "ScrewConfiguration")
+            else if (nameDataGroup == ScrewConfiguration)
             {
                 InitConfig(dataFields, ec.ScrewPossibleСonfigurations, ec.ScrewСonfigurations, ec.ScrewElements, ec.Screws, ec.ScrewParametrs);
             }
-            else if (nameDataGroup == "DieElement")
+            else if (nameDataGroup == DieElement)
             {
                 InitElement(dataFields, ec.DieElements, ec.DieElementParametrs);
             }
-            else if (nameDataGroup == "DieConfiguration")
+            else if (nameDataGroup == DieConfiguration)
             {
                 InitConfig(dataFields, ec.Dies, ec.DieElements);
+            }
+            else if (nameDataGroup == Polymer)
+            {
+                InitElement(dataFields, ec.Polymers, ec.PolymerParametrs);
+            }
+            else if (nameDataGroup == Extruder)
+            {
+                CreateExtruder(dataFields);
             }
 
             ec.SaveChanges();
@@ -139,29 +153,37 @@ namespace Assets.Scenes.Scripts.UI
 
         void SaveData(object _, string nameDataGroup, string oldDataName, Dictionary<string, object> dataFields)
         {
-            if (nameDataGroup == "BarrelSection")
+            if (nameDataGroup == BarrelSection)
             {
                 SaveElement(dataFields, oldDataName, ec.BarrelSections);
             }
-            else if (nameDataGroup == "BarrelConfiguration")
+            else if (nameDataGroup == BarrelConfiguration)
             {
                 SaveConfiguration(dataFields, oldDataName, ec.BarrelPossibleСonfigurations, ec.BarrelSections);
             }
-            else if (nameDataGroup == "ScrewElement")
+            else if (nameDataGroup == ScrewElement)
             {
                 SaveElement(dataFields, oldDataName, ec.ScrewElements);
             }
-            else if (nameDataGroup == "ScrewConfiguration")
+            else if (nameDataGroup == ScrewConfiguration)
             {
                 SaveConfiguration(dataFields, oldDataName, ec.ScrewPossibleСonfigurations, ec.ScrewElements);
             }
-            else if (nameDataGroup == "DieElement")
+            else if (nameDataGroup == DieElement)
             {
                 SaveElement(dataFields, oldDataName, ec.DieElements);
             }
-            else if (nameDataGroup == "DieConfiguration")
+            else if (nameDataGroup == DieConfiguration)
             {
                 SaveConfiguration(dataFields, oldDataName, ec.Dies, ec.DieElements);
+            }
+            else if (nameDataGroup == Polymer)
+            {
+                SaveElement(dataFields, oldDataName, ec.Polymers);
+            }
+            else if (nameDataGroup == Extruder)
+            {
+                SaveExtruder(dataFields, oldDataName);
             }
 
             ec.SaveChanges();
@@ -169,32 +191,98 @@ namespace Assets.Scenes.Scripts.UI
 
         void RemoveData(object _, string nameDataGroup, string dataName)
         {
-            if (nameDataGroup == "BarrelSection")
+            if (nameDataGroup == BarrelSection)
             {
                 RemoveElement(dataName, ec.BarrelSections);
             }
-            else if (nameDataGroup == "BarrelConfiguration")
+            else if (nameDataGroup == BarrelConfiguration)
             {
                 RemoveConfiguration(dataName, ec.BarrelPossibleСonfigurations, ec.Barrels, ec.BarrelСonfigurations);
             }
-            else if (nameDataGroup == "ScrewElement")
+            else if (nameDataGroup == ScrewElement)
             {
                 RemoveElement(dataName, ec.ScrewElements);
             }
-            else if (nameDataGroup == "ScrewConfiguration")
+            else if (nameDataGroup == ScrewConfiguration)
             {
                 RemoveConfiguration(dataName, ec.ScrewPossibleСonfigurations, ec.Screws, ec.ScrewСonfigurations);
             }
-            else if(nameDataGroup == "DieElement")
+            else if(nameDataGroup == DieElement)
             {
                 RemoveElement(dataName, ec.DieElements);
             }
-            else if (nameDataGroup == "DieConfiguration")
+            else if (nameDataGroup == DieConfiguration)
             {
                 RemoveConfiguration(dataName, ec.Dies);
             }
+            else if (nameDataGroup == Polymer)
+            {
+                RemoveElement(dataName, ec.Polymers);
+            }
+            else if (nameDataGroup == Extruder)
+            {
+                RemoveExtruder(dataName);
+            }
 
             ec.SaveChanges();
+        }
+
+        private void CreateExtruder(Dictionary<string, object> data)
+        {
+            var extr = new Database.Extruder();
+            SaveExtruder(data, extr);
+            ec.Extruders.Add(extr);
+        }
+
+        private void SaveExtruder(Dictionary<string, object> data, string name)
+        {
+            var extr = ec.Extruders.FirstOrDefault(e => e.Brand == name);
+            SaveExtruder(data, extr);
+        }
+
+        private void SaveExtruder(Dictionary<string, object> data, Database.Extruder extr)
+        {
+            string extruderName = data[DesignName] as string;
+            var barrel = ec.Barrels.FirstOrDefault(b => b.Name == (string)data["BarrelConfiguration"]);
+            var barrelConf = ec.BarrelPossibleСonfigurations.FirstOrDefault(b => b.IdBodyNavigation == barrel);
+            var die = ec.Dies.FirstOrDefault(b => b.Name == (string)data["DieConfiguration"]);
+            var screw = ec.Screws.FirstOrDefault(s => s.Name == (string)data["ScrewConfiguration"]);
+            var screwConf = ec.ScrewPossibleСonfigurations.FirstOrDefault(s => s.IdScrewNavigation == screw);
+
+            if (barrel == null) Debug.Log($"Не найдено корпуса {(string)data["BarrelConfiguration"]}");
+            if (barrelConf == null) Debug.Log($"Не найдено конфигурации корпуса {(string)data["BarrelConfiguration"]}");
+            if (die == null) Debug.Log($"Не найдено головки {(string)data["DieConfiguration"]}");
+            if (screw == null) Debug.Log($"Не найдено шнека {(string)data["ScrewConfiguration"]}");
+            if (screwConf == null) Debug.Log($"Не найдено конфигурации шнека {(string)data["ScrewConfiguration"]}");
+            if (barrel == null || barrelConf == null || die == null || screw == null || screwConf == null) return;
+
+            extr.IdBarrelNavigation = barrelConf;
+            extr.IdDieNavigation = die;
+            extr.IdScrew1Navigation = screwConf;
+            extr.IdTypeNavigation = ec.ExtruderTypes.First();
+            extr.Brand = extruderName;
+        }
+
+        private void RemoveExtruder(string extruderName)
+        {
+            var extr = ec.Extruders.FirstOrDefault(e => e.Brand == extruderName);
+            ec.Extruders.Remove(extr);
+        }
+
+        private Dictionary<string, List<IValue>> GetExtruderParametrs()
+        {
+            var data = new Dictionary<string, List<IValue>>();
+            foreach(var extruder in ec.Extruders)
+            {
+                data[extruder.Brand] = new List<IValue>()
+                {
+                    new DesignVal {  ValName = DieConfiguration, Val = extruder.IdDieNavigation.Name },
+                    new DesignVal {  ValName = ScrewConfiguration, Val = extruder.IdScrew1Navigation.Element.Name },
+                    new DesignVal {  ValName = DieConfiguration, Val = extruder.IdBarrelNavigation.Element.Name }
+                };
+            }
+
+            return data;
         }
 
         private List<IValue> GetParametrs(IElement element)
@@ -466,69 +554,6 @@ namespace Assets.Scenes.Scripts.UI
 
             Debug.Log($"Не было найдено параметра {des}");
             return new ParametrInstance();
-        }
-
-        public List<Dictionary<string, object>> GetDatas(Dictionary<string, List<string>> needsData)
-        {
-            int count = int.MaxValue;
-            foreach (var needsFields in needsData)
-            {
-                count = Math.Min(count, datas[needsFields.Key].Count);
-            }
-
-            List<Dictionary<string, object>> res = new();
-            for (int i = 0; i < count; i++)
-            {
-                res.Add(new());
-            }
-
-            foreach (var needsFields in needsData)
-            {
-                for (int i = 0; i < count; ++i)
-                {
-                    foreach (var needsField in needsFields.Value)
-                    {
-                        res[i][needsField] = datas[needsFields.Key][i][needsField];
-                    }
-                }
-            }
-
-            return res;
-        }
-
-        void InitDatas<T>(T[] fields)
-        {
-            string fieldName = typeof(T[]).ToString()[6..];
-            datas[fieldName] = GetFields(fields);
-        }
-        
-        void InitDatas<T>(T fields)
-        {
-            string fieldName = typeof(T).ToString()[6..];
-            datas[fieldName] = new() { GetFields(fields) };
-        }
-
-        List<Dictionary<string, object>> GetFields<T>(T[] data)
-        {
-            var vals = new List<Dictionary<string, object>>();
-            foreach (var field in data)
-            {
-                vals.Add(GetFields(field));
-            }
-
-            return vals;
-        }
-
-        Dictionary<string, object> GetFields<T>(T data)
-        {
-            var vals = new Dictionary<string, object>();
-            var fields = typeof(T).GetFields();
-            foreach (var fild in fields)
-            {
-                vals[fild.Name] = fild.GetValue(data);
-            }
-
-            return vals;
         }
     }
 }

@@ -39,8 +39,6 @@ public class DropdownDatas : Value
     private Dictionary<string, Value> currVals = new();
     private Dictionary<string, Dictionary<string, object>> optVals = new();
 
-    private Dictionary<string, List<string>> dataFields = new();
-
     [SerializeField] private string newOptionText = "Новый";
 
     [SerializeField] private TMP_InputField inputField;
@@ -63,21 +61,16 @@ public class DropdownDatas : Value
         {
             var vals = valGrp.GetVals();
             currVals.AddRange(vals);
-            dataFields[valGrp.name] = vals.Keys.ToList();
-            dataFields[valGrp.name].Add(designValName);
         }
 
         foreach (var valArrGrp in valGrpsArr)
         {
             currVals[valArrGrp.name] = valArrGrp;
-            dataFields[valArrGrp.name] = new List<string> { "Designation", valArrGrp.name };
         }
 
         foreach (var dd in valDropdowns)
         {
             currVals[dd.name] = dd;
-            //dataNames.Add(dd.name);
-            Debug.Log("В этом цикле надо дописать инициалицазию dataNames, чтобы он читал данные с БД");
         }
 
         addBtn.onClick.AddListener(() => AddData());
@@ -121,6 +114,14 @@ public class DropdownDatas : Value
             {
                 dropdown.value = i;
             }
+        }
+    }
+
+    public override object DefaultVal
+    {
+        get
+        {
+            return Val;
         }
     }
 

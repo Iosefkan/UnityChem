@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -16,8 +16,8 @@ namespace Database
         public long IdType { get; set; }
         public long IdDie { get; set; }
         public long IdScrew1 { get; set; }
-        public long IdBarrel { get; set; }
         public long? IdScrew2 { get; set; }
+        public long IdBarrel { get; set; }
         public string Brand { get; set; }
 
         public virtual BarrelPossibleСonfiguration IdBarrelNavigation { get; set; }
