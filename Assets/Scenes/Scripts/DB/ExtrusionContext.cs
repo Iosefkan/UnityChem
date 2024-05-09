@@ -27,7 +27,7 @@ namespace Database
         public virtual DbSet<BarrelSectionParametr> BarrelSectionParametrs { get; set; }
         public virtual DbSet<BarrelSectionParametrValue> BarrelSectionParametrValues { get; set; }
         public virtual DbSet<BarrelСonfiguration> BarrelСonfigurations { get; set; }
-        public virtual DbSet<Die> Dice { get; set; }
+        public virtual DbSet<Die> Dies { get; set; }
         public virtual DbSet<DieElement> DieElements { get; set; }
         public virtual DbSet<DieElementInСonfiguration> DieElementInСonfigurations { get; set; }
         public virtual DbSet<DieElementParametr> DieElementParametrs { get; set; }
@@ -690,6 +690,7 @@ namespace Database
                     .HasColumnName("name");
 
                 entity.Property(e => e.Throughput).HasColumnName("throughput");
+                entity.Property(e => e.Time).HasColumnName("time");
 
                 entity.HasOne(d => d.IdExtruderNavigation)
                     .WithMany(p => p.Scenarios)

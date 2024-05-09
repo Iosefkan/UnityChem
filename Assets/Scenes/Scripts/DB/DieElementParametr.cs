@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Database
 {
-    public partial class DieElementParametr
+    public partial class DieElementParametr : IPar
     {
         public DieElementParametr()
         {

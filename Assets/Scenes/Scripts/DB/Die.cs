@@ -19,6 +19,19 @@ namespace Database
         public string Name { get; set; }
 
         [NotMapped]
+        public string ValName
+        {
+            get
+            {
+                return "Configuration";
+            }
+            set
+            {
+                Debug.Log($"Попытка присвоить значение {value} к ValName");
+            }
+        }
+
+        [NotMapped]
         public IElement Element { get { return null; } set { Debug.Log("в Database.Die не реализован set для Element"); } }
         [NotMapped]
         public IConfig Config { get { return this; } set { Debug.Log("в Database.Die не реализован set для Config"); } }

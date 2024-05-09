@@ -14,11 +14,17 @@ namespace Database
         {
             get
             {
-                return Element.Name;
+                if (Element != null)
+                    return Element.Name;
+                else
+                    return Config.Name;
             }
             set
             {
-                Element.Name = value;
+                if (Element != null)
+                    Element.Name = value;
+                else
+                    Config.Name = value;
             }
         }
 

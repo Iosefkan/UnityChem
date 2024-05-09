@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Database
 {
-    public partial class ScrewElementParametr
+    public partial class ScrewElementParametr : IPar
     {
         public ScrewElementParametr()
         {

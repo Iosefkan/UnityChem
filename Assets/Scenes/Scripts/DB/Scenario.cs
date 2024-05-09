@@ -12,6 +12,7 @@ namespace Database
         public long IdExtruder { get; set; }
         public string Name { get; set; }
         public double Throughput { get; set; }
+        public int Time { get; set; }
 
         public virtual Extruder IdExtruderNavigation { get; set; }
         public virtual Film IdFilmNavigation { get; set; }
