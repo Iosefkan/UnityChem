@@ -12,7 +12,7 @@ namespace Assets.Scenes.Scripts.UI
         ExtrusionContext ec = new();
 
         private static readonly string DesignName = "Designation";
-        private static readonly string ConfName = "Configuration";
+        private static string ConfName = "Configuration";
 
         private static readonly string BarrelSection = "BarrelSection";
         private static readonly string BarrelConfiguration = "BarrelConfiguration";
@@ -77,6 +77,7 @@ namespace Assets.Scenes.Scripts.UI
 
         public Dictionary<string, List<IValue>> GetDatas(string name)
         {
+            ConfName = name;
             if (name == BarrelSection)
             {
                 return GetElemParametrs(ec.BarrelSections);
@@ -115,6 +116,7 @@ namespace Assets.Scenes.Scripts.UI
 
         void AddData(object _, string nameDataGroup, Dictionary<string, object> dataFields)
         {
+            ConfName = nameDataGroup;
             if (nameDataGroup == BarrelSection)
             {
                 InitElement(dataFields, ec.BarrelSections, ec.BarrelSectionParametrs);
@@ -153,6 +155,7 @@ namespace Assets.Scenes.Scripts.UI
 
         void SaveData(object _, string nameDataGroup, string oldDataName, Dictionary<string, object> dataFields)
         {
+            ConfName = nameDataGroup;
             if (nameDataGroup == BarrelSection)
             {
                 SaveElement(dataFields, oldDataName, ec.BarrelSections);
@@ -191,6 +194,7 @@ namespace Assets.Scenes.Scripts.UI
 
         void RemoveData(object _, string nameDataGroup, string dataName)
         {
+            ConfName = nameDataGroup;
             if (nameDataGroup == BarrelSection)
             {
                 RemoveElement(dataName, ec.BarrelSections);

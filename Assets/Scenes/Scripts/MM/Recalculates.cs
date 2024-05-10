@@ -24,8 +24,15 @@ public class Recalculates : MonoBehaviour
 
     [SerializeField] private TMP_Text _temp1;
     [SerializeField] private TMP_Text _tempTarget1;
+    [SerializeField] private TMP_Text _tempDopLabel11;
+    [SerializeField] private TMP_Text _tempDopLabel12;
+    [SerializeField] private MeasuringtTemp _measTemp1;
+
     [SerializeField] private TMP_Text _temp2;
     [SerializeField] private TMP_Text _tempTarget2;
+    [SerializeField] private TMP_Text _tempDopLabel21;
+    [SerializeField] private TMP_Text _tempDopLabel22;
+    [SerializeField] private MeasuringtTemp _measTemp2;
 
     [SerializeField] private TMP_Text _resText;
 
@@ -48,11 +55,11 @@ public class Recalculates : MonoBehaviour
     void Start()
     {
         _entrPanel.OnChangeVal += EntrPanelOnChangeVal;
-
+       
         /// Show G Id Fs Trend Graphs
-        _GTrendGraph .AddData(new Vector(0, 0));
-        _IdTrendGraph.AddData(new Vector(0, 0));
-        _FsTrendGraph.AddData(new Vector(0, 0));
+        //_GTrendGraph .AddData(new Vector(0, 0));
+        //_IdTrendGraph.AddData(new Vector(0, 0));
+        //_FsTrendGraph.AddData(new Vector(0, 0));
     }
 
     public void SetInitData()
@@ -264,10 +271,16 @@ public class Recalculates : MonoBehaviour
     void SetTempTarget1()
     {
         _tempTarget1.text = _temp1.text;
+        _tempDopLabel11.text = _temp1.text;
+        _tempDopLabel12.text = _temp1.text;
+        _measTemp1.SetValue(_temp1.text);
     }
 
     void SetTempTarget2()
     {
         _tempTarget2.text = _temp2.text;
+        _tempDopLabel21.text = _temp2.text;
+        _tempDopLabel22.text = _temp2.text;
+        _measTemp2.SetValue(_temp2.text);
     }
 }

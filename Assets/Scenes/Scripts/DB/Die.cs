@@ -23,7 +23,7 @@ namespace Database
         {
             get
             {
-                return "Configuration";
+                return "DieConfiguration";
             }
             set
             {
