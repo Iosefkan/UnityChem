@@ -1,13 +1,16 @@
 using TMPro;
+using UnityEngine;
 
 public class IntValue : Value
 {
+    [SerializeField] private int defaultValue = 0;
+
     private TMP_InputField inputField;
     
     private void Awake()
     {
         inputField = GetComponentInChildren<TMP_InputField>();
-        Val = 0;
+        Val = defaultValue;
     }
 
     public override object Val
@@ -16,7 +19,7 @@ public class IntValue : Value
         {
             if (!int.TryParse(inputField.text, out int v))
             {
-                v = 0;
+                v = defaultValue;
             }
             return v;
         }
@@ -28,6 +31,6 @@ public class IntValue : Value
 
     public override object DefaultVal
     {
-        get { return 0; }
+        get { return defaultValue; }
     }
 }

@@ -236,8 +236,7 @@ namespace Types
 
         public double
             Time,
-            G_max,
-            G_min,
+            G0,
             Id_max,
             Fs_max;
     }

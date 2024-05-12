@@ -255,8 +255,7 @@ namespace Program
             ////////// Train //////////
             train.Designation = "train1";
             train.Time = 30;
-            train.G_max = 50;
-            train.G_min = 10;
+            train.G0 = 50;
             train.Id_max = 5;
             train.Fs_max = 0.1;
     }

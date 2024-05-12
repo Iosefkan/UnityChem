@@ -70,7 +70,7 @@ public class Recalculates : MonoBehaviour
 
         _operTime.trainTime = TimeSpan.FromMinutes(train.Time);
 
-        _GTrendGraph.SetYMaxMinLine((float)train.G_max, (float)train.G_min);
+        _GTrendGraph.SetYMaxLine((float)train.G0);
         _IdTrendGraph.SetYMaxLine((float)train.Id_max);
         _FsTrendGraph.SetYMaxLine((float)train.Fs_max);
 
@@ -131,8 +131,9 @@ public class Recalculates : MonoBehaviour
 
         Train train = _qdAdapter.initData.train;
         float g = G();
-        float dG = g / (float)train.G_max * 100 - 100;
-        if (dG <= 0) dG = Math.Min(g / (float)train.G_min * 100 - 100, 0);
+        //float dG = g / (float)train.G_max * 100 - 100;
+        //if (dG <= 0) dG = Math.Min(g / (float)train.G_min * 100 - 100, 0);
+        float dG = g / (float)train.G0 * 100 - 100;
         float id = Id();
         float dId = Math.Max(id / (float)train.Id_max * 100 - 100, 0);
         float fs = Fs();

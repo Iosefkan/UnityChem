@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Database
 {
-    public partial class ProcessParametr
+    public partial class ProcessParametr : IPar
     {
         public ProcessParametr()
         {

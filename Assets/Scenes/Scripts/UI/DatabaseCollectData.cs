@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Rendering.FilterWindow;
 
 namespace Assets.Scenes.Scripts.UI
 {
@@ -110,6 +111,14 @@ namespace Assets.Scenes.Scripts.UI
             {
                 return GetExtruderParametrs();
             }
+            else if (name == Film)
+            {
+                return GetFilmParametrs();
+            }
+            else if (name == Scenario)
+            {
+                return GetScenarioParametrs();
+            }
 
             return null;
         }
@@ -148,6 +157,14 @@ namespace Assets.Scenes.Scripts.UI
             else if (nameDataGroup == Extruder)
             {
                 CreateExtruder(dataFields);
+            }
+            else if (nameDataGroup == Film)
+            {
+                CreateFilm(dataFields);
+            }
+            else if (nameDataGroup == Scenario)
+            {
+                CreateScenario(dataFields);
             }
 
             ec.SaveChanges();
@@ -188,6 +205,14 @@ namespace Assets.Scenes.Scripts.UI
             {
                 SaveExtruder(dataFields, oldDataName);
             }
+            else if (nameDataGroup == Film)
+            {
+                SaveFilm(dataFields, oldDataName);
+            }
+            else if (nameDataGroup == Scenario)
+            {
+                SaveScenario(dataFields, oldDataName);
+            }
 
             ec.SaveChanges();
         }
@@ -227,37 +252,153 @@ namespace Assets.Scenes.Scripts.UI
             {
                 RemoveExtruder(dataName);
             }
+            else if (nameDataGroup == Film)
+            {
+                RemoveFilm(dataName);
+            }
+            else if (nameDataGroup == Scenario)
+            {
+                RemoveScenario(dataName);
+            }
 
             ec.SaveChanges();
+        }
+
+        private void CreateScenario(Dictionary<string, object> data)
+        {
+            var scen = new Scenario();
+            SaveScenarioData(data, scen);
+            if (scen.IdExtruderNavigation == null || scen.IdFilmNavigation == null)
+            {
+                Debug.Log("Не удалось создать сценарий");
+                return;
+            }
+            ec.Scenarios.Add(scen);
+        }
+
+        private void SaveScenario(Dictionary<string, object> data, string name)
+        {
+            var scen = ec.Scenarios.FirstOrDefault(s => s.Name == name);
+            if (scen == null)
+            {
+                Debug.Log("Не найдена сцена");
+                return;
+            }
+            SaveScenarioData(data, scen);
+        }
+
+        private void SaveScenarioData(Dictionary<string, object> data, Scenario scen)
+        {
+            var extr = ec.Extruders.FirstOrDefault(e => e.Brand == data[Extruder].ToString());
+            var film = ec.Films.FirstOrDefault(f => f.Type == data[Film].ToString());
+            if (extr == null) Debug.Log($"Не найден экструдер {extr}");
+            if (film == null) Debug.Log($"Не найден пленка {film}");
+            if (extr == null || film == null) return;
+
+            scen.Name = data[DesignName].ToString();
+            scen.Throughput = (double)data["G0"];
+            scen.Time = (int)data["Time"];
+            scen.IdExtruderNavigation = extr;
+            scen.IdFilmNavigation = film;
+        }
+
+        private void RemoveScenario(string name)
+        {
+            var s = ec.Scenarios.FirstOrDefault(s => s.Name == name);
+            if (s != null) ec.Scenarios.Remove(s);
+            else Debug.Log($"Не был найден сценарий {name}");
+        }
+
+        private Dictionary<string, List<IValue>> GetScenarioParametrs()
+        {
+            var valsConfs = new Dictionary<string, List<IValue>>();
+            foreach (var s in ec.Scenarios)
+            {
+                valsConfs[s.Name] = new List<IValue>()
+                {
+                    new DesignVal { ValName = Film, Val = s.IdFilmNavigation.Type },
+                    new DesignVal { ValName = Extruder, Val = s.IdExtruderNavigation.Brand },
+                    new DesignVal { ValName = "G0", Val = s.Throughput},
+                    new DesignVal { ValName = "Time", Val = s.Time},
+                };
+            }
+
+            return valsConfs;
+        }
+
+        private void CreateFilm(Dictionary<string, object> data)
+        {
+            var pol = ec.Polymers.FirstOrDefault(p => p.Name == data[Polymer].ToString());
+            if (pol == null)
+            {
+                Debug.Log($"Не был найден полимер {data[Polymer]}");
+                return;
+            }
+
+            var film = CreateElement<Film, ProcessParametr>(data, ec.ProcessParametrs);
+            film.IdPolymerNavigation = pol;
+            ec.Films.Add(film);
+        }
+
+        private void SaveFilm(Dictionary<string, object> data, string name)
+        {
+            var pol = ec.Polymers.FirstOrDefault(p => p.Name == data[Polymer].ToString());
+            if (pol == null)
+            {
+                Debug.Log($"Не был найден полимер {data[Polymer]}");
+                return;
+            }
+
+            var film = SaveElement(data, name, ec.Films);
+            film.IdPolymerNavigation = pol;
+        }
+
+        private void RemoveFilm(string name)
+        {
+            var f = ec.Films.FirstOrDefault(f => f.Type == name);
+            if (f != null)  ec.Films.Remove(f); 
+            else            Debug.Log($"Не был найдена пленка {name}"); 
+        }
+
+        private Dictionary<string, List<IValue>> GetFilmParametrs()
+        {
+            var valsConfs = new Dictionary<string, List<IValue>>();
+            foreach (var f in ec.Films)
+            {
+                valsConfs[f.Name] = GetParametrs(f);                
+                valsConfs[f.Name].Add(new DesignVal{ ValName = Polymer, Val = f.IdPolymerNavigation.Name });
+            }
+
+            return valsConfs;
         }
 
         private void CreateExtruder(Dictionary<string, object> data)
         {
             var extr = new Database.Extruder();
-            SaveExtruder(data, extr);
+            SetExtruderData(data, extr);
             ec.Extruders.Add(extr);
         }
 
         private void SaveExtruder(Dictionary<string, object> data, string name)
         {
             var extr = ec.Extruders.FirstOrDefault(e => e.Brand == name);
-            SaveExtruder(data, extr);
+            SetExtruderData(data, extr);
         }
 
-        private void SaveExtruder(Dictionary<string, object> data, Database.Extruder extr)
+        private void SetExtruderData(Dictionary<string, object> data, Database.Extruder extr)
         {
             string extruderName = data[DesignName] as string;
-            var barrel = ec.Barrels.FirstOrDefault(b => b.Name == (string)data["BarrelConfiguration"]);
+            var barrel = ec.Barrels.FirstOrDefault(b => b.Name == (string)data[BarrelConfiguration]);
             var barrelConf = ec.BarrelPossibleСonfigurations.FirstOrDefault(b => b.IdBodyNavigation == barrel);
-            var die = ec.Dies.FirstOrDefault(b => b.Name == (string)data["DieConfiguration"]);
-            var screw = ec.Screws.FirstOrDefault(s => s.Name == (string)data["ScrewConfiguration"]);
+            var die = ec.Dies.FirstOrDefault(b => b.Name == (string)data[DieConfiguration]);
+            var screw = ec.Screws.FirstOrDefault(s => s.Name == (string)data[ScrewConfiguration]);
             var screwConf = ec.ScrewPossibleСonfigurations.FirstOrDefault(s => s.IdScrewNavigation == screw);
 
-            if (barrel == null) Debug.Log($"Не найдено корпуса {(string)data["BarrelConfiguration"]}");
-            if (barrelConf == null) Debug.Log($"Не найдено конфигурации корпуса {(string)data["BarrelConfiguration"]}");
-            if (die == null) Debug.Log($"Не найдено головки {(string)data["DieConfiguration"]}");
-            if (screw == null) Debug.Log($"Не найдено шнека {(string)data["ScrewConfiguration"]}");
-            if (screwConf == null) Debug.Log($"Не найдено конфигурации шнека {(string)data["ScrewConfiguration"]}");
+            if (barrel == null) Debug.Log($"Не найдено корпуса {(string)data[BarrelConfiguration]}");
+            if (barrelConf == null) Debug.Log($"Не найдено конфигурации корпуса {(string)data[BarrelConfiguration]}");
+            if (die == null) Debug.Log($"Не найдено головки {(string)data[DieConfiguration]}");
+            if (screw == null) Debug.Log($"Не найдено шнека {(string)data[ScrewConfiguration]}");
+            if (screwConf == null) Debug.Log($"Не найдено конфигурации шнека {(string)data[ScrewConfiguration]}");
             if (barrel == null || barrelConf == null || die == null || screw == null || screwConf == null) return;
 
             extr.IdBarrelNavigation = barrelConf;
@@ -282,7 +423,7 @@ namespace Assets.Scenes.Scripts.UI
                 {
                     new DesignVal {  ValName = DieConfiguration, Val = extruder.IdDieNavigation.Name },
                     new DesignVal {  ValName = ScrewConfiguration, Val = extruder.IdScrew1Navigation.Element.Name },
-                    new DesignVal {  ValName = DieConfiguration, Val = extruder.IdBarrelNavigation.Element.Name }
+                    new DesignVal {  ValName = BarrelConfiguration, Val = extruder.IdBarrelNavigation.Element.Name }
                 };
             }
 
@@ -319,6 +460,8 @@ namespace Assets.Scenes.Scripts.UI
                 List<IValue> pars = new();
                 if (e.Element != null)
                     pars = GetParametrs(e.Element);
+                else
+                    pars.Add(new DesignVal() { ValName = DesignName, Val = e.Name });
                 pars.Add(e.Config);
 
                 valsConfs[e.Name] = pars;
@@ -367,24 +510,28 @@ namespace Assets.Scenes.Scripts.UI
             }
         }
 
-        void SaveElement<E>(Dictionary<string, object> dataFields, string oldDataName, DbSet<E> els) where E : class, IElement, new()
+        E SaveElement<E>(Dictionary<string, object> dataFields, string oldDataName, DbSet<E> els) where E : class, IElement, new()
         {
-            foreach (var b in els)
+            foreach (var e in els)
             {
-                if (b.Name == oldDataName)
+                if (e.Name == oldDataName)
                 {
-                    b.Name = dataFields[DesignName].ToString();
-                    foreach (var p in b.Parametrs)
+                    e.Name = dataFields[DesignName].ToString();
+                    foreach (var p in e.Parametrs)
                     {
-                        var v = dataFields[p.ValName];
-                        if (v is int)
-                            p.Value = (int)v;
-                        if (v is double)
-                            p.Value = (double)v;
+                        if (dataFields.TryGetValue(p.ValName, out object v))
+                        {
+                            if (v is int)
+                                p.Value = (int)v;
+                            if (v is double)
+                                p.Value = (double)v;
+                        }
                     }
-                    break;
+                    return e;
                 }
             }
+
+            return null;
         }
 
         void SaveConfiguration<P, EC>(Dictionary<string, object> dataFields, string oldDataName, DbSet<P> conf, DbSet<EC> confElem) where P : class, IPossibleConfig, new()
