@@ -18,7 +18,10 @@ public class LeftTrainTime : MonoBehaviour
 
     void Update()
     {   
-        tmp_text.color = operTime.GetLeftMin() < warningTime ? Color.red : Color.black;
-        tmp_text.text = text + operTime.GetLeftTimeStr();
+        if (operTime.GetLeftMin() > 0)
+        {
+            tmp_text.color = operTime.GetLeftMin() < warningTime ? Color.red : Color.black;
+            tmp_text.text = text + operTime.GetLeftTimeStr();
+        }
     }
 }

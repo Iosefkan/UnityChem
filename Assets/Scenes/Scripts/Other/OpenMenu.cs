@@ -1,46 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class OpenMenu : MonoBehaviour
 {
-    GameObject menu;
-    ClickOnObj clickOnObj;
-    MoveCharacter moveScript;
-    void Start()
+    [SerializeField] private GameObject menu;
+    [SerializeField] private GameObject xr;
+    [SerializeField] private Button startBtn;
+
+    private void Start()
     {
-        moveScript = GameObject.Find("Main Camera").GetComponent<MoveCharacter>();
-        menu = GameObject.Find("UI/Canvas/MenuPanel");
-        clickOnObj = GameObject.Find("Settings").GetComponent<ClickOnObj>();
+        menu.SetActive(true);
+        xr.SetActive(false);
 
-
-        Button btn = GameObject.Find("UI/Canvas/MenuPanel/ExitButton").GetComponent<Button>();
-        if (btn) btn.onClick.AddListener(() => { Application.Quit(); });
+        startBtn.onClick.AddListener(open);
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            
-            if (menu != null)
-            {
-                menu.SetActive(!menu.activeSelf);
-                if (menu.activeSelf)
-                {
-                    clickOnObj.enabled = false;
-                    Cursor.lockState = CursorLockMode.None;
-                    moveScript.enabled = false;
-                }
-                else
-                {
-                    clickOnObj.enabled = true;
-                    Cursor.lockState = CursorLockMode.Locked;
-                    moveScript.enabled = true;
-                }
-            }
+            menu.SetActive(menu.activeSelf);
+            xr.SetActive(xr.activeSelf);
         }
+    }
+
+    void open()
+    {
+        menu.SetActive(false);
+        xr.SetActive(true);
     }
 }

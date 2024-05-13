@@ -209,6 +209,8 @@ namespace Program
 
                 X_PL_LIST.Add(new List<double>());
 
+                JSum = 0;
+
                 for (iSect = 0; iSect < nSect; iSect++) //{Циклы по секциям}
                 {
                     if (SCT[iSect].S_Type == 1)
@@ -475,7 +477,12 @@ namespace Program
                                 X_PL_LIST.Last().Add(X_PL);
                             }
                             ic++;
+
+                            CalcIs(); //Сумирует Is для рассчета степени смешения
                         }
+                        JSum += (2 * IsSum - firstIs - lastIs) / 2; // для рассчета степени смешения
+                        Sav = JSum / dz;
+
                     } //{ конец цикла по i для секции с нарезкой }
                     else
                     {
@@ -634,6 +641,32 @@ namespace Program
             Res.b = b;
             Res.n = m;
             Res.T0 = T0;
+        }
+
+        /// Моя Ф для расчета Is для рассчета степени смешения
+        public void CalcIs()
+        {
+            if (i == 0)
+            {
+                IsSum = 0;
+                isFirstIs = true;
+            }
+
+            double firstSum = Math.Sqrt(Math.Pow(Gamma_XX[n_Eta], 2) + Math.Pow(Gamma_ZZ[n_Eta], 2));
+            double lastSum = Math.Sqrt(Math.Pow(Gamma_XX[0], 2) + Math.Pow(Gamma_ZZ[0], 2));
+            double sum = 0;
+            for (int i = 0; i <= n_Eta; i++)
+            {
+                sum += Math.Sqrt(Math.Pow(Gamma_XX[i], 2) + Math.Pow(Gamma_ZZ[i], 2));
+            }
+
+            lastIs = (sum - firstSum + sum - lastSum) / 2;
+            if (isFirstIs)
+            {
+                firstIs = lastIs;
+                isFirstIs = false;
+            }
+            IsSum += lastIs;
         }
 
         // Свободная глубина винтового канала
@@ -1006,6 +1039,11 @@ namespace Program
             aSpline = new double[61],bSpline = new double[61],
             cSpline = new double[61],dSpline = new double[61];
 
+
+        public double IsSum = 0, firstIs = 0, lastIs = 0;
+        public double JSum = 0;
+        public double Sav = 0;//средняя скорость деформации сдвига расплава в канале шнека
+        public bool isFirstIs = true;
 
         //Рузультаты
         public string table = "";

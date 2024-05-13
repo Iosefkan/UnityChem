@@ -2,17 +2,17 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static TabsManager;
 
-public class SwitchTabs : MonoBehaviour
+public class TabsMore : MonoBehaviour
 {
     [Serializable]
     struct Switch
     {
         public Button btn;
         public GameObject panel;
+        public Vector2 pos;
     }
-
-    [SerializeField] private ScrollRect scrollRect;
     [SerializeField] Switch[] switchs;
 
     Switch currSwt;
@@ -22,12 +22,17 @@ public class SwitchTabs : MonoBehaviour
     {
         foreach (Switch sw in switchs)
         {
-            sw.btn.onClick.AddListener(() => ActivePanel(sw));
             //Необходимо активировать, чтобы вызвались скрипты скрытых панелей
-            HideTab(sw.panel);
             sw.panel.SetActive(true);
-        }
 
+            sw.btn.onClick.AddListener(() => ActivePanel(sw));
+
+            RectTransform rectTr = sw.panel.GetComponent<RectTransform>();
+            sw.pos.Set(0, rectTr.rect.height);
+
+            HideTab(sw.panel);
+        }
+            
         if (switchs.Length > 0) ActivePanel(switchs.First());
     }
 
@@ -37,16 +42,22 @@ public class SwitchTabs : MonoBehaviour
         if (currSwt.btn) currSwt.btn.GetComponent<Image>().color = prevBtnColor;
 
         currSwt = sw;
-        scrollRect.content = currSwt.panel.GetComponent<RectTransform>();
-        //currSwt.panel.SetActive(true);
         Image btnImage = currSwt.btn.GetComponent<Image>();
         prevBtnColor = btnImage.color;
         btnImage.color = currSwt.panel.GetComponent<Image>().color;
+
+        ShowTab(currSwt);
     }
 
     void HideTab(GameObject tab)
     {
         RectTransform rectTr = tab.GetComponent<RectTransform>();
-        rectTr.anchoredPosition = new Vector2(0, -rectTr.rect.height);
+        rectTr.anchoredPosition = new Vector2(0, -rectTr.rect.height*2);
+    }
+
+    void ShowTab(Switch sw)
+    {
+        RectTransform rectTr = sw.panel.GetComponent<RectTransform>();
+        rectTr.anchoredPosition = sw.pos;
     }
 }

@@ -39,6 +39,7 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private WindowGraph _GTrendGraph;
     [SerializeField] private WindowGraph _IdTrendGraph;
     [SerializeField] private WindowGraph _FsTrendGraph;
+    [SerializeField] private WindowGraph _YTrendGraph;
 
     [SerializeField] private WindowGraph _XGraph;
     [SerializeField] private WindowGraph _PGraph;
@@ -47,6 +48,21 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TableManager _XPTTabel;
 
     [SerializeField] private TableManager _logTabel;
+
+    [SerializeField] private TMP_Text _resTextInstructor;
+
+    [SerializeField] private WindowGraph _GTrendGraphInstructor;
+    [SerializeField] private WindowGraph _IdTrendGraphInstructor;
+    [SerializeField] private WindowGraph _FsTrendGraphInstructor;
+    [SerializeField] private WindowGraph _YTrendGraphInstructor;
+
+    [SerializeField] private WindowGraph _XGraphInstructor;
+    [SerializeField] private WindowGraph _PGraphInstructor;
+    [SerializeField] private WindowGraph _TGraphInstructor;
+    [SerializeField] private WindowGraph _WorkDotGraphInstructor;
+
+    [SerializeField] private TableManager _logTabelInstructor;
+
 
     [SerializeField] private CollectData collectData;
 
@@ -73,6 +89,10 @@ public class Recalculates : MonoBehaviour
         _GTrendGraph.SetYMaxLine((float)train.G0);
         _IdTrendGraph.SetYMaxLine((float)train.Id_max);
         _FsTrendGraph.SetYMaxLine((float)train.Fs_max);
+
+        _GTrendGraphInstructor.SetYMaxLine((float)train.G0);
+        _IdTrendGraphInstructor.SetYMaxLine((float)train.Id_max);
+        _FsTrendGraphInstructor.SetYMaxLine((float)train.Fs_max);
 
         _shnekSpeed.text = initData.data.N_.ToString();
         RecalcShnekSpeed();
@@ -138,16 +158,27 @@ public class Recalculates : MonoBehaviour
         float dId = Math.Max(id / (float)train.Id_max * 100 - 100, 0);
         float fs = Fs();
         float dFs = Math.Max(fs / (float)train.Fs_max * 100 - 100, 0);
+        float y = Dmix();
+        //float dY = Math.Max(y / (float)train.Y_min * 100 - 100, 0);
 
         /// Show res
         _resText.text = $"{g:f2}\n" +
                         $"{id:f2}\n" +
-                        $"{fs:f2}\n";
-        
+                        $"{fs:f2}\n"/* +
+                        $"{y:f2}\n"*/;
+        _resTextInstructor.text = $"{g:f2}\n" +
+                $"{id:f2}\n" +
+                $"{fs:f2}\n"/* +
+                        $"{y:f2}\n"*/;
+
         /// Show X P T WorkDot Graphs
         _XGraph.SetData(_qdAdapter.qpt.XZ.Last());
         _PGraph.SetData(_qdAdapter.qpt.PZ.Last());
         _TGraph.SetData(_qdAdapter.qpt.TZ.Last());
+
+        _XGraphInstructor.SetData(_qdAdapter.qpt.XZ.Last());
+        _PGraphInstructor.SetData(_qdAdapter.qpt.PZ.Last());
+        _TGraphInstructor.SetData(_qdAdapter.qpt.TZ.Last());
 
         List<Vector> mt = new List<Vector>();
         List<Vector> tout = new List<Vector>();
@@ -157,17 +188,38 @@ public class Recalculates : MonoBehaviour
             tout.Add(new((float)(_qdAdapter.die.M_Q[i] * 1e2), (float)_qdAdapter.die.M_P[i]));
         }
         _WorkDotGraph.SetData(mt, tout);
+        _WorkDotGraphInstructor.SetData(mt, tout);
 
         /// Show X P T Table
         _XPTTabel.SetData(_qdAdapter.qpt.ZXPT.Last());
 
-        /// Show G Id Fs Trend Graphs
+        /// Show G Id Fs Y Trend Graphs
         _GTrendGraph .AddData(new Vector((float)_operTime.GetMin(), g));
         _IdTrendGraph.AddData(new Vector((float)_operTime.GetMin(), id));
         _FsTrendGraph.AddData(new Vector((float)_operTime.GetMin(), fs));
+        //_YTrendGraph .AddData(new Vector((float)_operTime.GetMin(), y));
+
+        _GTrendGraphInstructor .AddData(new Vector((float)_operTime.GetMin(), g));
+        _IdTrendGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), id));
+        _FsTrendGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), fs));
+        //_YTrendGraphInstructor .AddData(new Vector((float)_operTime.GetMin(), y));
 
         /// Log 
         _logTabel.AddData(new List<object>
+        {
+            _operTime.GetTimeStr(),
+            _qdAdapter.initData.data.N_,
+            _qdAdapter.initData.cyl[0].T_W_k_,
+            _qdAdapter.initData.cyl[1].T_W_k_,
+            g,
+            dG,
+            id,
+            dId,
+            fs,
+            dFs
+        });
+
+        _logTabelInstructor.AddData(new List<object>
         {
             _operTime.GetTimeStr(),
             _qdAdapter.initData.data.N_,
@@ -189,23 +241,6 @@ public class Recalculates : MonoBehaviour
      
     private float Id()
     {
-        double V = 0;
-        foreach (var sect in _qdAdapter.initData.sect)
-        {
-            if (sect.S_Type == 1)
-            {
-                double z = sect.L_sect / _qdAdapter.qpt.sn;
-                V += z * _qdAdapter.qpt.W * 1e3 * ((sect.H_st + sect.H_fin) / 2);
-            }
-            else
-            {
-                double d = sect.D_st - 2 * sect.H_st;
-                V += 0.25 * Math.PI * sect.L_sect * (sect.D_st * sect.D_st - d*d);
-            }
-        }
-
-        double t_av = V / (_qdAdapter.die.RES_f.Q_fin * 1e3);
-
         const double T_kel = 273.15;
         const double R = 8.31;
 
@@ -217,7 +252,7 @@ public class Recalculates : MonoBehaviour
         const double T_d = 200 + T_kel;
 
         double T_ext = _qdAdapter.qpt.T + T_kel;
-        return (float)(t_av / t_d * Math.Exp(E_d / (R * T_ext * T_d) * (T_ext - T_d)) * 100);
+        return (float)(t_av() / t_d * Math.Exp(E_d / (R * T_ext * T_d) * (T_ext - T_d)) * 100);
     }
 
     private float Fs()
@@ -228,6 +263,33 @@ public class Recalculates : MonoBehaviour
         if (Q == 0) return 0;
 
         return (float)(Q_s / Q);
+    }
+
+    private float Dmix()
+    {
+        double tav = t_av();
+        double j = _qdAdapter.qpt.JSum;
+        return (float)(_qdAdapter.qpt.Sav * 1000 * tav);
+    }
+
+    private double t_av()
+    {
+        double V = 0;
+        foreach (var sect in _qdAdapter.initData.sect)
+        {
+            if (sect.S_Type == 1)
+            {
+                double z = sect.L_sect / _qdAdapter.qpt.sn;
+                V += z * _qdAdapter.qpt.W * 1e3 * ((sect.H_st + sect.H_fin) / 2);
+            }
+            else
+            {
+                double d = sect.D_st - 2 * sect.H_st;
+                V += 0.25 * Math.PI * sect.L_sect * (sect.D_st * sect.D_st - d * d);
+            }
+        }
+
+        return V / (_qdAdapter.die.RES_f.Q_fin * 1e3);
     }
 
     //////////////// RECALC PARAMS ON CONTROL PANEL //////////////// 
