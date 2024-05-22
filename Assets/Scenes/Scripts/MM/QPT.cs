@@ -128,8 +128,7 @@ namespace Program
             T_Start = DataRec.T_St;
             C_S = Lam_T / a_T / Ro;
 
-            c = 1 / m + 1;
-
+            double c_Potok = 1 / m + 1;
             //{Табличное представление определяющего расчетного уравнения
             //               теории плоских потоков}
             s = 10;
@@ -139,8 +138,8 @@ namespace Program
             {
                 mb[i] = mb[i - 1] + db;
                 mf[i] = Math.Abs((mb[i] - 1) / (mb[i] + 1));
-                mf[i] = Math.Exp(c * Math.Log(mf[i])) - 1;
-                mf[i] = Math.Abs(c * (mf[i] + 2) / mf[i] + 1 / mb[i]);
+                mf[i] = Math.Exp(c_Potok * Math.Log(mf[i])) - 1;
+                mf[i] = Math.Abs(c_Potok * (mf[i] + 2) / mf[i] + 1 / mb[i]);
                 if (i == s)
                     db = 5.0 / s;
                 if (i == 2 * s)
@@ -210,7 +209,7 @@ namespace Program
                 X_PL_LIST.Add(new List<double>());
 
                 JSum = 0;
-
+                double Z = 0;
                 for (iSect = 0; iSect < nSect; iSect++) //{Циклы по секциям}
                 {
                     if (SCT[iSect].S_Type == 1)
@@ -478,10 +477,9 @@ namespace Program
                             }
                             ic++;
 
-                            CalcIs(); //Сумирует Is для рассчета степени смешения
+                            CalcIsNarezannay(); //Сумирует Is для рассчета степени смешения
                         }
-                        JSum += (2 * IsSum - firstIs - lastIs) / 2; // для рассчета степени смешения
-                        Sav = JSum / dz;
+                        Z += SCT[iSect].L_sect / sn;
 
                     } //{ конец цикла по i для секции с нарезкой }
                     else
@@ -596,9 +594,17 @@ namespace Program
                             }
 
                             ic++;
+
+                            CalcIsGladkay();
                         } //{ конец цикла по i для гладкой секции }
-                    } 
+                        Z += SCT[iSect].L_sect;
+                    }
+
+                    JSum += (2 * IsSum - firstIs - lastIs) / 2 * dz; // для рассчета степени смешения
+
                 }//{ cycle by iSect }
+
+                Sav = JSum / Z; // для рассчета степени смешения
 
                 //Данные для графика
                 PM_LIST.Add(PM);
@@ -643,8 +649,8 @@ namespace Program
             Res.T0 = T0;
         }
 
-        /// Моя Ф для расчета Is для рассчета степени смешения
-        public void CalcIs()
+        /// Моя Ф для расчета Is для рассчета степени смешения нарезанная секция
+        public void CalcIsNarezannay()
         {
             if (i == 0)
             {
@@ -660,7 +666,32 @@ namespace Program
                 sum += Math.Sqrt(Math.Pow(Gamma_XX[i], 2) + Math.Pow(Gamma_ZZ[i], 2));
             }
 
-            lastIs = (sum - firstSum + sum - lastSum) / 2;
+            lastIs = (sum - firstSum + sum - lastSum) / 2 / n_Eta;
+            if (isFirstIs)
+            {
+                firstIs = lastIs;
+                isFirstIs = false;
+            }
+            IsSum += lastIs;
+        }
+        /// Моя Ф для расчета Is для рассчета степени смешения гладкая секция
+        public void CalcIsGladkay()
+        {
+            if (i == 0)
+            {
+                IsSum = 0;
+                isFirstIs = true;
+            }
+
+            double firstSum = Math.Sqrt(Math.Pow(c[i], 2) + Math.Pow(d[i], 2));
+            double lastSum = Math.Sqrt(Math.Pow(c[i], 2) + Math.Pow(d[i], 2));
+            double sum = 0;
+            for (int i = 0; i <= n_Eta; i++)
+            {
+                sum += Math.Sqrt(Math.Pow(c[i], 2) + Math.Pow(d[i], 2));
+            }
+
+            lastIs = (sum - firstSum + sum - lastSum) / 2 / n_Eta;
             if (isFirstIs)
             {
                 firstIs = lastIs;
@@ -961,21 +992,21 @@ namespace Program
         void MuEff_g()
         {
             int i;
-            double a, b, c, d, f1, f2;            
+            double a, b, f1, f2;            
             for (i = 0; i <= n_Eta; i++)
             {
                 a = Mu_ef[i] * MuEf_Fix;
                 f1 = rH / r[i] * (r[i] * r[i] - rB * rB) / (rH * rH - rB * rB);
                 f2 = rB / r[i] * (rH * rH - r[i] * r[i]) / (rH * rH - rB * rB);
-                c = (f1 * Tau_rz_H + f2 * Tau_rz_B) / a;
-                d = Tau_rt_H * rH / r[i] / a;
-                b = Math.Sqrt(c * c + d * d);
+                c[i] = (f1 * Tau_rz_H + f2 * Tau_rz_B) / a;
+                d[i] = Tau_rt_H * rH / r[i] / a;
+                b = Math.Sqrt(c[i] * c[i] + d[i] * d[i]);
                 Mu_eff[i] = Mu * Math.Exp((m - 1) * Math.Log(b)) / MuEf_Fix;
             }
         }
      
         public double
-            D=0,L=0,H0=0,H=0,TETA=0,e=0,u=0,fi=0,Mu0=0,T0=0,Mu=0,b=0,m=0,n=0,T=0,c=0,Lm=0,p=0,uX=0,uZ=0,db=0,Q_M=0,W=0,AL_Z=0,
+            D=0,L=0,H0=0,H=0,TETA=0,e=0,u=0,fi=0,Mu0=0,T0=0,Mu=0,b=0,m=0,n=0,T=0,Lm=0,p=0,uX=0,uZ=0,db=0,Q_M=0,W=0,AL_Z=0,
             AL_X=0,cs=0,sn=0,fd=0,fp=0,ff=0,tkz=0,tkx=0,z=0,pr=0,f1=0,f2=0,Ro=0,MASSA=0,T_Start=0,a_T=0,Lam_T=0,
             T_korp=0,T_screw=0,Al_korp=0,Al_screw=0,pd=0,dLm=0,st=0,dz=0,dn=0,Mu_e=0,I0=0,I1=0,I2=0,I3=0,
             I4=0,I5=0,fMin=0,fMax=0,ffMin=0,ffMax=0,Eta_Z=0,Eta_X=0,dp_dx=0,dp_dz=0,sign_dp=0,Del=0,
@@ -996,7 +1027,8 @@ namespace Program
             v_Z = new double[61],Mu_eff = new double[61], Gamma_XX = new double[61],
             Gamma_ZZ = new double[61],vX_N = new double[61],vZ_N = new double[61],
             M_TETA = new double[61],M_P = new double[61],M_Q = new double[61],
-            M_T = new double[61],r = new double[61];
+            M_T = new double[61],r = new double[61],
+            c = new double[61], d = new double[61];
 
         public bool
             IterEnd=false,transit=false;

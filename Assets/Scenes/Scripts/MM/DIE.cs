@@ -19,6 +19,7 @@ namespace Program
             for (int i = 0; i < s_kg.Num_S; ++i)
             {
                 s_kg.S[i].Order = i + 1;
+                s_kg.S[i].T_B = s_kg.S[i].T_st;
             }
 
             table = "";

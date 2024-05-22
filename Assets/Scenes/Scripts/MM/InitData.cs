@@ -43,7 +43,7 @@ namespace Program
             data.T_PL_          = 110;
             data.K_PL_          = 0;
             data.T_St           = 50;
-            data.a_T_           = 0.00000008;
+            data.a_T_           = 0.000000008;
             data.Lam_T_         = 0.16;
             data.Lam_k          = 12.7;
             data.Lam_s          = 12.7;
