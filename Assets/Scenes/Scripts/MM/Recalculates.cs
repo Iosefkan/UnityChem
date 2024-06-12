@@ -36,6 +36,8 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TMP_Text _tempDopLabel22;
     [SerializeField] private MeasuringtTemp _measTemp2;
 
+    [SerializeField] private TMP_Text       _scenarioLabel;
+
     [SerializeField] private TMP_Text       _resText;
 
     [SerializeField] private WindowGraph    _GTrendGraph;
@@ -65,7 +67,6 @@ public class Recalculates : MonoBehaviour
 
     [SerializeField] private TableManager   _logTabelInstructor;
 
-
     [SerializeField] private CollectData collectData;
 
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
@@ -88,6 +89,11 @@ public class Recalculates : MonoBehaviour
         _qdAdapter.initData = collectData.GetInitData();
         InitData initData = _qdAdapter.initData;
         Train train = initData.train;
+
+        _scenarioLabel.text = $"{train.G0:f2}\n" +
+                              $"{train.Id_max:f2}\n" +
+                              $"{train.Fs_max:f2}\n" +
+                              $"{train.Is0:f2}\n";
 
         _operTime.trainTime = TimeSpan.FromMinutes(train.Time);
 
