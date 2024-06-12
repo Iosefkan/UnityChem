@@ -47,10 +47,12 @@ public class WindowGraph : MonoBehaviour
         SetYMaxLine(max);
         SetYMinLine(min);
     }
+
     public void SetYMaxLine(float val)
     {
         yMaxLineVal = val;
     }
+
     public void SetYMinLine(float val)
     {
         yMinLineVal = val;
@@ -68,14 +70,16 @@ public class WindowGraph : MonoBehaviour
         SetData(values);
     }
 
+    public void Clear()
+    {
+        values.Clear();
+        ClearObjs();
+    }
+
     public void SetData(List<Vector> valueList)
     {
         values = valueList;
-        foreach (GameObject gameObject in gameObjectList) 
-        {
-            Destroy(gameObject);
-        }
-        gameObjectList.Clear();
+        ClearObjs();
 
         if (valueList.Count == 0) return;
 
@@ -97,11 +101,7 @@ public class WindowGraph : MonoBehaviour
     public void SetData(List<Vector> valueList, List<Vector> valueList2)
     {
         values = valueList;
-        foreach (GameObject gameObject in gameObjectList)
-        {
-            Destroy(gameObject);
-        }
-        gameObjectList.Clear();
+        ClearObjs();
 
         if (valueList.Count == 0) return;
         
@@ -247,5 +247,14 @@ public class WindowGraph : MonoBehaviour
         if (n < 0) n += 360;
 
         return n;
+    }
+
+    private void ClearObjs()
+    {
+        foreach (GameObject gameObject in gameObjectList)
+        {
+            Destroy(gameObject);
+        }
+        gameObjectList.Clear();
     }
 }

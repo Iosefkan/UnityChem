@@ -44,6 +44,12 @@ public class TableManager : MonoBehaviour
         AddData(valueList);
     }
 
+    public void Clear()
+    {
+        Init();
+        ClearObjs();
+    }
+
     public void AddData<T>(List<List<T>> valueList)
     {
         Init();

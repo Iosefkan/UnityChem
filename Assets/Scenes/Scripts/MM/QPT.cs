@@ -123,7 +123,7 @@ namespace Program
             }
             Al_korp = DataRec.Al_kor;
             Al_screw = DataRec.Al_scr;
-            a_T = DataRec.a_T_;
+            a_T = DataRec.a_T_  * 1e-8;
             Lam_T = DataRec.Lam_T_;
             T_Start = DataRec.T_St;
             C_S = Lam_T / a_T / Ro;
@@ -616,7 +616,7 @@ namespace Program
                 TZ.Add(new List<Vector2>());
                 XZ.Add(new List<Vector2>());
                 ZXPT.Add(new List<List<double>>());
-                for (int i = 0; i < k; ++i)
+                for (int i = 0; i < k+1; ++i)
                 {
                     PZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)PM[i]));
                     TZ.Last().Add(new Vector2((float)(ZM[i] * 1e3), (float)TM[i]));

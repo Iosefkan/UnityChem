@@ -36,34 +36,34 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TMP_Text _tempDopLabel22;
     [SerializeField] private MeasuringtTemp _measTemp2;
 
-    [SerializeField] private TMP_Text _resText;
+    [SerializeField] private TMP_Text       _resText;
 
-    [SerializeField] private WindowGraph _GTrendGraph;
-    [SerializeField] private WindowGraph _IdTrendGraph;
-    [SerializeField] private WindowGraph _FsTrendGraph;
-    [SerializeField] private WindowGraph _YTrendGraph;
+    [SerializeField] private WindowGraph    _GTrendGraph;
+    [SerializeField] private WindowGraph    _IdTrendGraph;
+    [SerializeField] private WindowGraph    _FsTrendGraph;
+    [SerializeField] private WindowGraph    _YTrendGraph;
 
-    [SerializeField] private WindowGraph _XGraph;
-    [SerializeField] private WindowGraph _PGraph;
-    [SerializeField] private WindowGraph _TGraph;
-    [SerializeField] private WindowGraph _WorkDotGraph;
-    [SerializeField] private TableManager _XPTTabel;
+    [SerializeField] private WindowGraph    _XGraph;
+    [SerializeField] private WindowGraph    _PGraph;
+    [SerializeField] private WindowGraph    _TGraph;
+    [SerializeField] private WindowGraph    _WorkDotGraph;
+    [SerializeField] private TableManager   _XPTTabel;
 
-    [SerializeField] private TableManager _logTabel;
+    [SerializeField] private TableManager   _logTabel;
 
-    [SerializeField] private TMP_Text _resTextInstructor;
+    [SerializeField] private TMP_Text       _resTextInstructor;
 
-    [SerializeField] private WindowGraph _GTrendGraphInstructor;
-    [SerializeField] private WindowGraph _IdTrendGraphInstructor;
-    [SerializeField] private WindowGraph _FsTrendGraphInstructor;
-    [SerializeField] private WindowGraph _YTrendGraphInstructor;
+    [SerializeField] private WindowGraph    _GTrendGraphInstructor;
+    [SerializeField] private WindowGraph    _IdTrendGraphInstructor;
+    [SerializeField] private WindowGraph    _FsTrendGraphInstructor;
+    [SerializeField] private WindowGraph    _YTrendGraphInstructor;
 
-    [SerializeField] private WindowGraph _XGraphInstructor;
-    [SerializeField] private WindowGraph _PGraphInstructor;
-    [SerializeField] private WindowGraph _TGraphInstructor;
-    [SerializeField] private WindowGraph _WorkDotGraphInstructor;
+    [SerializeField] private WindowGraph    _XGraphInstructor;
+    [SerializeField] private WindowGraph    _PGraphInstructor;
+    [SerializeField] private WindowGraph    _TGraphInstructor;
+    [SerializeField] private WindowGraph    _WorkDotGraphInstructor;
 
-    [SerializeField] private TableManager _logTabelInstructor;
+    [SerializeField] private TableManager   _logTabelInstructor;
 
 
     [SerializeField] private CollectData collectData;
@@ -83,6 +83,8 @@ public class Recalculates : MonoBehaviour
 
     public void SetInitData()
     {
+        Clear();
+
         _qdAdapter.initData = collectData.GetInitData();
         InitData initData = _qdAdapter.initData;
         Train train = initData.train;
@@ -107,6 +109,46 @@ public class Recalculates : MonoBehaviour
         SetTempTarget2();
 
         RecalcOutData();
+    }
+
+    void Clear()
+    {
+        /// Show res
+        _resText.text = $"{0:f2}\n" +
+                        $"{0:f2}\n" +
+                        $"{0:f2}\n" +
+                        $"{0:f2}\n";
+        _resTextInstructor.text = $"{0:f2}\n" +
+                                  $"{0d:f2}\n" +
+                                  $"{0:f2}\n" +
+                                  $"{0:f2}\n";
+
+        //Обучаемый
+        _GTrendGraph.Clear();
+        _IdTrendGraph.Clear();
+        _FsTrendGraph.Clear();
+        _YTrendGraph.Clear();
+
+        _XGraph.Clear();
+        _PGraph.Clear();
+        _TGraph.Clear();
+        _WorkDotGraph.Clear();
+        _XPTTabel.Clear();
+
+        _logTabel.Clear();
+
+        //Инструктор
+        _GTrendGraphInstructor.Clear();
+        _IdTrendGraphInstructor.Clear();
+        _FsTrendGraphInstructor.Clear();
+        _YTrendGraphInstructor.Clear();
+
+        _XGraphInstructor.Clear();
+        _PGraphInstructor.Clear();
+        _TGraphInstructor.Clear();
+        _WorkDotGraphInstructor.Clear();
+
+        _logTabelInstructor.Clear();
     }
 
     void EntrPanelOnChangeVal(TMP_Text valText)
