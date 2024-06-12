@@ -95,7 +95,7 @@ public class Recalculates : MonoBehaviour
                               $"{train.Fs_max:f2}\n" +
                               $"{train.Is0:f2}\n";
 
-        _operTime.trainTime = TimeSpan.FromMinutes(train.Time);
+        _operTime.SetTime(TimeSpan.FromMinutes(train.Time));
 
         _GTrendGraph.SetYMaxLine((float)train.G0);
         _YTrendGraph.SetYMaxLine((float)train.Is0);
