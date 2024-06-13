@@ -3,11 +3,13 @@ using Vector = System.Numerics.Vector2;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 using System;
 
 public class WindowGraph : MonoBehaviour
 {
+    [SerializeField] private int _numberPrecisionX = 2;
+    [SerializeField] private int _numberPrecisionY = 2;
+
     public string graphName = string.Empty;
     public string xName = string.Empty;
     public string yName = string.Empty;
@@ -170,10 +172,10 @@ public class WindowGraph : MonoBehaviour
             float normalizedValue = i * 1f / separatorCount;
 
             RectTransform labelY = CreateLabel(labelTemplateY, -10f, normalizedValue * Height());
-            labelY.GetComponent<Text>().text = $"{yMin + (normalizedValue * (yMax - yMin)):f2}";
+            labelY.GetComponent<Text>().text = String.Format($"{{0:{"f" + _numberPrecisionY}}}", yMin + (normalizedValue * (yMax - yMin))); //$"{yMin + (normalizedValue * (yMax - yMin)):f2}";
 
             RectTransform labelX = CreateLabel(labelTemplateX, normalizedValue * Width(), -15f);
-            labelX.GetComponent<Text>().text = $"{xMin + (normalizedValue * (xMax - xMin)):f2}";
+            labelX.GetComponent<Text>().text = String.Format($"{{0:{"f" + _numberPrecisionX}}}", xMin + (normalizedValue * (xMax - xMin)));//$"{xMin + (normalizedValue * (xMax - xMin)):f2}";
 
             if (i == separatorCount)
             {

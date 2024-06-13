@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class TableManager : MonoBehaviour
 {
+    [Serializable]
+    class Column
+    {
+        [SerializeField]
+        public string header = "";
+        [SerializeField]
+        public int numberPrecision = -1;
+    }
+
     private bool isInit = false;
 
     private List<GameObject> gameObjectList = new List<GameObject>();
@@ -13,8 +22,9 @@ public class TableManager : MonoBehaviour
     [SerializeField] private GameObject rowPrefab;
     [SerializeField] private GameObject cellPrefab;
 
-    [SerializeField] private List<string> headers = new List<string>() { "" };
-    [SerializeField] private int numberPrecision = -1;
+    [SerializeField] private List<Column> columns = new();
+    //[SerializeField] private List<string> headers = new List<string>() { "" };
+    //[SerializeField] private int numberPrecision = -1;
 
     void Awake()
     {
@@ -28,13 +38,23 @@ public class TableManager : MonoBehaviour
             isInit = true;
             rowPrefab.SetActive(false);
             cellPrefab.SetActive(false);
-            GameObject newRow = AddRow(headers);
+            GameObject newRow = AddRow(ToHeaderList(columns));
             TMP_Text[] texts = newRow.GetComponentsInChildren<TMP_Text>();
             foreach(var text in texts)
             {
                 text.fontStyle = FontStyles.Bold;
             }
         }
+    }
+
+    List<string> ToHeaderList(List<Column> columnList)
+    {
+        List<string> headers = new List<string>();
+        foreach(var column in columnList)
+        {
+            headers.Add(column.header);
+        }
+        return headers;
     }
 
     public void SetData<T>(List<List<T>> valueList)
@@ -77,17 +97,19 @@ public class TableManager : MonoBehaviour
     GameObject AddRow<T>(List<T> rowList)
     {
         GameObject newRow = AddElement(rowPrefab, rowContainer);
+        int i = 0;
         foreach (var val in rowList)
         {
             GameObject newCell = AddElement(cellPrefab, newRow);
-            if (numberPrecision != -1 && (val.GetType() == typeof(double) || val.GetType() == typeof(float)))
+            if (columns[i].numberPrecision != -1 && (val.GetType() == typeof(double) || val.GetType() == typeof(float)))
             {
-                newCell.GetComponentInChildren<TMP_Text>().text = string.Format("{0:f" + numberPrecision + "}", val);
+                newCell.GetComponentInChildren<TMP_Text>().text = string.Format("{0:f" + columns[i].numberPrecision + "}", val);
             }
             else
             {
                 newCell.GetComponentInChildren<TMP_Text>().text = val.ToString();
             }
+            i++;
         }
 
         return newRow;
