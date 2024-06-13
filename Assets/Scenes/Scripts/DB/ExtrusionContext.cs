@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Text;
 
 #nullable disable
 
@@ -6,14 +8,11 @@ namespace Database
 {
     public partial class ExtrusionContext : DbContext
     {
-        string connectStr = "Host=localhost;Port=5432;Database=Extrusion;Username=postgres;Password=1";
+        const string DefaultConnectStr = "Host=localhost;Port=5432;Database=Extrusion;Username=postgres;Password=1";
+        const string ConnectFile = "connectData.info";
+
         public ExtrusionContext()
         {
-        }
-
-        public ExtrusionContext(string connStr)
-        {
-            connectStr = connStr;
         }
 
         public ExtrusionContext(DbContextOptions<ExtrusionContext> options)
@@ -63,6 +62,14 @@ namespace Database
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+
+                System.IO.FileInfo fileInfo = new FileInfo(ConnectFile);
+                if (!fileInfo.Exists)
+                {
+                    File.WriteAllText(ConnectFile, DefaultConnectStr, Encoding.UTF8);
+                }
+                
+                string connectStr = File.ReadAllText(ConnectFile, Encoding.UTF8);
                 optionsBuilder.UseNpgsql(connectStr);
             }
         }
