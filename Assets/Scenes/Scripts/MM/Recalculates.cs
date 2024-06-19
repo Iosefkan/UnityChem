@@ -207,54 +207,54 @@ public class Recalculates : MonoBehaviour
         _qdAdapter.initData.cyl[0].T_W_k_ = double.Parse(_temp1.text);
         _qdAdapter.initData.cyl[1].T_W_k_ = double.Parse(_temp2.text);
         await Task.Run(() => _qdAdapter.init());
+        
+        //await Task.Run(() =>
+        //{
+        //    string text = "";
+        //    ///////////////////////////////////////////
+        //    double n = _qdAdapter.initData.data.N_;
+        //    for (int i = 0; i < 20; ++i)
+        //    {
+        //        _qdAdapter.initData.data.N_ = n + i;
+        //        _qdAdapter.init();
+        //        text += $"{G()}\n";
+        //    }
+        //    Debug.Log(text);
 
-        await Task.Run(() =>
-        {
-            string text = "";
-            ///////////////////////////////////////////
-            double n = _qdAdapter.initData.data.N_;
-            for (int i = 0; i < 20; ++i)
-            {
-                _qdAdapter.initData.data.N_ = n + i;
-                _qdAdapter.init();
-                text += $"{G()}\n";
-            }
-            Debug.Log(text);
+        //    double t = _qdAdapter.initData.cyl[1].T_W_k_;
+        //    text = "";
+        //    string ns = "";
+        //    string ts = "";
+        //    //for (int i = 0; i < 20; ++i)
+        //    //{
+        //    //    _qdAdapter.initData.data.N_ = n + i;
+        //    //    for (int j = 0; j < 20; ++j)
+        //    //    {
+        //    //        _qdAdapter.initData.cyl[1].T_W_k_ = t + j;
+        //    //        _qdAdapter.init();
+        //    //        text += $"{Id()}\n";
+        //    //        ns += $"{_qdAdapter.initData.data.N_}\n";
+        //    //        ts += $"{_qdAdapter.initData.cyl[1].T_W_k_}\n";
+        //    //    }
+        //    //}
+        //    //Debug.Log(text);
+        //    //Debug.Log(ns);
+        //    //Debug.Log(ts);
 
-            double t = _qdAdapter.initData.cyl[1].T_W_k_;
-            text = "";
-            string ns = "";
-            string ts = "";
-            //for (int i = 0; i < 20; ++i)
-            //{
-            //    _qdAdapter.initData.data.N_ = n + i;
-            //    for (int j = 0; j < 20; ++j)
-            //    {
-            //        _qdAdapter.initData.cyl[1].T_W_k_ = t + j;
-            //        _qdAdapter.init();
-            //        text += $"{Id()}\n";
-            //        ns += $"{_qdAdapter.initData.data.N_}\n";
-            //        ts += $"{_qdAdapter.initData.cyl[1].T_W_k_}\n";
-            //    }
-            //}
-            //Debug.Log(text);
-            //Debug.Log(ns);
-            //Debug.Log(ts);
+        //    for (int j = 0; j < 1; ++j)
+        //    {
+        //        for (int i = 0; i < 1; ++i)
+        //        {
+        //            _qdAdapter.initData.data.N_ = n + i;
+        //            _qdAdapter.initData.cyl[1].T_W_k_ = t + j;
+        //            _qdAdapter.init();
+        //            text += $"{Id()}\n";
+        //        }
 
-            for (int j = 0; j < 1; ++j)
-            {
-                for (int i = 0; i < 1; ++i)
-                {
-                    _qdAdapter.initData.data.N_ = n + i;
-                    _qdAdapter.initData.cyl[1].T_W_k_ = t + j;
-                    _qdAdapter.init();
-                    text += $"{Id()}\n";
-                }
-
-                Debug.Log(text);
-                text = "";
-            }
-        });
+        //        Debug.Log(text);
+        //        text = "";
+        //    }
+        //});
 
         ///////////////////////////////////////////
 

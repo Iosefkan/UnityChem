@@ -74,8 +74,11 @@ namespace Program
                     TBZ[i] = S_K.S[i-1].T_B;
                 }
             }
-            MRB[Num_sect - 1] = S_K.S[Num_sect-1].D_B_st / 2 / 1000;
-            TBZ[Num_sect - 1] = S_K.S[Num_sect-1].T_B;
+            if (Num_sect > 0)
+            {
+                MRB[Num_sect - 1] = S_K.S[Num_sect - 1].D_B_st / 2 / 1000;
+                TBZ[Num_sect - 1] = S_K.S[Num_sect - 1].T_B;
+            }
 
             first = true;
             table += "Даные рассчитанные с модуля QPT:\n";
