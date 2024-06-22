@@ -148,18 +148,24 @@ public class WindowGraph : MonoBehaviour
 
     private void ShowMinMaxLines(float xMax, float xMin, float yMax, float yMin)
     {        
-        if (yMaxLineVal.HasValue && yMax > yMaxLineVal)
+        if (yMaxLineVal.HasValue)
         {
+            float y = yMax > yMaxLineVal.Value ? yMaxLineVal.Value : yMax;
+            y = yMin < y ? y : yMin;
+            Debug.Log($"max {yMax} {yMin} {yMaxLineVal.Value} {y}");
             isMaxMin = true;
-            Vector2 lastCircle = ShowValue(new Vector(xMin, yMaxLineVal.Value), null, xMax, xMin, yMax, yMin);
-            lastCircle = ShowValue(new Vector(xMax, yMaxLineVal.Value), lastCircle, xMax, xMin, yMax, yMin);
+            Vector2 lastCircle = ShowValue(new Vector(xMin, y), null, xMax, xMin, yMax, yMin);
+            lastCircle = ShowValue(new Vector(xMax, y), lastCircle, xMax, xMin, yMax, yMin);
             isMaxMin = false;
         }
-        if (yMinLineVal.HasValue && yMax > yMaxLineVal)
+        if (yMinLineVal.HasValue)
         {
+            float y = yMin < yMinLineVal.Value ? yMinLineVal.Value : yMin;
+            y = yMax > y ? y : yMax;
+            Debug.Log($"min {yMax} {yMin} {yMinLineVal.Value} {y}");
             isMaxMin = true;
-            Vector2 lastCircle = ShowValue(new Vector(xMin, yMinLineVal.Value), null, xMax, xMin, yMax, yMin);
-            lastCircle = ShowValue(new Vector(xMax, yMinLineVal.Value), lastCircle, xMax, xMin, yMax, yMin);
+            Vector2 lastCircle = ShowValue(new Vector(xMin, y), null, xMax, xMin, yMax, yMin);
+            lastCircle = ShowValue(new Vector(xMax, y), lastCircle, xMax, xMin, yMax, yMin);
             isMaxMin = false;
         }
     }

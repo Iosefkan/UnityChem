@@ -103,7 +103,7 @@ public class Recalculates : MonoBehaviour
         _FsTrendGraph.SetYMaxLine((float)train.Fs_max);
 
         _GTrendGraphInstructor.SetYMaxLine((float)train.G0);
-        _GTrendGraphInstructor.SetYMaxLine((float)train.Is0);
+        _YTrendGraphInstructor.SetYMaxLine((float)train.Is0);
         _IdTrendGraphInstructor.SetYMaxLine((float)train.Id_max);
         _FsTrendGraphInstructor.SetYMaxLine((float)train.Fs_max);
 
