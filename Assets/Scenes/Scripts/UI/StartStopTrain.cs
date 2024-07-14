@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class StartStopTrain : MonoBehaviour
 {
-    [SerializeField] private GameObject _zatichka;
+    [SerializeField] private GameObject _instr;
     [SerializeField] private VrButton _stopBtn;
     [SerializeField] private Button _startBtn;
     [SerializeField] private CurrTimeUpdate _leftTime;
@@ -28,12 +28,12 @@ public class StartStopTrain : MonoBehaviour
 
     public void StartTrain()
     {
-        _zatichka.SetActive(false);
+        _instr.SetActive(false);
     }
 
     public void StopTrain()
     {
-        _zatichka.SetActive(true);
-        _leftTime.SetTime(TimeSpan.FromMinutes(0));    
+        _instr.SetActive(true);
+        _leftTime.SetTime(TimeSpan.FromMinutes(0));
     }
 }
