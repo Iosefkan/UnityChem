@@ -164,9 +164,9 @@ namespace Program
 
             //QPT
             dop.Designation = "dop1";
-            dop.Alfa_min        = 0.8;
-            dop.Alfa_max        = 0.9;
-            dop.n_Alfa          = 2;
+            dop.Alfa_min        = 0.5;
+            dop.Alfa_max        = 0.95;
+            dop.n_Alfa          = 10;
 
             //QPT_R
             //res.Mu0 = 10000;
