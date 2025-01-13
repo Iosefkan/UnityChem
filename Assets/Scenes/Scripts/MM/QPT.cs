@@ -475,7 +475,7 @@ namespace Program
                             }
                             ic++;
 
-                            CalcIsNarezannay(); //Сумирует Is для рассчета степени смешения
+                            CalcIsNarezannay(); //Сумирует Is для расчета степени смешения
                         }
                         Z += SCT[iSect].L_sect / sn;
 
@@ -598,11 +598,11 @@ namespace Program
                         Z += SCT[iSect].L_sect;
                     }
 
-                    JSum += (2 * IsSum - firstIs - lastIs) / 2 * dz; // для рассчета степени смешения
+                    JSum += (2 * IsSum - firstIs - lastIs) / 2 * dz; // для расчета степени смешения
 
                 }//{ cycle by iSect }
 
-                Sav = JSum / Z; // для рассчета степени смешения
+                Sav = JSum / Z; // для расчета степени смешения
 
                 //Данные для графика
                 PM_LIST.Add(PM);
@@ -647,7 +647,7 @@ namespace Program
             Res.T0 = T0;
         }
 
-        /// Моя Ф для расчета Is для рассчета степени смешения нарезанная секция
+        /// Моя Ф для расчета Is для расчета степени смешения нарезанная секция
         public void CalcIsNarezannay()
         {
             if (i == 0)
@@ -672,7 +672,7 @@ namespace Program
             }
             IsSum += lastIs;
         }
-        /// Моя Ф для расчета Is для рассчета степени смешения гладкая секция
+        /// Моя Ф для расчета Is для расчета степени смешения гладкая секция
         public void CalcIsGladkay()
         {
             if (i == 0)

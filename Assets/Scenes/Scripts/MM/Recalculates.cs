@@ -1,4 +1,6 @@
-﻿using Extruder;
+﻿using Database;
+using Extruder;
+using Microsoft.EntityFrameworkCore;
 using Program;
 using System;
 using System.Collections;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 using TMPro;
 using Types;
 using UnityEngine;
+using UnityEngine.UI;
 using Vector = System.Numerics.Vector2;
 
 public class Recalculates : MonoBehaviour
@@ -69,6 +72,12 @@ public class Recalculates : MonoBehaviour
 
     [SerializeField] private CollectData collectData;
 
+    public string FilmName;
+    [SerializeField] private CreateDuplicates extrudat;
+    [SerializeField] private Image curColor;
+    [SerializeField] private TMP_Text curColorDiff;
+    [SerializeField] private WindowGraph delEGraph;
+
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
 
     void Start()
@@ -126,6 +135,7 @@ public class Recalculates : MonoBehaviour
                         $"{0:f2}\n";
         _resTextInstructor.text = $"{0:f2}\n" +
                                   $"{0d:f2}\n" +
+                                  $"{0:f2}\n" +
                                   $"{0:f2}\n" +
                                   $"{0:f2}\n";
 
@@ -264,6 +274,13 @@ public class Recalculates : MonoBehaviour
         //if (dG <= 0) dG = Math.Min(g / (float)train.G_min * 100 - 100, 0);
         float dG = g / (float)Math.Max(train.G0, 1e-5) * 100 - 100;
         float id = Id();
+
+        (var color, var diff) = GetColorAndDiffFromBaseById(id);
+        extrudat.extrudatColor = color;
+        curColor.color = color;
+        curColorDiff.text = $"{diff:f2}";
+        delEGraph.AddData(new Vector((float)_operTime.GetMin(), diff));
+
         float dId = Math.Max(id / (float)train.Id_max * 100 - 100, 0);
         float fs = Fs();
         float dFs = Math.Max(fs / (float)train.Fs_max * 100 - 100, 0);
@@ -278,7 +295,8 @@ public class Recalculates : MonoBehaviour
         _resTextInstructor.text = $"{g:f2}\n" +
                                   $"{id:f2}\n" +
                                   $"{fs:f2}\n" +
-                                  $"{y:f2}\n";
+                                  $"{y:f2}\n" +
+                                  $"{diff:f2}";
 
         /// Show X P T WorkDot Graphs
         _XGraph.SetData(_qdAdapter.qpt.XZ.Last());
@@ -457,5 +475,27 @@ public class Recalculates : MonoBehaviour
         _tempDopLabel21.text = _temp2.text;
         _tempDopLabel22.text = _temp2.text;
         _measTemp2.SetValue(_temp2.text);
+    }
+
+    private List<ColorInterval> GetFilmIntervals()
+    {
+        using var ctx = new ExtrusionContext();
+        return ctx.ColorIntervals.Include(ci => ci.Film).Where(ci => ci.Film.Type == FilmName).AsNoTracking().ToList();
+    }
+
+    private (Color, float) GetColorAndDiffFromBaseById(float Id)
+    {
+        var intervals = GetFilmIntervals();
+        var curInter = intervals.FirstOrDefault(i => i.MaxDelE > Id && i.MinDelE <= Id);
+        if (curInter is null)
+        {
+            Debug.Log("No such interval");
+            return (Color.black, -1);
+        }
+        var curColor = new Vector3(curInter.L, curInter.a, curInter.b);
+        var baseInterval = intervals.FirstOrDefault(i => i.IsBaseColor);
+        var baseColor = new Vector3(baseInterval.L, baseInterval.a, baseInterval.b);
+
+        return (ColorHelper.LabToRGB(curColor), ColorHelper.GetLabColorsDiff(baseColor, curColor));
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Assertions;
 
 public class WindowGraph : MonoBehaviour
 {
@@ -259,6 +260,7 @@ public class WindowGraph : MonoBehaviour
 
     private void ClearObjs()
     {
+        Debug.Assert(gameObject is not null);
         foreach (GameObject gameObject in gameObjectList)
         {
             Destroy(gameObject);

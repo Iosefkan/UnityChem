@@ -17,6 +17,7 @@ namespace Database
 
         public long Id { get; set; }
         public long? IdPolymer { get; set; }
+        public double MaxDelE { get; set; }
         public string Type { get; set; }
 
         [NotMapped]
@@ -51,5 +52,6 @@ namespace Database
         public virtual Polymer IdPolymerNavigation { get; set; }
         public virtual ICollection<ProcessParametrValue> ProcessParametrValues { get; set; }
         public virtual ICollection<Scenario> Scenarios { get; set; }
+        public virtual ICollection<ColorInterval> ColorIntervals { get; set; }
     }
 }

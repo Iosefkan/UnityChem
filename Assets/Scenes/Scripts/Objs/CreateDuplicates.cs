@@ -7,8 +7,9 @@ using UnityEngine.InputSystem.LowLevel;
 
 public class CreateDuplicates : MonoBehaviour
 {
-    [SerializeField] private float dilay = 10f;
-    [SerializeField] private float destroyDilay = 10f;
+    [SerializeField] private float delay = 10f;
+    [SerializeField] private float destroyDelay = 10f;
+    public Color extrudatColor = Color.gray;
 
     private List<GameObject> extrudatPrefabs = new List<GameObject>();
     int prefCount = 0;
@@ -36,7 +37,7 @@ public class CreateDuplicates : MonoBehaviour
                 StartCoroutine(Wait());
                 CreateObj();
             }
-            yield return new WaitForSeconds(dilay);
+            yield return new WaitForSeconds(delay);
         }
     }
 
@@ -48,11 +49,12 @@ public class CreateDuplicates : MonoBehaviour
     GameObject CreateObj()
     {
         GameObject newObj = Instantiate(extrudatPrefabs[Random.Range(0, prefCount)], gameObject.transform);
+        newObj.GetComponent<Renderer>().material.color = extrudatColor;
         newObj.GetComponent<Rigidbody>().drag = Random.value;
         newObj.GetComponent<BoxCollider>().material.bounciness = Random.value;
         newObj.SetActive(true);
 
-        Destroy(newObj, destroyDilay);
+        Destroy(newObj, destroyDelay);
 
         return newObj;
     }

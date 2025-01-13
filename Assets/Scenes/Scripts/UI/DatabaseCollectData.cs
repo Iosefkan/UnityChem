@@ -69,6 +69,8 @@ namespace Assets.Scenes.Scripts.UI
 
             ec.Scenarios.Load();
 
+            ec.ColorIntervals.Load();
+
             DropdownDatasEvents.AddDataEvent += AddData;
             DropdownDatasEvents.SaveDataEvent += SaveData;
             DropdownDatasEvents.RemoveDataEvent += RemoveData;

@@ -12,6 +12,7 @@ TagManager:
   - ShnekSpeed
   - ResText
   - hand
+  - ColorRow
   layers:
   - Default
   - TransparentFX

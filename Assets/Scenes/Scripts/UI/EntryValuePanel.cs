@@ -16,6 +16,12 @@ public class EntryValuePanel : MonoBehaviour
     [SerializeField] VrButton delBtn;
     [SerializeField] VrButton entrBtn;
 
+    [SerializeField] MouseButton[] valMouseBtns = new MouseButton[10];
+    [SerializeField] MouseButton minusMouseBtn;
+    [SerializeField] MouseButton commaMouseBtn;
+    [SerializeField] MouseButton delMouseBtn;
+    [SerializeField] MouseButton entrMouseBtn;
+
     [SerializeField] TMP_Text valText;
 
     TMP_Text targetField;
@@ -37,9 +43,29 @@ public class EntryValuePanel : MonoBehaviour
                             valText.text = resStr;
                 }                
             });
+
+            valMouseBtns[i].click.AddListener(() =>
+            {
+                string resStr = valText.text + elem.ToString();
+                if (inReg.IsMatch(resStr))
+                {
+                    if (double.TryParse(resStr, out double val))
+                        if (_min <= val && val <= _max)
+                            valText.text = resStr;
+                }
+            });
         }
 
         minusBtn.down.AddListener(() =>
+        {
+            if (valText.text.Length == 0)
+            {
+                if (_min < 0)
+                    valText.text = "-";
+            }
+        });
+
+        minusMouseBtn.click.AddListener(() =>
         {
             if (valText.text.Length == 0)
             {
@@ -57,6 +83,15 @@ public class EntryValuePanel : MonoBehaviour
             }
         });
 
+        commaMouseBtn.click.AddListener(() =>
+        {
+            string resStr = valText.text + ",";
+            if (inReg.IsMatch(resStr))
+            {
+                valText.text = resStr;
+            }
+        });
+
         delBtn.down.AddListener(() =>
         {
             if (valText.text.Length != 0)
@@ -65,7 +100,35 @@ public class EntryValuePanel : MonoBehaviour
             }
         });
 
+        delMouseBtn.click.AddListener(() =>
+        {
+            if (valText.text.Length != 0)
+            {
+                valText.text = valText.text.Substring(0, valText.text.Length - 1);
+            }
+        });
+
         entrBtn.down.AddListener(() =>
+        {
+            if (valText.text.Length == 0 ||
+                (valText.text.Length == 1 && valText.text == "-"))
+            {
+                valText.text = "0";
+            }
+
+            double val = double.Parse(valText.text);
+            if (_min > val)
+                val = _min;
+            if (_max < val)
+                val = _max;
+
+            targetField.text = string.Format("{0:f}", val);
+
+            OnChangeVal?.Invoke(targetField);
+            gameObject.SetActive(false);
+        });
+
+        entrMouseBtn.click.AddListener(() =>
         {
             if (valText.text.Length == 0 ||
                 (valText.text.Length == 1 && valText.text == "-"))

@@ -56,13 +56,12 @@ namespace Database
         public virtual DbSet<ScrewPossibleСonfiguration> ScrewPossibleСonfigurations { get; set; }
         public virtual DbSet<ScrewСonfiguration> ScrewСonfigurations { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
+        public virtual DbSet<ColorInterval> ColorIntervals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-
                 System.IO.FileInfo fileInfo = new FileInfo(ConnectFile);
                 if (!fileInfo.Exists)
                 {
@@ -483,10 +482,59 @@ namespace Database
                     .IsRequired()
                     .HasColumnName("type");
 
+                entity.Property(e => e.MaxDelE)
+                    .IsRequired()
+                    .HasColumnName("max_delE")
+                    .HasDefaultValue(0d);
+
                 entity.HasOne(d => d.IdPolymerNavigation)
                     .WithMany(p => p.Films)
                     .HasForeignKey(d => d.IdPolymer)
                     .HasConstraintName("Polymer");
+            });
+
+            modelBuilder.Entity<ColorInterval>(entity =>
+            {
+                entity.ToTable("ColorInterval");
+
+                entity.Property(c => c.Id)
+                    .HasColumnName("id")
+                    .UseIdentityAlwaysColumn();
+
+                entity.Property(c => c.MaxDelE)
+                    .IsRequired()
+                    .HasColumnName("max_delE");
+
+                entity.Property(c => c.MinDelE)
+                    .IsRequired()
+                    .HasColumnName("min_delE");
+
+                entity.Property(c => c.L)
+                    .IsRequired()
+                    .HasColumnName("l");
+
+                entity.Property(c => c.a)
+                    .IsRequired()
+                    .HasColumnName("a");
+
+                entity.Property(c => c.b)
+                    .IsRequired()
+                    .HasColumnName("b");
+
+                entity.Property(c => c.IsBaseColor)
+                    .IsRequired()
+                    .HasColumnName("is_base_color")
+                    .HasDefaultValue(false);
+
+                entity.HasIndex(c => c.FilmId, "IX_Relationship401");
+
+                entity.Property(e => e.FilmId).HasColumnName("film_id");
+
+                entity.HasOne(c => c.Film)
+                    .WithMany(f => f.ColorIntervals)
+                    .HasForeignKey(c => c.FilmId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("Film");
             });
 
             modelBuilder.Entity<MathModel>(entity =>
