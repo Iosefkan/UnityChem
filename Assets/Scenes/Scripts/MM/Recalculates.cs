@@ -77,6 +77,7 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private Image curColor;
     [SerializeField] private TMP_Text curColorDiff;
     [SerializeField] private WindowGraph delEGraph;
+    [SerializeField] private WindowGraph delEGraphInstructor;
 
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
 
@@ -153,6 +154,8 @@ public class Recalculates : MonoBehaviour
 
         _logTabel.Clear();
 
+        delEGraph.Clear();
+
         //Инструктор
         _GTrendGraphInstructor.Clear();
         _IdTrendGraphInstructor.Clear();
@@ -165,6 +168,8 @@ public class Recalculates : MonoBehaviour
         _WorkDotGraphInstructor.Clear();
 
         _logTabelInstructor.Clear();
+
+        delEGraphInstructor.Clear();
     }
 
     void EntrPanelOnChangeVal(TMP_Text valText)
@@ -280,6 +285,7 @@ public class Recalculates : MonoBehaviour
         curColor.color = color;
         curColorDiff.text = $"{diff:f2}";
         delEGraph.AddData(new Vector((float)_operTime.GetMin(), diff));
+        delEGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), diff));
 
         float dId = Math.Max(id / (float)train.Id_max * 100 - 100, 0);
         float fs = Fs();
