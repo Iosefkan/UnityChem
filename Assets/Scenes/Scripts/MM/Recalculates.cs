@@ -81,7 +81,7 @@ public class Recalculates : MonoBehaviour
 
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
 
-    void Start()
+    void Awake()
     {
         _entrPanel.OnChangeVal += EntrPanelOnChangeVal;
 
@@ -99,11 +99,13 @@ public class Recalculates : MonoBehaviour
         _qdAdapter.initData = collectData.GetInitData();
         InitData initData = _qdAdapter.initData;
         Train train = initData.train;
+        var maxE = GetMaxDelE();
 
         _scenarioLabel.text = $"{train.G0:f2}\n" +
                               $"{train.Id_max:f2}\n" +
                               $"{train.Fs_max:f2}\n" +
-                              $"{train.Is0:f2}\n";
+                              $"{train.Is0:f2}\n" +
+                              $"{maxE:f2}";
 
         _operTime.SetTime(TimeSpan.FromMinutes(train.Time));
 
@@ -116,6 +118,9 @@ public class Recalculates : MonoBehaviour
         _YTrendGraphInstructor.SetYMaxLine((float)train.Is0);
         _IdTrendGraphInstructor.SetYMaxLine((float)train.Id_max);
         _FsTrendGraphInstructor.SetYMaxLine((float)train.Fs_max);
+
+        delEGraph.SetYMaxLine(maxE);
+        delEGraphInstructor.SetYMaxLine(maxE);
 
         _shnekSpeed.text = initData.data.N_.ToString();
         RecalcShnekSpeed();
@@ -489,6 +494,13 @@ public class Recalculates : MonoBehaviour
     {
         using var ctx = new ExtrusionContext();
         return ctx.ColorIntervals.Include(ci => ci.Film).Where(ci => ci.Film.Type == FilmName).AsNoTracking().ToList();
+    }
+
+    private float GetMaxDelE()
+    {
+        using var ctx = new ExtrusionContext();
+        var film = ctx.Films.AsNoTracking().FirstOrDefault(f => f.Type == FilmName);
+        return film is null ? 0 : (float)film.MaxDelE;
     }
 
     private (Color, float) GetColorAndDiffFromBaseById(float Id)
