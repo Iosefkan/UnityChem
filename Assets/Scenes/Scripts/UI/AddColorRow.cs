@@ -11,6 +11,7 @@ public class AddColorRow : MonoBehaviour
 
     [SerializeField] private GameObject popup;
     [SerializeField] private ConfirmColorPopup conf;
+    [SerializeField] private Image avgColor;
     public void Start()
     {
         button.onClick.AddListener(AddRow);
@@ -28,6 +29,7 @@ public class AddColorRow : MonoBehaviour
         var openPicker = row.GetComponentInChildren<OpenColorPickerPopup>();
         openPicker.popup = popup;
         openPicker.conf = conf;
+        openPicker.avgColor = avgColor;
         var group = intervals.GetComponent<ToggleGroup>();
         var toggle = row.GetComponentInChildren<Toggle>();
         var setToggle = group.GetFirstActiveToggle() is null;

@@ -11,6 +11,7 @@ using TMPro;
 using Types;
 using UnityEngine;
 using UnityEngine.UI;
+using static TabsManager;
 using Vector = System.Numerics.Vector2;
 
 public class Recalculates : MonoBehaviour
@@ -78,6 +79,14 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private TMP_Text curColorDiff;
     [SerializeField] private WindowGraph delEGraph;
     [SerializeField] private WindowGraph delEGraphInstructor;
+
+    [SerializeField] private WindowGraph LGraph;
+    [SerializeField] private WindowGraph aGraph;
+    [SerializeField] private WindowGraph bGraph;
+
+    [SerializeField] private WindowGraph LGraphInstructor;
+    [SerializeField] private WindowGraph aGraphInstructor;
+    [SerializeField] private WindowGraph bGraphInstructor;
 
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
 
@@ -175,6 +184,13 @@ public class Recalculates : MonoBehaviour
         _logTabelInstructor.Clear();
 
         delEGraphInstructor.Clear();
+
+        LGraph.Clear();
+        aGraph.Clear();
+        bGraph.Clear();
+        LGraphInstructor.Clear();
+        aGraphInstructor.Clear();
+        bGraphInstructor.Clear();
     }
 
     void EntrPanelOnChangeVal(TMP_Text valText)
@@ -285,12 +301,22 @@ public class Recalculates : MonoBehaviour
         float dG = g / (float)Math.Max(train.G0, 1e-5) * 100 - 100;
         float id = Id();
 
-        (var color, var diff) = GetColorAndDiffFromBaseById(id);
+        (var lab, var color, var diff) = GetColorAndDiffFromBaseById(id);
         extrudat.extrudatColor = color;
         curColor.color = color;
-        curColorDiff.text = $"{diff:f2}";
+        curColorDiff.text = $"{diff:f2}\n" +
+                            $"{lab.x:f2}\n" +
+                            $"{lab.y:f2}\n" +
+                            $"{lab.z:f2}";
         delEGraph.AddData(new Vector((float)_operTime.GetMin(), diff));
         delEGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), diff));
+
+        LGraph.AddData(new Vector((float)_operTime.GetMin(), lab.x));
+        LGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), lab.x));
+        aGraph.AddData(new Vector((float)_operTime.GetMin(), lab.y));
+        aGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), lab.y));
+        bGraph.AddData(new Vector((float)_operTime.GetMin(), lab.z));
+        bGraphInstructor.AddData(new Vector((float)_operTime.GetMin(), lab.z));
 
         float dId = Math.Max(id / (float)train.Id_max * 100 - 100, 0);
         float fs = Fs();
@@ -503,19 +529,19 @@ public class Recalculates : MonoBehaviour
         return film is null ? 0 : (float)film.MaxDelE;
     }
 
-    private (Color, float) GetColorAndDiffFromBaseById(float Id)
+    private (Vector3, Color, float) GetColorAndDiffFromBaseById(float Id)
     {
         var intervals = GetFilmIntervals();
         var curInter = intervals.FirstOrDefault(i => i.MaxDelE > Id && i.MinDelE <= Id);
         if (curInter is null)
         {
             Debug.Log("No such interval");
-            return (Color.black, -1);
+            return (new Vector3(), Color.black, -1);
         }
         var curColor = new Vector3(curInter.L, curInter.a, curInter.b);
         var baseInterval = intervals.FirstOrDefault(i => i.IsBaseColor);
         var baseColor = new Vector3(baseInterval.L, baseInterval.a, baseInterval.b);
 
-        return (ColorHelper.LabToRGB(curColor), ColorHelper.GetLabColorsDiff(baseColor, curColor));
+        return (curColor, ColorHelper.LabToRGB(curColor), ColorHelper.GetLabColorsDiff(baseColor, curColor));
     }
 }

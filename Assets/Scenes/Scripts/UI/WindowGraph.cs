@@ -88,6 +88,11 @@ public class WindowGraph : MonoBehaviour
 
         float yMax = valueList.Max((Vector vec) => { return vec.Y; });
         float yMin = valueList.Min((Vector vec) => { return vec.Y; });
+        if ((int)yMax == (int)yMin)
+        {
+            yMax += 1;
+            yMin -= 1;
+        }
         float xMax = valueList.Max((Vector vec) => { return vec.X; });
         float xMin = valueList.Min((Vector vec) => { return vec.X; });
 

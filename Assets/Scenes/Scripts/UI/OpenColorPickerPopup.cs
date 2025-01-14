@@ -8,6 +8,7 @@ public class OpenColorPickerPopup : MonoBehaviour
     public GameObject popup;
     [SerializeField] private Button button;
     public ConfirmColorPopup conf;
+    public Image avgColor;
     [SerializeField] private Image colorPreview;
 
     public void Start()
@@ -22,7 +23,9 @@ public class OpenColorPickerPopup : MonoBehaviour
 
     private void PickColor()
     {
+        avgColor.color = colorPreview.color;
         conf.SetRowPreviewImage(colorPreview);
+        popup.GetComponentInChildren<SetCieLabText>().SetColor(colorPreview.color);
         popup.SetActive(true);
     }
 }
