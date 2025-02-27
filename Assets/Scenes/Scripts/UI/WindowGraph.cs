@@ -266,6 +266,7 @@ public class WindowGraph : MonoBehaviour
     private void ClearObjs()
     {
         Debug.Assert(gameObject is not null);
+        if (gameObjectList is null) return;
         foreach (GameObject gameObject in gameObjectList)
         {
             Destroy(gameObject);
