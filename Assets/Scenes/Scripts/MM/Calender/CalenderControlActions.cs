@@ -30,7 +30,7 @@ public static class CalenderControlActions
         double Iw = Math.PI / 4 * (Math.Pow(Dn, 4) / 16 - Math.Pow(Dh, 4) / 16);
         double part1 = r * b / (2 * E * Ib);
         double part2 = Math.Pow(z, 2) - w * z - a * (w + (Ib / Iw) * a);
-        return part1 * part2;
+        return part1 * part2 * 1000;
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public static class CalenderControlActions
     {
         double part1 = Math.Sqrt(Math.Pow(x * f / w, 2) + Math.Pow(d, 2)) - d;
         double part2 = Math.Pow(1 - (2 * z / f), 2);
-        return part1 * part2;
+        return part1 * part2 * 1000;
     }
 
     /// <summary>

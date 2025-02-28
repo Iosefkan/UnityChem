@@ -45,6 +45,7 @@ public class ScenarioManager : MonoBehaviour
 
         addScenario.onClick.AddListener(AddData);
         saveScenario.onClick.AddListener(SaveData);
+        if (scenarioDrop.options.Count > 0) scenarioDrop.value = 0;
     }
 
 

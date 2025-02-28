@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -238,7 +239,7 @@ public class Orchestrator : MonoBehaviour
     void FillCross()
     {
         profCross = new();
-        for (var cross = curCross; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
+        for (var cross = scenario.CrossMin; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
         {
             var delCross = GetCross(cross);
             profCross.Add(new((float)cross, (float)delCross));
@@ -248,7 +249,7 @@ public class Orchestrator : MonoBehaviour
     void FillCurve()
     {
         profCurve = new();
-        for (var curve = curCurve; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
+        for (var curve = scenario.CurveMin; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
         {
             var delCurve = GetCurve(curve);
             profCurve.Add(new((float)curve, (float)delCurve));
@@ -259,10 +260,10 @@ public class Orchestrator : MonoBehaviour
     {
         min = new(0, float.MaxValue, 0);
         profAll = new();
-        for (var cross = curCross; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
+        for (var cross = scenario.CrossMin; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
         {
             var vec = new List<Vector3>();
-            for (var curve = curCurve; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
+            for (var curve = scenario.CurveMin; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
             {
                 var del = GetAll(cross, curve);
                 var point = new Vector3((float)curve, (float)del, (float)cross);
@@ -280,9 +281,9 @@ public class Orchestrator : MonoBehaviour
 
     void GetCur()
     {
-        for (var cross = curCross; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
+        for (var cross = scenario.CrossMin; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
         {
-            for (var curve = curCurve; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
+            for (var curve = scenario.CurveMin; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
             {
                 if (Math.Abs(curCross - cross) < scenario.CrossDelta 
                     &&
@@ -290,6 +291,7 @@ public class Orchestrator : MonoBehaviour
                 {
                     var del = GetAll(cross, curve);
                     cur = new Vector3((float)curve, (float)del, (float)cross);
+                    return;
                 }
             }
         }
@@ -299,7 +301,7 @@ public class Orchestrator : MonoBehaviour
     {
         var onlyCross = avFilmProfile.Select(point =>
         {
-            var sCross = CalenderControlActions.Cross(curCross, scenario.FilmProfileCluster.Width, scenario.RollSettings.Width, scenario.RollSettings.BarrelDiameter, point.WidthPoint);
+            var sCross = CalenderControlActions.Cross(cross, scenario.FilmProfileCluster.Width, scenario.RollSettings.Width, scenario.RollSettings.BarrelDiameter, point.WidthPoint);
             return point.Thickness + sCross;
         }).ToArray();
 
@@ -321,7 +323,7 @@ public class Orchestrator : MonoBehaviour
     {
         var all = avFilmProfile.Select(point =>
         {
-            var sCross = CalenderControlActions.Cross(curCross, scenario.FilmProfileCluster.Width, scenario.RollSettings.Width, scenario.RollSettings.BarrelDiameter, point.WidthPoint);
+            var sCross = CalenderControlActions.Cross(cross, scenario.FilmProfileCluster.Width, scenario.RollSettings.Width, scenario.RollSettings.BarrelDiameter, point.WidthPoint);
             var sCurve = CalenderControlActions.Curve(curve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
             return point.Thickness + sCross + sCurve;
         }).ToArray();

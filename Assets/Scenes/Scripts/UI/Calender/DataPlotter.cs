@@ -34,14 +34,15 @@ public class DataPlotter : MonoBehaviour
     public bool enableRotation = true;
     public float horizontalSpeed = 50000f;
     public float verticalSpeed = 50000f;
+    public Transform lookCamera;
 
     private Vector3[][] matrix;
     private Vector3[][] originalMatrix;
     private Vector3 current;
     private Vector3 optimal;
     private List<Transform> labels = new();
-    private float generalOffset = 0.05f;
-    private float labelsOffset = 0.11f;
+    private float generalOffset => 0.5f * scaleFactor;
+    private float labelsOffset => 1.1f * scaleFactor;
     private GameObject currentPoint;
 
     void Rotate()
@@ -88,8 +89,9 @@ public class DataPlotter : MonoBehaviour
         float maxX = originalMatrix.MaxX(), maxY = originalMatrix.MaxY(), maxZ = originalMatrix.MaxZ();
         float minX = originalMatrix.MinX(), minY = originalMatrix.MinY(), minZ = originalMatrix.MinZ();
         var p = Instantiate(point, transform);
+        p.layer = gameObject.layer;
         p.transform.localPosition = GetProportionalVector(pos, maxX, minX, maxY, minY, maxZ, minZ);
-        p.transform.localScale = new Vector3(scaleFactor / 3, scaleFactor / 3, scaleFactor / 3);
+        p.transform.localScale = new Vector3(scaleFactor / 1.5f, scaleFactor / 1.5f, scaleFactor / 1.5f);
         MeshRenderer renderer = p.GetComponent<MeshRenderer>();
         Material newMaterial = new Material(Shader.Find("Unlit/Color"));
         newMaterial.color = color;
@@ -263,6 +265,7 @@ public class DataPlotter : MonoBehaviour
     LineRenderer GetNewLineRenderer(string name, Color rendererColor, bool isPlot = true)
     {
         GameObject axis = new GameObject(name);
+        axis.layer = gameObject.layer;
         axis.transform.position = transform.position;
         axis.transform.SetParent(transform);
 
@@ -274,12 +277,14 @@ public class DataPlotter : MonoBehaviour
         lr.endWidth = scalecWidth;
         lr.material = new Material(Shader.Find("Unlit/Color"));
         lr.material.color = rendererColor;
+        axis.transform.localScale = new Vector3(1, 1, 1);
         return lr;
     }
 
     Transform GetNewText(string name, string label, Vector3 pos, bool isLabel = false)
     {
         GameObject textObj = new GameObject(name);
+        textObj.layer = gameObject.layer;
         textObj.transform.SetParent(transform);
         textObj.transform.localPosition = pos;
 
@@ -291,6 +296,7 @@ public class DataPlotter : MonoBehaviour
         rect.sizeDelta = new(size * 2f / 10f, size / 2f / 10f);
         text.text = label;
         text.fontSize = fontSize;
+        textObj.transform.localScale = new Vector3(1, 1, 1);
         return textObj.transform;
     }
 
@@ -331,7 +337,7 @@ public class DataPlotter : MonoBehaviour
 
     void UpdateText()
     {
-        var camera = Camera.main.transform.transform;
+        var camera = lookCamera.transform;
         foreach (var label in labels)
         {
             label.rotation = Quaternion.LookRotation(label.position - camera.position);
