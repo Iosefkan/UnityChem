@@ -45533,12 +45533,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[0].header
-      value: "\u041A\u043E\u043D\u0442\u0440\u0438\u0437\u0433\u0438\u0431, \u041D"
+      value: "r, \u041D"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[1].header
-      value: "\u0420\u0430\u0437\u043D\u043E\u0442\u043E\u043B\u0449\u0438\u043D\u043D\u043E\u0441\u0442\u044C,
-        \u043C\u043A\u043C"
+      value: "S, \u043C\u043A\u043C"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[2].header
@@ -71852,13 +71851,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[0].header
-      value: "\u041F\u0435\u0440\u0435\u043A\u0440\u0435\u0449\u0438\u0432\u0430\u043D\u0438\u0435,
-        \u043C\u043C"
+      value: "x, \u043C\u043C"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[1].header
-      value: "\u0420\u0430\u0437\u043D\u043E\u0442\u043E\u043B\u0449\u0438\u043D\u043D\u043E\u0441\u0442\u044C,
-        \u043C\u043A\u043C"
+      value: "S, \u043C\u043A\u043C"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[2].header
@@ -88952,17 +88949,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[0].header
-      value: "\u041F\u0435\u0440\u0435\u043A\u0440\u0435\u0449\u0438\u0432\u0430\u043D\u0438\u0435,
-        \u043C\u043C"
+      value: "x, \u043C\u043C"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[1].header
-      value: "\u041A\u043E\u043D\u0442\u0440\u0438\u0437\u0433\u0438\u0431, \u041D"
+      value: "r, \u041D"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[2].header
-      value: "\u0420\u0430\u0437\u043D\u043E\u0442\u043E\u043B\u0449\u0438\u043D\u043D\u043E\u0441\u0442\u044C,
-        \u043C\u043A\u043C"
+      value: "S, \u043C\u043A\u043C"
       objectReference: {fileID: 0}
     - target: {fileID: 2144777057297397600, guid: 9b80a06eda79bd54e98ada190e28a3d2, type: 3}
       propertyPath: columns.Array.data[3].header
