@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,12 @@ public class Orchestrator : MonoBehaviour
     public WindowGraph crossGraph;
     public WindowGraph curveGraph;
     public WindowGraph averageGraph;
+    public CurrTimeUpdate timeUpdate;
+
+    public TableManager crossTable;
+    public TableManager curveTable;
+    public TableManager bothTable;
+    public TableManager protocol;
 
     void Awake()
     {
@@ -66,8 +73,9 @@ public class Orchestrator : MonoBehaviour
     {
         this.scenarioId = scenarioId;
         using var ctx = new CalenderContext();
-        scenario = ctx.Scenarios.Include(s => s.RollSettings).Include(s => s.FilmProfileCluster).ThenInclude(pc => pc.FilmProfiles).AsNoTracking().FirstOrDefault(s => s.Id == scenarioId);
+        scenario = ctx.Scenarios.Include(s => s.RollSettings).Include(s => s.FilmProfileCluster).ThenInclude(pc => pc.FilmProfiles).Include(s => s.FilmProfileCluster.Film).AsNoTracking().FirstOrDefault(s => s.Id == scenarioId);
         if (scenario is null) return;
+        timeUpdate.SetTime(TimeSpan.FromMinutes(scenario.Minutes));
         SetScenario();
         GetAverageProfile();
         DrawAverageGraph();
@@ -84,8 +92,8 @@ public class Orchestrator : MonoBehaviour
         string taskText = scenario.IsRange ? $"Разнотолщинность пленки не превышающая предельно допустимого значение\nS<sup>max</sup> = {scenario.ThicknessMax:F} мкм - Предельно допустимая разнотолщинность" : "Минимальная разнотолщинность пленки";
         sceneTask.text = taskText;
         sceneParams.text = $"{scenario.AveragedProfilesCount}\n{scenario.AveragedProfileWeight:F}\n{scenario.LastProfileWeight:F}\n{scenario.FilmProfileCluster.CrossStart:F}\n{scenario.FilmProfileCluster.CurveStart:F}";
-        crossParams.text = $"X<sup>min</sup>={scenario.CrossMin:F} мм, X<sup>max</sup>={scenario.CrossMax:F} мм, deltaX={scenario.CrossDelta:F} мм";
-        curveParams.text = $"R<sup>min</sup>={scenario.CurveMin:F} Н, R<sup>max</sup>={scenario.CurveMax:F} Н, deltaR={scenario.CurveDelta:F} Н";
+        crossParams.text = $"x<sup>min</sup>={scenario.FilmProfileCluster.Film.CrossMin:F} мм, x<sup>max</sup>={scenario.FilmProfileCluster.Film.CrossMax:F} мм, delta_x={scenario.FilmProfileCluster.Film.CrossDelta:F} мм";
+        curveParams.text = $"r<sup>min</sup>={scenario.FilmProfileCluster.Film.CurveMin:F} Н, r<sup>max</sup>={scenario.FilmProfileCluster.Film.CurveMax:F} Н, delta_r={scenario.FilmProfileCluster.Film.CurveDelta:F} Н";
         UpdateCurCross();
         UpdateCurCurve();
     }
@@ -100,45 +108,60 @@ public class Orchestrator : MonoBehaviour
     public void CrossUp()
     {
         if (!CheckCross(true)) return;
-        curCross += scenario.CrossDelta;
+        curCross += scenario.FilmProfileCluster.Film.CrossDelta;
         UpdatePoint();
         UpdateCurCross();
+        AddLog();
     }
 
     public void CrossDown()
     {
         if (!CheckCross(false)) return;
-        curCross -= scenario.CrossDelta;
+        curCross -= scenario.FilmProfileCluster.Film.CrossDelta;
         UpdatePoint();
         UpdateCurCross();
+        AddLog();
     }
 
     public void CurveUp()
     {
         if (!CheckCurve(true)) return;
-        curCurve += scenario.CurveDelta;
+        curCurve += scenario.FilmProfileCluster.Film.CurveDelta;
         UpdatePoint();
         UpdateCurCurve();
+        AddLog();
     }
 
     public void CurveDown()
     {
         if (!CheckCurve(false)) return;
-        curCurve -= scenario.CurveDelta;
+        curCurve -= scenario.FilmProfileCluster.Film.CurveDelta;
         UpdatePoint();
         UpdateCurCurve();
+        AddLog();
+    }
+
+    public void AddLog()
+    {
+        protocol.AddData(new List<object>
+        {
+            timeUpdate.GetTimeStr(),
+            curCross, 
+            curCurve, 
+            cur.y
+        });
     }
 
     bool CheckCross(bool more)
     {
-        var cur = curCross + (more ? scenario.CrossDelta : -scenario.CrossDelta);
-        return cur >= scenario.CrossMin && cur <= scenario.CrossMax;
+        var cur = curCross + (more ? scenario.FilmProfileCluster.Film.CrossDelta : -scenario.FilmProfileCluster.Film.CrossDelta);
+        return cur >= scenario.FilmProfileCluster.Film.CrossMin && cur <= scenario.FilmProfileCluster.Film.CrossMax;
     }
 
     bool CheckCurve(bool more)
     {
-        var cur = curCurve + (more ? scenario.CurveDelta : -scenario.CurveDelta);
-        return cur >= scenario.CurveMin && cur <= scenario.CurveMax;
+        var cur = curCurve + (more ? scenario.FilmProfileCluster.Film.CurveDelta : -scenario.FilmProfileCluster.Film.CurveDelta);
+        return cur >= scenario.FilmProfileCluster.Film.CurveMin && cur <= scenario.FilmProfileCluster.Film.CurveMax;
     }
 
     void DrawAverageGraph()
@@ -192,7 +215,7 @@ public class Orchestrator : MonoBehaviour
         var coef = scenario.LastProfileWeight;
         curProfile = curProfile.Select(p => new ProfilePoint { Id = p.Id, Thickness = p.Thickness * coef, WidthPoint = p.WidthPoint }).ToList();
 
-        if (scenario.AveragedProfilesCount <= 0 && scenario.AveragedProfileWeight == 0 && scenario.FilmProfileCluster.FilmProfiles.Count == 1)
+        if (scenario.AveragedProfilesCount <= 1 && scenario.AveragedProfileWeight == 0 && scenario.FilmProfileCluster.FilmProfiles.Count == 1)
         {
             avFilmProfile = curProfile;
             return;
@@ -238,37 +261,55 @@ public class Orchestrator : MonoBehaviour
 
     void FillCross()
     {
+        int count = 0;
         profCross = new();
-        for (var cross = scenario.CrossMin; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
+        for (var cross = scenario.FilmProfileCluster.Film.CrossMin; cross <= scenario.FilmProfileCluster.Film.CrossMax; cross += scenario.FilmProfileCluster.Film.CrossDelta)
         {
             var delCross = GetCross(cross);
             profCross.Add(new((float)cross, (float)delCross));
+            if (count == 0)
+            {
+                crossTable.AddData(new List<object> { cross, delCross });
+            }
+            count = (count + 1) % 3;
         }
     }
 
     void FillCurve()
     {
+        int count = 0;
         profCurve = new();
-        for (var curve = scenario.CurveMin; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
+        for (var curve = scenario.FilmProfileCluster.Film.CurveMin; curve <= scenario.FilmProfileCluster.Film.CurveMax; curve += scenario.FilmProfileCluster.Film.CurveDelta)
         {
             var delCurve = GetCurve(curve);
             profCurve.Add(new((float)curve, (float)delCurve));
+            if (count == 0)
+            {
+                curveTable.AddData(new List<object> { curve, delCurve });
+            }
+            count = (count + 1) % 3;
         }
     }
 
     void FillAll()
     {
+        int count = 0;
         min = new(0, float.MaxValue, 0);
         profAll = new();
-        for (var cross = scenario.CrossMin; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
+        for (var cross = scenario.FilmProfileCluster.Film.CrossMin; cross <= scenario.FilmProfileCluster.Film.CrossMax; cross += scenario.FilmProfileCluster.Film.CrossDelta)
         {
             var vec = new List<Vector3>();
-            for (var curve = scenario.CurveMin; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
+            for (var curve = scenario.FilmProfileCluster.Film.CurveMin; curve <= scenario.FilmProfileCluster.Film.CurveMax; curve += scenario.FilmProfileCluster.Film.CurveDelta)
             {
                 var del = GetAll(cross, curve);
                 var point = new Vector3((float)curve, (float)del, (float)cross);
                 if (point.y < min.y) min = point;
                 vec.Add(point);
+                if (count == 0)
+                {
+                    bothTable.AddData(new List<object> { cross, curve, del });
+                }
+                count = (count + 1) % 15;
             }
             profAll.Add(vec);
         }
@@ -281,13 +322,13 @@ public class Orchestrator : MonoBehaviour
 
     void GetCur()
     {
-        for (var cross = scenario.CrossMin; cross <= scenario.CrossMax; cross += scenario.CrossDelta)
+        for (var cross = scenario.FilmProfileCluster.Film.CrossMin; cross <= scenario.FilmProfileCluster.Film.CrossMax; cross += scenario.FilmProfileCluster.Film.CrossDelta)
         {
-            for (var curve = scenario.CurveMin; curve <= scenario.CurveMax; curve += scenario.CurveDelta)
+            for (var curve = scenario.FilmProfileCluster.Film.CurveMin; curve <= scenario.FilmProfileCluster.Film.CurveMax; curve += scenario.FilmProfileCluster.Film.CurveDelta)
             {
-                if (Math.Abs(curCross - cross) < scenario.CrossDelta 
+                if (Math.Abs(curCross - cross) < scenario.FilmProfileCluster.Film.CrossDelta 
                     &&
-                    Math.Abs(curCurve - curve) < scenario.CurveDelta)
+                    Math.Abs(curCurve - curve) < scenario.FilmProfileCluster.Film.CurveDelta)
                 {
                     var del = GetAll(cross, curve);
                     cur = new Vector3((float)curve, (float)del, (float)cross);

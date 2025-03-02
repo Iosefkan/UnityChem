@@ -65,6 +65,7 @@ public class RollManager : MonoBehaviour
         rollDrop.AddOptions(rollNames);
         int index = rollDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) rollDrop.SetValueWithoutNotify(index);
+        //else rollDrop.onValueChanged.Invoke(0);
         rollDrop.RefreshShownValue();
     }
 

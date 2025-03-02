@@ -1,7 +1,6 @@
 ﻿using CalenderDatabase;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -14,6 +13,14 @@ public class FilmManager : MonoBehaviour
     public TMP_Dropdown scenarioDrop;
     public Button addFilm;
     public Button saveFilm;
+
+    public DoubleValue crossMin;
+    public DoubleValue crossMax;
+    public DoubleValue crossDelta;
+
+    public DoubleValue curveMin;
+    public DoubleValue curveMax;
+    public DoubleValue curveDelta;
 
     private long? currentId;
 
@@ -54,6 +61,7 @@ public class FilmManager : MonoBehaviour
         filmDrop.AddOptions(filmNames);
         int index = filmDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) filmDrop.SetValueWithoutNotify(index);
+        //else filmDrop.onValueChanged.Invoke(0);
         filmDrop.RefreshShownValue();
     }
 
@@ -62,6 +70,15 @@ public class FilmManager : MonoBehaviour
         if (film is null) return;
         currentId = film.Id;
         filmName.Val = film.Name;
+
+        crossMin.Val = film.CrossMin;
+        crossMax.Val = film.CrossMax;
+        crossDelta.Val = film.CrossDelta;
+
+        curveMin.Val = film.CurveMin;
+        curveMax.Val = film.CurveMax;
+        curveDelta.Val = film.CurveDelta;
+
         if (!fromItself)
         {
             int index = filmDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == film.Name);
@@ -73,6 +90,13 @@ public class FilmManager : MonoBehaviour
     {
         currentId = null;
         filmName.Val = "";
+        crossMin.Val = 0d;
+        crossMax.Val = 0d;
+        crossDelta.Val = 0d;
+
+        curveMin.Val = 0d;
+        curveMax.Val = 0d;
+        curveDelta.Val = 0d;
     }
 
     void AddData()
@@ -94,6 +118,13 @@ public class FilmManager : MonoBehaviour
         using var ctx = new CalenderContext();
         var film = ctx.Films.Find(currentId);
         film.Name = (string)filmName.Val;
+        film.CrossMin = (double)crossMin.Val;
+        film.CrossMax = (double)crossMax.Val;
+        film.CrossDelta = (double)crossDelta.Val;
+
+        film.CurveMin = (double)curveMin.Val;
+        film.CurveMax = (double)curveMax.Val;
+        film.CurveDelta = (double)curveDelta.Val;
         ctx.SaveChanges();
         UpdateOptions();
     }

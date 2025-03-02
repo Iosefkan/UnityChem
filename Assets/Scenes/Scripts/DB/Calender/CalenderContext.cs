@@ -53,6 +53,26 @@ namespace CalenderDatabase
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnName("name");
+
+                entity.Property(e => e.CrossMin)
+                    .IsRequired()
+                    .HasColumnName("cross_min");
+                entity.Property(e => e.CrossMax)
+                    .IsRequired()
+                    .HasColumnName("cross_max");
+                entity.Property(e => e.CrossDelta)
+                    .IsRequired()
+                    .HasColumnName("cross_delta");
+
+                entity.Property(e => e.CurveMin)
+                    .IsRequired()
+                    .HasColumnName("curve_min");
+                entity.Property(e => e.CurveMax)
+                    .IsRequired()
+                    .HasColumnName("curve_max");
+                entity.Property(e => e.CurveDelta)
+                    .IsRequired()
+                    .HasColumnName("curve_delta");
             });
 
             modelBuilder.Entity<FilmProfileCluster>(entity =>
@@ -157,26 +177,6 @@ namespace CalenderDatabase
                     .HasForeignKey(d => d.FilmProfileClusterId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FilmProfileCluster");
-
-                entity.Property(e => e.CrossMin)
-                    .IsRequired()
-                    .HasColumnName("cross_min");
-                entity.Property(e => e.CrossMax)
-                    .IsRequired()
-                    .HasColumnName("cross_max");
-                entity.Property(e => e.CrossDelta)
-                    .IsRequired()
-                    .HasColumnName("cross_delta");
-
-                entity.Property(e => e.CurveMin)
-                    .IsRequired()
-                    .HasColumnName("curve_min");
-                entity.Property(e => e.CurveMax)
-                    .IsRequired()
-                    .HasColumnName("curve_max");
-                entity.Property(e => e.CurveDelta)
-                    .IsRequired()
-                    .HasColumnName("curve_delta");
 
                 entity.Property(e => e.IsRange)
                     .IsRequired()

@@ -9,13 +9,6 @@ namespace CalenderDatabase
         public double AveragedProfileWeight { get; set; }
         public double LastProfileWeight { get; set; }
 
-        public double CrossMin { get; set; }
-        public double CrossMax { get; set; }
-        public double CrossDelta { get; set; }
-
-        public double CurveMin { get; set; }
-        public double CurveMax { get; set; }
-        public double CurveDelta { get; set; }
         public int Minutes { get; set; }
         public bool IsRange { get; set; }
         public double? ThicknessMax { get; set; }

@@ -46,31 +46,31 @@ public class ProfileClusterManager : MonoBehaviour
         using var ctx = new CalenderContext();
         var profileCluster = source switch
         {
-            Source.Scenario => ctx.Scenarios.Include(s => s.FilmProfileCluster).ThenInclude(pc => pc.FilmProfiles).AsNoTracking().FirstOrDefault(s => s.Name == scenarioDrop.captionText.text).FilmProfileCluster,
+            Source.Scenario => ctx.Scenarios.Include(s => s.FilmProfileCluster).ThenInclude(pc => pc.FilmProfiles).Include(s => s.FilmProfileCluster.Film).AsNoTracking().FirstOrDefault(s => s.Name == scenarioDrop.captionText.text).FilmProfileCluster,
             Source.Film => ctx.FilmProfileClusters.Include(pc => pc.FilmProfiles).Include(pc => pc.Film).AsNoTracking().FirstOrDefault(f => f.Film.Name == filmDrop.captionText.text),
-            Source.Profile => ctx.FilmProfileClusters.Include(pc => pc.FilmProfiles).AsNoTracking().FirstOrDefault(pc => pc.Name == profileClusterDrop.captionText.text)
+            Source.Profile => ctx.FilmProfileClusters.Include(pc => pc.FilmProfiles).Include(pc => pc.Film).AsNoTracking().FirstOrDefault(pc => pc.Name == profileClusterDrop.captionText.text)
         };
         ClearProfileCluster();
         SetProfileCluster(profileCluster);
-        UpdateOptions();
+        UpdateOptions(profileCluster?.Film?.Name);
     }
 
-    void UpdateOptions()
+    void UpdateOptions(string? filmName = null)
     {
         var currentText = profileClusterDrop.captionText.text;
-        if (filmDrop?.captionText?.text is null) return;
         Debug.Log("Current " + currentText);
         Debug.Log(filmDrop.captionText.text);
         using var ctx = new CalenderContext();
+        profileClusterDrop.ClearOptions();
         var profileClusterNames = ctx.Films
             .Include(f => f.FilmProfileClusters)
-            .FirstOrDefault(f => f.Name == filmDrop.captionText.text)
+            .FirstOrDefault(f => f.Name == (filmName ?? filmDrop.captionText.text))
             .FilmProfileClusters.Select(pc => pc.Name).ToList();
-        profileClusterDrop.ClearOptions();
         profileClusterDrop.AddOptions(profileClusterNames);
         Debug.Log(string.Join(", ", profileClusterNames));
         int index = profileClusterDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) profileClusterDrop.SetValueWithoutNotify(index);
+        //else profileClusterDrop.onValueChanged.Invoke(0);
         profileClusterDrop.RefreshShownValue();
     }
 
@@ -167,6 +167,7 @@ public class ProfileClusterManager : MonoBehaviour
         Debug.Log(points.Count);
         foreach (ProfilePoint point in points)
         {
+            Debug.Log(point.Thickness + "   " + point.WidthPoint);
             profileGraph.AddData(new System.Numerics.Vector2((float)point.WidthPoint, (float)point.Thickness));
         }
     }

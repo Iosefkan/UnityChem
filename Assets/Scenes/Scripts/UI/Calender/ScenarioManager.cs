@@ -1,7 +1,9 @@
 ﻿using CalenderDatabase;
 using Microsoft.EntityFrameworkCore;
+using Program;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,14 +24,6 @@ public class ScenarioManager : MonoBehaviour
 
     public IntValue time;
 
-    public DoubleValue crossMin;
-    public DoubleValue crossMax;
-    public DoubleValue crossDelta;
-
-    public DoubleValue curveMin;
-    public DoubleValue curveMax;
-    public DoubleValue curveDelta;
-
     public IntValue averagedCount;
     public DoubleValue averagedWeight;
     public DoubleValue lastWeight;
@@ -38,16 +32,22 @@ public class ScenarioManager : MonoBehaviour
 
     private long? currentId;
 
-    private void Awake()
+    private async void Awake()
     {
         scenarioDrop.onValueChanged.AddListener(_ => LoadData());
         UpdateOptions();
 
         addScenario.onClick.AddListener(AddData);
         saveScenario.onClick.AddListener(SaveData);
-        if (scenarioDrop.options.Count > 0) scenarioDrop.value = 0;
+
+        await InitData().ConfigureAwait(false);
     }
 
+    async Task InitData()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        if (scenarioDrop.options.Count > 0) scenarioDrop.onValueChanged.Invoke(0);
+    }
 
     void LoadData()
     {
@@ -66,6 +66,7 @@ public class ScenarioManager : MonoBehaviour
         scenarioDrop.AddOptions(scenarioNames);
         int index = scenarioDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) scenarioDrop.SetValueWithoutNotify(index);
+        //else scenarioDrop.onValueChanged.Invoke(0);
         scenarioDrop.RefreshShownValue();
     }
 
@@ -80,14 +81,6 @@ public class ScenarioManager : MonoBehaviour
         thicknessMax.Val = scenario.ThicknessMax ?? 0d;
         time.Val = scenario.Minutes;
 
-        crossMin.Val = scenario.CrossMin;
-        crossMax.Val = scenario.CrossMax;
-        crossDelta.Val = scenario.CrossDelta;
-
-        curveMin.Val = scenario.CurveMin;
-        curveMax.Val = scenario.CurveMax;
-        curveDelta.Val = scenario.CurveDelta;
-
         averagedCount.Val = scenario.AveragedProfilesCount;
         averagedWeight.Val = scenario.AveragedProfileWeight;
         lastWeight.Val = scenario.LastProfileWeight;
@@ -100,14 +93,6 @@ public class ScenarioManager : MonoBehaviour
 
         thicknessMax.Val = 0d;
         time.Val = 0;
-
-        crossMin.Val = 0d;
-        crossMax.Val = 0d;
-        crossDelta.Val = 0d;
-
-        curveMin.Val = 0d;
-        curveMax.Val = 0d;
-        curveDelta.Val = 0d;
 
         averagedCount.Val =  0;
         averagedWeight.Val = 0d;
@@ -136,6 +121,7 @@ public class ScenarioManager : MonoBehaviour
 
     void SaveData()
     {
+        Debug.Log("Saving scenario");
         if (currentId is null) return;
         using var ctx = new CalenderContext();
         var scenario = ctx.Scenarios.Find(currentId);
@@ -151,19 +137,12 @@ public class ScenarioManager : MonoBehaviour
         scenario.IsRange = rangeTask.isOn;
         scenario.ThicknessMax = (double)thicknessMax.Val;
 
-        scenario.CrossMin = (double)crossMin.Val;
-        scenario.CrossMax = (double)crossMax.Val;
-        scenario.CrossDelta = (double)crossDelta.Val;
-
-        scenario.CurveMin = (double)curveMin.Val;
-        scenario.CurveMax = (double)curveMax.Val;
-        scenario.CurveDelta = (double)curveDelta.Val;
-
         scenario.AveragedProfilesCount = (int)averagedCount.Val;
         scenario.AveragedProfileWeight = (double)averagedWeight.Val;
         scenario.LastProfileWeight = (double)lastWeight.Val;
 
         ctx.SaveChanges();
+        Debug.Log("Scenario saved");
         UpdateOptions();
     }
 
