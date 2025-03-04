@@ -52,7 +52,7 @@ namespace CalenderDatabase
                     .UseIdentityAlwaysColumn();
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnName("name");
+                    .HasColumnName("f_name");
 
                 entity.Property(e => e.CrossMin)
                     .IsRequired()
@@ -84,7 +84,7 @@ namespace CalenderDatabase
                     .UseIdentityAlwaysColumn();
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnName("name");
+                    .HasColumnName("fpc_name");
 
                 entity.Property(e => e.Width)
                     .IsRequired()
@@ -112,6 +112,7 @@ namespace CalenderDatabase
 
                 entity.HasKey(x => new { x.Id, x.FilmProfileClusterId });
                 entity.HasIndex(e => e.FilmProfileClusterId, "IX_Relationship5");
+                entity.HasIndex(e => new { e.Id, e.FilmProfileClusterId }, "IX_Relationship6");
 
                 entity.Property(e => e.Profile)
                     .HasColumnType("jsonb[]")
@@ -121,13 +122,13 @@ namespace CalenderDatabase
 
             modelBuilder.Entity<RollSetting>(entity =>
             {
-                entity.ToTable("RollSetting");
+                entity.ToTable("Calender");
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .UseIdentityAlwaysColumn();
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnName("name");
+                    .HasColumnName("c_name");
 
                 entity.Property(e => e.Elasticity)
                     .IsRequired()
@@ -160,7 +161,7 @@ namespace CalenderDatabase
                     .UseIdentityAlwaysColumn();
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnName("name");
+                    .HasColumnName("s_name");
 
                 entity.HasIndex(e => e.RollSettingsId, "IX_Relationship3");
                 entity.Property(e => e.RollSettingsId).HasColumnName("roll_settings_id");
@@ -188,6 +189,9 @@ namespace CalenderDatabase
                 entity.Property(e => e.Minutes)
                     .IsRequired()
                     .HasColumnName("minutes_learning");
+                entity.Property(e => e.TableSkipStep)
+                    .IsRequired()
+                    .HasColumnName("table_skip_step");
 
                 entity.Property(e => e.AveragedProfilesCount)
                     .IsRequired()

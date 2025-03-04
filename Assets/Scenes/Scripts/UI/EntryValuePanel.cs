@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -116,13 +117,13 @@ public class EntryValuePanel : MonoBehaviour
                 valText.text = "0";
             }
 
-            double val = double.Parse(valText.text);
+            double val = double.Parse(valText.text, CultureInfo.GetCultureInfo("RU-ru"));
             if (_min > val)
                 val = _min;
             if (_max < val)
                 val = _max;
 
-            targetField.text = string.Format("{0:f}", val);
+            targetField.text = string.Format(CultureInfo.GetCultureInfo("RU-ru"), "{0:f}", val);
 
             OnChangeVal?.Invoke(targetField);
             gameObject.SetActive(false);
@@ -136,13 +137,13 @@ public class EntryValuePanel : MonoBehaviour
                 valText.text = "0";
             }
 
-            double val = double.Parse(valText.text);
+            double val = double.Parse(valText.text, CultureInfo.GetCultureInfo("RU-ru"));
             if (_min > val)
                 val = _min;
             if (_max < val)
                 val = _max;
 
-            targetField.text = string.Format("{0:f}", val);
+            targetField.text = string.Format(CultureInfo.GetCultureInfo("RU-ru"), "{0:f}", val);
 
             OnChangeVal?.Invoke(targetField);
             gameObject.SetActive(false);

@@ -61,6 +61,10 @@ public class FilmManager : MonoBehaviour
         filmDrop.AddOptions(filmNames);
         int index = filmDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) filmDrop.SetValueWithoutNotify(index);
+        else if (filmDrop.options.Count > 0 && !string.IsNullOrEmpty(currentText))
+        {
+            filmDrop.onValueChanged.Invoke(0);
+        }
         //else filmDrop.onValueChanged.Invoke(0);
         filmDrop.RefreshShownValue();
     }
@@ -109,7 +113,10 @@ public class FilmManager : MonoBehaviour
         SetFilm(film);
         UpdateOptions();
         int index = filmDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == film.Name);
-        if (index > -1) filmDrop.SetValueWithoutNotify(index);
+        if (index > -1)
+        {
+            filmDrop.value = index;
+        }
     }
 
     void SaveData()

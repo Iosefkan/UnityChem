@@ -60,17 +60,22 @@ public class ProfileClusterManager : MonoBehaviour
         var currentText = profileClusterDrop.captionText.text;
         Debug.Log("Current " + currentText);
         Debug.Log(filmDrop.captionText.text);
+        var searchText = filmName ?? filmDrop.captionText.text;
+        if (string.IsNullOrEmpty(searchText)) return;
         using var ctx = new CalenderContext();
         profileClusterDrop.ClearOptions();
         var profileClusterNames = ctx.Films
             .Include(f => f.FilmProfileClusters)
-            .FirstOrDefault(f => f.Name == (filmName ?? filmDrop.captionText.text))
+            .FirstOrDefault(f => f.Name == searchText)
             .FilmProfileClusters.Select(pc => pc.Name).ToList();
         profileClusterDrop.AddOptions(profileClusterNames);
         Debug.Log(string.Join(", ", profileClusterNames));
         int index = profileClusterDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) profileClusterDrop.SetValueWithoutNotify(index);
-        //else profileClusterDrop.onValueChanged.Invoke(0);
+        else if (profileClusterDrop.options.Count > 0 && !string.IsNullOrEmpty(currentText))
+        {
+            profileClusterDrop.onValueChanged.Invoke(0);
+        }
         profileClusterDrop.RefreshShownValue();
     }
 
@@ -98,9 +103,7 @@ public class ProfileClusterManager : MonoBehaviour
 
     void AddData()
     {
-        Debug.Log("Adding profile");
         using var ctx = new CalenderContext();
-        Debug.Log("Adding cluster " + filmDrop.captionText.text);
         var film = ctx.Films.AsNoTracking().FirstOrDefault(f => f.Name == filmDrop.captionText.text);
         Debug.Log(film);
         if (film is null) return;
@@ -167,7 +170,6 @@ public class ProfileClusterManager : MonoBehaviour
         Debug.Log(points.Count);
         foreach (ProfilePoint point in points)
         {
-            Debug.Log(point.Thickness + "   " + point.WidthPoint);
             profileGraph.AddData(new System.Numerics.Vector2((float)point.WidthPoint, (float)point.Thickness));
         }
     }

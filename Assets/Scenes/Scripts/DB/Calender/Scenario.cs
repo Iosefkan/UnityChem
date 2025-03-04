@@ -10,6 +10,7 @@ namespace CalenderDatabase
         public double LastProfileWeight { get; set; }
 
         public int Minutes { get; set; }
+        public int TableSkipStep { get; set; }
         public bool IsRange { get; set; }
         public double? ThicknessMax { get; set; }
 

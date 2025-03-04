@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MouseButton : MonoBehaviour, IPointerDownHandler
+public class MouseButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public bool isChangeColor = false;
     private Color _color_start;
@@ -38,16 +38,7 @@ public class MouseButton : MonoBehaviour, IPointerDownHandler
         StartCoroutine(Stay());
     }
 
-    private void OnMouseDown()
-    {
-        Debug.Log("Start");
-        click?.Invoke();
-        if (_button && isChangeColor)
-            _button.color = Color.gray;
-        StartCoroutine(Stay());
-    }
-
-    private void OnMouseUp()
+    public void OnPointerUp(PointerEventData eventData)
     {
         Debug.Log("Stop");
         release?.Invoke();
@@ -55,6 +46,20 @@ public class MouseButton : MonoBehaviour, IPointerDownHandler
             _button.color = _color_start;
         StopAllCoroutines();
     }
+
+/*    private void OnMouseDown()
+    {
+        Debug.Log("Start");
+        click?.Invoke();
+        if (_button && isChangeColor)
+            _button.color = Color.gray;
+        StartCoroutine(Stay());
+    }*/
+
+/*    private void OnMouseUp()
+    {
+
+    }*/
 
     private IEnumerator Stay()
     {

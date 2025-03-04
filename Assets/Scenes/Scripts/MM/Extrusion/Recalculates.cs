@@ -5,6 +5,7 @@ using Program;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
@@ -89,6 +90,7 @@ public class Recalculates : MonoBehaviour
     [SerializeField] private WindowGraph bGraphInstructor;
 
     private QPT_DIE_Adapter _qdAdapter =  new QPT_DIE_Adapter();
+    private CultureInfo rusCulture = CultureInfo.GetCultureInfo("RU-ru");
 
     void Awake()
     {
@@ -131,11 +133,11 @@ public class Recalculates : MonoBehaviour
         delEGraph.SetYMaxLine(maxE);
         delEGraphInstructor.SetYMaxLine(maxE);
 
-        _shnekSpeed.text = initData.data.N_.ToString();
+        _shnekSpeed.text = initData.data.N_.ToString(rusCulture);
         RecalcShnekSpeed();
-        _temp1.text = initData.cyl[0].T_W_k_.ToString();
+        _temp1.text = initData.cyl[0].T_W_k_.ToString(rusCulture);
         SetTempTarget1();
-        _temp2.text = initData.cyl[1].T_W_k_.ToString();
+        _temp2.text = initData.cyl[1].T_W_k_.ToString(rusCulture);
         SetTempTarget2();
 
         RecalcOutData();
@@ -239,9 +241,9 @@ public class Recalculates : MonoBehaviour
 
     async void RecalcOutDataAsync()
     {
-        _qdAdapter.initData.data.N_       = Math.Max(double.Parse(_shnekSpeed.text), 0.1);
-        _qdAdapter.initData.cyl[0].T_W_k_ = double.Parse(_temp1.text);
-        _qdAdapter.initData.cyl[1].T_W_k_ = double.Parse(_temp2.text);
+        _qdAdapter.initData.data.N_       = Math.Max(double.Parse(_shnekSpeed.text, rusCulture), 0.1);
+        _qdAdapter.initData.cyl[0].T_W_k_ = double.Parse(_temp1.text, rusCulture);
+        _qdAdapter.initData.cyl[1].T_W_k_ = double.Parse(_temp2.text, rusCulture);
         await Task.Run(() => _qdAdapter.init());
         
         //await Task.Run(() =>
@@ -465,39 +467,42 @@ public class Recalculates : MonoBehaviour
     void RecalcShnekSpeed()
     {
         _shnekSpeedTarget.text = _shnekSpeed.text;
-
         RecalcVoronkaSpeed();
         RecalcKnifeSpeed();
     }
 
     void RecalcVoronkaSpeed()
     {
-        double N = double.Parse(_shnekSpeed.text);
-        double fr = double.Parse(_voronkaFr.text);
-        _voronkaSpeed.text = string.Format("{0:f}", (1 + fr / 100) * N);
+        double N = double.Parse(_shnekSpeed.text, rusCulture);
+        double fr = double.Parse(_voronkaFr.text, rusCulture);
+        _voronkaSpeed.text = string.Format(rusCulture,"{0:f}", (1 + fr / 100) * N);
         _voronkaSpeedTarget.text = _voronkaSpeed.text;
     }
 
     void RecalcVoronkaFr()
     {
-        double N = double.Parse(_shnekSpeed.text);
-        double Nh = double.Parse(_voronkaSpeed.text);
-        _voronkaFr.text = string.Format("{0:f}", (Nh / N - 1) * 100);
+        Debug.Log(_shnekSpeed.text);
+        Debug.Log(_voronkaSpeed.text);
+        double N = double.Parse(_shnekSpeed.text, rusCulture);
+        double Nh = double.Parse(_voronkaSpeed.text, rusCulture);
+        Debug.Log(N + "   " + Nh);
+        _voronkaFr.text = string.Format(rusCulture,"{0:f}", (Nh - N) / N * 100);
     }
 
     void RecalcKnifeSpeed()
     {
-        double N = double.Parse(_shnekSpeed.text);
-        double fr = double.Parse(_knifeFr.text);
-        _knifeSpeed.text = string.Format("{0:f}", (1 + fr / 100) * N);
+        double N = double.Parse(_shnekSpeed.text, rusCulture);
+        double fr = double.Parse(_knifeFr.text, rusCulture);
+        _knifeSpeed.text = string.Format(rusCulture, "{0:f}", (1 + fr / 100) * N);
         _knifeSpeedTarget.text = _knifeSpeed.text;
     }
 
     void RecalcKnifeFr()
     {
-        double N = double.Parse(_shnekSpeed.text);
-        double Nh = double.Parse(_knifeSpeed.text);
-        _knifeFr.text = string.Format("{0:f}", (Nh / N - 1) * 100);
+        double N = double.Parse(_shnekSpeed.text, rusCulture);
+        double Nh = double.Parse(_knifeSpeed.text, rusCulture);
+        Debug.Log(N + "   " + Nh);
+        _knifeFr.text = string.Format(rusCulture, "{0:f}", (Nh - N) / N * 100);
     }
 
     void SetTempTarget1()
@@ -535,8 +540,7 @@ public class Recalculates : MonoBehaviour
         var curInter = intervals.FirstOrDefault(i => i.MaxDelE > Id && i.MinDelE <= Id);
         if (curInter is null)
         {
-            Debug.Log("No such interval");
-            return (new Vector3(), Color.black, -1);
+            return (new Vector3(), Color.gray, -1);
         }
         var curColor = new Vector3(curInter.L, curInter.a, curInter.b);
         var baseInterval = intervals.FirstOrDefault(i => i.IsBaseColor);

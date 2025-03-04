@@ -65,6 +65,10 @@ public class RollManager : MonoBehaviour
         rollDrop.AddOptions(rollNames);
         int index = rollDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) rollDrop.SetValueWithoutNotify(index);
+        else if (rollDrop.options.Count > 0 && !string.IsNullOrEmpty(currentText))
+        {
+            rollDrop.onValueChanged.Invoke(0);
+        }
         //else rollDrop.onValueChanged.Invoke(0);
         rollDrop.RefreshShownValue();
     }
@@ -109,7 +113,7 @@ public class RollManager : MonoBehaviour
     void AddData()
     {
         using var ctx = new CalenderContext();
-        var name = "Валок " + DateTime.Now.ToString("hh:mm");
+        var name = "Каландр " + DateTime.Now.ToString("hh:mm");
         var roll = new RollSetting() { Name = name };
         ctx.RollSettings.Add(roll);
         ctx.SaveChanges();

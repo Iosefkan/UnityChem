@@ -25,6 +25,7 @@ public class ScenarioManager : MonoBehaviour
     public IntValue time;
 
     public IntValue averagedCount;
+    public IntValue tableSkipStep;
     public DoubleValue averagedWeight;
     public DoubleValue lastWeight;
 
@@ -46,7 +47,10 @@ public class ScenarioManager : MonoBehaviour
     async Task InitData()
     {
         await Task.Delay(TimeSpan.FromSeconds(1));
-        if (scenarioDrop.options.Count > 0) scenarioDrop.onValueChanged.Invoke(0);
+        if (scenarioDrop.options.Count > 0) {
+            Debug.Log("Init");
+            scenarioDrop.onValueChanged.Invoke(0);
+        }
     }
 
     void LoadData()
@@ -66,6 +70,10 @@ public class ScenarioManager : MonoBehaviour
         scenarioDrop.AddOptions(scenarioNames);
         int index = scenarioDrop.options.FindIndex((TMP_Dropdown.OptionData od) => od.text == currentText);
         if (index > -1) scenarioDrop.SetValueWithoutNotify(index);
+        else if (scenarioDrop.options.Count > 0 && !string.IsNullOrEmpty(currentText))
+        {
+            scenarioDrop.onValueChanged.Invoke(0);
+        }
         //else scenarioDrop.onValueChanged.Invoke(0);
         scenarioDrop.RefreshShownValue();
     }
@@ -84,6 +92,7 @@ public class ScenarioManager : MonoBehaviour
         averagedCount.Val = scenario.AveragedProfilesCount;
         averagedWeight.Val = scenario.AveragedProfileWeight;
         lastWeight.Val = scenario.LastProfileWeight;
+        tableSkipStep.Val = scenario.TableSkipStep;
     }
 
     void ClearScenario()
@@ -93,6 +102,7 @@ public class ScenarioManager : MonoBehaviour
 
         thicknessMax.Val = 0d;
         time.Val = 0;
+        tableSkipStep.Val = 4;
 
         averagedCount.Val =  0;
         averagedWeight.Val = 0d;
@@ -110,7 +120,7 @@ public class ScenarioManager : MonoBehaviour
             return;
         }
         var name = "Сценарий " + DateTime.Now.ToString("hh:mm");
-        var scenario = new Scenario() { Name = name, RollSettingsId = roll.Id, FilmProfileClusterId = profile.Id };
+        var scenario = new Scenario() { Name = name, RollSettingsId = roll.Id, FilmProfileClusterId = profile.Id, TableSkipStep = 4 };
         ctx.Scenarios.Add(scenario);
         ctx.SaveChanges();
         SetScenario(scenario);
@@ -134,6 +144,7 @@ public class ScenarioManager : MonoBehaviour
 
         scenario.Name = (string)scenarioName.Val;
         scenario.Minutes = (int)time.Val;
+        scenario.TableSkipStep = (int)tableSkipStep.Val;
         scenario.IsRange = rangeTask.isOn;
         scenario.ThicknessMax = (double)thicknessMax.Val;
 

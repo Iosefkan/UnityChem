@@ -158,7 +158,6 @@ public class WindowGraph : MonoBehaviour
         {
             float y = yMax > yMaxLineVal.Value ? yMaxLineVal.Value : yMax;
             y = yMin < y ? y : yMin;
-            Debug.Log($"max {yMax} {yMin} {yMaxLineVal.Value} {y}");
             isMaxMin = true;
             Vector2 lastCircle = ShowValue(new Vector(xMin, y), null, xMax, xMin, yMax, yMin);
             lastCircle = ShowValue(new Vector(xMax, y), lastCircle, xMax, xMin, yMax, yMin);
@@ -168,7 +167,6 @@ public class WindowGraph : MonoBehaviour
         {
             float y = yMin < yMinLineVal.Value ? yMinLineVal.Value : yMin;
             y = yMax > y ? y : yMax;
-            Debug.Log($"min {yMax} {yMin} {yMinLineVal.Value} {y}");
             isMaxMin = true;
             Vector2 lastCircle = ShowValue(new Vector(xMin, y), null, xMax, xMin, yMax, yMin);
             lastCircle = ShowValue(new Vector(xMax, y), lastCircle, xMax, xMin, yMax, yMin);

@@ -46,6 +46,7 @@ public class Orchestrator : MonoBehaviour
     public WindowGraph crossGraph;
     public WindowGraph curveGraph;
     public WindowGraph averageGraph;
+    public WindowGraph currentGraph;
     public CurrTimeUpdate timeUpdate;
 
     public TableManager crossTable;
@@ -76,9 +77,11 @@ public class Orchestrator : MonoBehaviour
         scenario = ctx.Scenarios.Include(s => s.RollSettings).Include(s => s.FilmProfileCluster).ThenInclude(pc => pc.FilmProfiles).Include(s => s.FilmProfileCluster.Film).AsNoTracking().FirstOrDefault(s => s.Id == scenarioId);
         if (scenario is null) return;
         timeUpdate.SetTime(TimeSpan.FromMinutes(scenario.Minutes));
+        if (scenario.TableSkipStep >= 0) scenario.TableSkipStep = 1;
         SetScenario();
         GetAverageProfile();
         DrawAverageGraph();
+        DrawCurrentGraph();
         GetAverageProfileWithoutControl();
         Recalc3D();
         RecalcCross();
@@ -103,7 +106,7 @@ public class Orchestrator : MonoBehaviour
     void UpdateCurDelta() { curDeltaText.text = $"Разнотолщинность - {cur.y:F} мкм"; }
     void UpdateOptCross() { optimCrossText.text = $"Перекрещивание - {min.z:F} мм"; }
     void UpdateOptCurve() { optimCurveText.text = $"Контризгиб - {min.x:F} Н"; }
-    void UpdateOptDelta() { optimDeltaText.text = $"Разнотолщинность - {min.y:F} мкм"; }
+    void UpdateOptDelta() { optimDeltaText.text = $"Оптимальная разнотолщинность - {min.y:F} мкм"; }
 
     public void CrossUp()
     {
@@ -148,7 +151,9 @@ public class Orchestrator : MonoBehaviour
             timeUpdate.GetTimeStr(),
             curCross, 
             curCurve, 
-            cur.y
+            cur.y,
+            (cur.y - min.y) / min.y * 100,
+            cur.y - min.y
         });
     }
 
@@ -170,6 +175,15 @@ public class Orchestrator : MonoBehaviour
         foreach (var point in avFilmProfile)
         {
             averageGraph.AddData(new System.Numerics.Vector2((float)point.WidthPoint, (float)point.Thickness));
+        }
+    }
+
+    void DrawCurrentGraph()
+    {
+        currentGraph.Clear();
+        foreach (var point in scenario.FilmProfileCluster.FilmProfiles.Last().Profile)
+        {
+            currentGraph.AddData(new System.Numerics.Vector2((float)point.WidthPoint, (float)point.Thickness));
         }
     }
 
@@ -224,7 +238,7 @@ public class Orchestrator : MonoBehaviour
         // Усредненный
         var withoutCurCount = scenario.FilmProfileCluster.FilmProfiles.Count - 1;
         var avCoef = scenario.AveragedProfileWeight;
-        var avCount = scenario.AveragedProfilesCount < withoutCurCount ? scenario.AveragedProfilesCount : withoutCurCount;
+        var avCount = (scenario.AveragedProfilesCount - 1) < withoutCurCount ? (scenario.AveragedProfilesCount - 1) : withoutCurCount;
         var profiles = scenario.FilmProfileCluster.FilmProfiles.ToArray();
         var averagedProfile = profiles[0].Profile.Select(p => new ProfilePoint { Id = p.Id, Thickness = p.Thickness, WidthPoint = p.WidthPoint }).ToList();
         for (int i = 1; i < avCount; i++)
@@ -250,10 +264,11 @@ public class Orchestrator : MonoBehaviour
 
     void GetAverageProfileWithoutControl()
     {
+        var widthConst = (scenario.RollSettings.Width - scenario.FilmProfileCluster.Width) / 2;
         foreach (var point in avFilmProfile)
         {
             var sCross = CalenderControlActions.Cross(curCross, scenario.FilmProfileCluster.Width, scenario.RollSettings.Width, scenario.RollSettings.BarrelDiameter, point.WidthPoint);
-            var sCurve = CalenderControlActions.Curve(curCurve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
+            var sCurve = CalenderControlActions.Curve(curCurve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint + widthConst, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
             point.Thickness = point.Thickness - sCross - sCurve;
         }
 
@@ -271,7 +286,7 @@ public class Orchestrator : MonoBehaviour
             {
                 crossTable.AddData(new List<object> { cross, delCross });
             }
-            count = (count + 1) % 3;
+            count = (count + 1) % scenario.TableSkipStep;
         }
     }
 
@@ -287,7 +302,7 @@ public class Orchestrator : MonoBehaviour
             {
                 curveTable.AddData(new List<object> { curve, delCurve });
             }
-            count = (count + 1) % 3;
+            count = (count + 1) % scenario.TableSkipStep;
         }
     }
 
@@ -309,7 +324,7 @@ public class Orchestrator : MonoBehaviour
                 {
                     bothTable.AddData(new List<object> { cross, curve, del });
                 }
-                count = (count + 1) % 15;
+                count = (count + 1) % (scenario.TableSkipStep * scenario.TableSkipStep);
             }
             profAll.Add(vec);
         }
@@ -326,10 +341,11 @@ public class Orchestrator : MonoBehaviour
         {
             for (var curve = scenario.FilmProfileCluster.Film.CurveMin; curve <= scenario.FilmProfileCluster.Film.CurveMax; curve += scenario.FilmProfileCluster.Film.CurveDelta)
             {
-                if (Math.Abs(curCross - cross) < scenario.FilmProfileCluster.Film.CrossDelta 
+                if (Math.Abs(curCross - cross) < (scenario.FilmProfileCluster.Film.CrossDelta * 0.1)
                     &&
-                    Math.Abs(curCurve - curve) < scenario.FilmProfileCluster.Film.CurveDelta)
+                    Math.Abs(curCurve - curve) < (scenario.FilmProfileCluster.Film.CurveDelta * 0.1))
                 {
+                    Debug.Log(cross + "   " + curve);
                     var del = GetAll(cross, curve);
                     cur = new Vector3((float)curve, (float)del, (float)cross);
                     return;
@@ -351,9 +367,10 @@ public class Orchestrator : MonoBehaviour
 
     double GetCurve(double curve)
     {
+        var widthConst = (scenario.RollSettings.Width - scenario.FilmProfileCluster.Width) / 2;
         var onlyCurve = avFilmProfile.Select(point =>
         {
-            var sCurve = CalenderControlActions.Curve(curve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
+            var sCurve = CalenderControlActions.Curve(curve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint + widthConst, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
             return point.Thickness + sCurve;
         }).ToArray();
         
@@ -362,10 +379,11 @@ public class Orchestrator : MonoBehaviour
 
     double GetAll(double cross, double curve)
     {
+        var widthConst = (scenario.RollSettings.Width - scenario.FilmProfileCluster.Width) / 2;
         var all = avFilmProfile.Select(point =>
         {
             var sCross = CalenderControlActions.Cross(cross, scenario.FilmProfileCluster.Width, scenario.RollSettings.Width, scenario.RollSettings.BarrelDiameter, point.WidthPoint);
-            var sCurve = CalenderControlActions.Curve(curve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
+            var sCurve = CalenderControlActions.Curve(curve, scenario.RollSettings.SecondDistance, scenario.RollSettings.FirstDistance, point.WidthPoint + widthConst, scenario.RollSettings.Width, scenario.RollSettings.Elasticity, scenario.RollSettings.BarrelDiameter, scenario.RollSettings.NeckDiameter, scenario.RollSettings.HoleDiameter);
             return point.Thickness + sCross + sCurve;
         }).ToArray();
 
