@@ -1,10 +1,13 @@
 ﻿using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public class Avtorization : MonoBehaviour
 {
+    [SerializeField] LocalizedString error;
+    [SerializeField] LocalizedString roleError;
     [SerializeField] TMP_InputField _loginObj;
     [SerializeField] TMP_InputField _passwordObj;
     [SerializeField] Button _btn;
@@ -32,7 +35,7 @@ public class Avtorization : MonoBehaviour
         var user = ctx.Users.FirstOrDefault(u => u.Login == login && u.Password == password);
         if (user is null)
         {
-            errorLabel.text = "Неверный логин или пароль";
+            errorLabel.text = error.GetLocalizedString();
             return;
         }
         bool validRole = false;
@@ -51,7 +54,7 @@ public class Avtorization : MonoBehaviour
                 extrInstrPanel.SetActive(true);
                 break;
             default:
-                errorLabel.text = "Ошибка определения роли";
+                errorLabel.text = roleError.GetLocalizedString();
                 break;
         }
 

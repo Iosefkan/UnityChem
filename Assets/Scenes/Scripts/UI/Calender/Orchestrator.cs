@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public class Orchestrator : MonoBehaviour
@@ -72,6 +73,21 @@ public class Orchestrator : MonoBehaviour
     public GameObject player;
     public Vector3 startPlayerPosition;
 
+    public LocalizedString maxObjLearn;
+    public LocalizedString minObjLearn;
+    public LocalizedString xLearnStart;
+    public LocalizedString rLearnStart;
+    public LocalizedString labelControls;
+    public LocalizedString labelSpecified;
+    public LocalizedString labelOptimum;
+    public LocalizedString labelOptimumAchieve;
+    public LocalizedString mkmParam;
+    public LocalizedString labelCurAcc;
+    public LocalizedString labelCurBend;
+    public LocalizedString labelOptMin;
+    public LocalizedString labelOptRange;
+    public LocalizedString squareTableHeader;
+
     void Awake()
     {
         foreach (var curveButUp in curveUp)
@@ -97,7 +113,6 @@ public class Orchestrator : MonoBehaviour
     {
         //curUI.SetActive(false);
         UI.SetActive(true);
-        Debug.Log("end");
     }
 
     private void OnDestroy()
@@ -199,20 +214,23 @@ public class Orchestrator : MonoBehaviour
     {
         curCurve = scenario.FilmProfileCluster.CurveStart;
         curCross = scenario.FilmProfileCluster.CrossStart;
-        string taskText = scenario.IsRange ? $"Разнотолщинность пленки не превышающая предельно допустимого значение\nS<sup>max</sup> = {scenario.ThicknessMax:F} мкм - Предельно допустимая разнотолщинность" : "Минимальная разнотолщинность пленки";
+        if (scenario.ThicknessMax is not null) maxObjLearn.Arguments = new object[] { scenario.ThicknessMax?.ToString("F") };
+        xLearnStart.Arguments = new object[] { scenario.FilmProfileCluster.Film.CrossMin.ToString("F"), scenario.FilmProfileCluster.Film.CrossMax.ToString("F"), scenario.FilmProfileCluster.Film.CrossDelta.ToString("F") };
+        rLearnStart.Arguments = new object[] { scenario.FilmProfileCluster.Film.CurveMin.ToString("F"), scenario.FilmProfileCluster.Film.CurveMax.ToString("F"), scenario.FilmProfileCluster.Film.CurveDelta.ToString("F") };
+        string taskText = scenario.IsRange ? maxObjLearn.GetLocalizedString() : minObjLearn.GetLocalizedString();
         sceneTask.text = taskText;
         sceneParams.text = $"{scenario.AveragedProfilesCount}\n{scenario.AveragedProfileWeight:F}\n{scenario.LastProfileWeight:F}\n{scenario.FilmProfileCluster.CrossStart:F}\n{scenario.FilmProfileCluster.CurveStart:F}";
-        crossParams.text = $"x<sup>min</sup>={scenario.FilmProfileCluster.Film.CrossMin:F} мм, x<sup>max</sup>={scenario.FilmProfileCluster.Film.CrossMax:F} мм, delta_x={scenario.FilmProfileCluster.Film.CrossDelta:F} мм";
-        curveParams.text = $"r<sup>min</sup>={scenario.FilmProfileCluster.Film.CurveMin:F} Н, r<sup>max</sup>={scenario.FilmProfileCluster.Film.CurveMax:F} Н, delta_r={scenario.FilmProfileCluster.Film.CurveDelta:F} Н";
+        crossParams.text = xLearnStart.GetLocalizedString();
+        curveParams.text = rLearnStart.GetLocalizedString();
         if (scenario.IsRange)
         {
-            optimTitle.text = "Управляющие воздействия подходящей разнотолщинности,\nближайшей к текущим управляющим воздействиям:";
-            recomTitle.text = "Для достижения заданной разнотолщинности:";
+            optimTitle.text = labelControls.GetLocalizedString();
+            recomTitle.text = labelSpecified.GetLocalizedString();
         }
         else
         {
-            optimTitle.text = "Оптимальные управляющие воздействия:";
-            recomTitle.text = "Для достижения минимальной разнотолщинности:";
+            optimTitle.text = labelOptimum.GetLocalizedString();
+            recomTitle.text = labelOptimumAchieve.GetLocalizedString();
         }
         UpdateCurCross();
         UpdateCurCurve();
@@ -232,42 +250,49 @@ public class Orchestrator : MonoBehaviour
             curCurveT.text = curCurve.ToString("F");
         }
     }
-    void UpdateCurDelta() 
-    { 
-        curDeltaText.text = $"{cur.y:F} мкм";
+    void UpdateCurDelta()
+    {
+        mkmParam.Arguments = new object[] { cur.y.ToString("F") };
+        curDeltaText.text = mkmParam.GetLocalizedString();
         resultInstr.text = $"{curCross:F}\n{curCurve:F}\n{cur.y:F}";
     }
     void UpdateOptCross() 
     { 
         if (scenario.IsRange)
         {
-            optimCrossText.text = $"Перекрещивание - {graph3d.currentOptimimum.z:F} мм";
+            labelCurAcc.Arguments = new object[] { graph3d.currentOptimimum.z.ToString("F") };
+            optimCrossText.text = labelCurAcc.GetLocalizedString();
         }
         else
         {
-            optimCrossText.text = $"Перекрещивание - {min.z:F} мм";
+            labelCurAcc.Arguments = new object[] { min.z.ToString("F") };
+            optimCrossText.text = labelCurAcc.GetLocalizedString();
         }
     }
     void UpdateOptCurve() 
     {
         if (scenario.IsRange)
         {
-            optimCurveText.text = $"Усилие контризгиба - {graph3d.currentOptimimum.x:F} Н";
+            labelCurBend.Arguments = new object[] { graph3d.currentOptimimum.x.ToString("F") };
+            optimCurveText.text = labelCurBend.GetLocalizedString();
         }
         else
         {
-            optimCurveText.text = $"Усилие контризгиба - {min.x:F} Н";
+            labelCurBend.Arguments = new object[] { min.x.ToString("F") };
+            optimCurveText.text = labelCurBend.GetLocalizedString();
         }
     }
     void UpdateOptDelta() 
     { 
         if (scenario.IsRange)
         {
-            optimDeltaText.text = $"Разнотолщинность - {graph3d.currentOptimimum.y:F} мкм < {scenario.ThicknessMax:F}";
+            labelOptRange.Arguments = new object[] { graph3d.currentOptimimum.y.ToString("F"), scenario.ThicknessMax?.ToString("F") };
+            optimDeltaText.text = labelOptRange.GetLocalizedString();
         }
         else
         {
-            optimDeltaText.text = $"Минимальная разнотолщинность - {min.y:F} мкм";
+            labelOptMin.Arguments = new object[] { min.y.ToString("F") };
+            optimDeltaText.text = labelOptMin.GetLocalizedString();
         }
     }
 
@@ -460,9 +485,9 @@ public class Orchestrator : MonoBehaviour
         }
 
         // Усредненный
-        var withoutCurCount = scenario.FilmProfileCluster.FilmProfiles.Count - 1;
+        //var withoutCurCount = scenario.FilmProfileCluster.FilmProfiles.Count - 1;
         var avCoef = scenario.AveragedProfileWeight;
-        var avCount = (scenario.AveragedProfilesCount - 1) < withoutCurCount ? (scenario.AveragedProfilesCount - 1) : withoutCurCount;
+        var avCount = scenario.FilmProfileCluster.FilmProfiles.Count() - 1;
         var profiles = scenario.FilmProfileCluster.FilmProfiles.ToArray();
         var averagedProfile = profiles[0].Profile.Select(p => new ProfilePoint { Id = p.Id, Thickness = p.Thickness, WidthPoint = p.WidthPoint }).ToList();
         for (int i = 1; i < avCount; i++)
@@ -547,7 +572,7 @@ public class Orchestrator : MonoBehaviour
         profAll = new();
 
         // Первая строка таблицы
-        List<object> start = new() { "x, мм \\ r, Н" };
+        List<object> start = new() { squareTableHeader.GetLocalizedString() };
         int stc = 0;
         for (var curve = scenario.FilmProfileCluster.Film.CurveMin; curve <= scenario.FilmProfileCluster.Film.CurveMax; curve += scenario.FilmProfileCluster.Film.CurveDelta)
         {

@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: LearnerMenu Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: LearnerMenu
+  m_TableCollectionNameGuidString: b59c42aea5b040341a72ca3dae9233fe
+  m_Entries:
+  - m_Id: 149298085888
+    m_Key: control_var
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153072959488
+    m_Key: tables
+    m_Metadata:
+      m_Items: []
+  - m_Id: 157791551488
+    m_Key: New Entry 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2275009101824
+    m_Key: time_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3378094276608
+    m_Key: optim_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3693182976000
+    m_Key: cur_profile_learn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4168213069824
+    m_Key: length_mm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4655893184512
+    m_Key: comment_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4888639307776
+    m_Key: graphics_see
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5291175051264
+    m_Key: table_cross
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5439909265408
+    m_Key: table_curve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6142862032896
+    m_Key: scen_params
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6465332707328
+    m_Key: objective_learn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6764025872384
+    m_Key: labels_learn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6980158357504
+    m_Key: labels_more
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7198425743360
+    m_Key: actions_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7396011016192
+    m_Key: acc_title_learn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7485311942656
+    m_Key: bend_title_learn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7870122557440
+    m_Key: sum_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8719376842752
+    m_Key: end_button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8972498894848
+    m_Key: roll_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9365056389120
+    m_Key: fact_acc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9601690632192
+    m_Key: zad_acc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9809010884608
+    m_Key: fact_var
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10819129311232
+    m_Key: roll_4_p
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10906840596480
+    m_Key: roll_4_n
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11241676079104
+    m_Key: fact_bend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11382344646656
+    m_Key: zad_bend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13459523371008
+    m_Key: labels_start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14433503674368
+    m_Key: max_obj_learn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15332745674752
+    m_Key: x_learn_start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15654943719424
+    m_Key: r_learn_start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15918073380864
+    m_Key: label_controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16093856661504
+    m_Key: label_specified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16280368971776
+    m_Key: label_optimum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16369757978624
+    m_Key: label_optimum_achieve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16584443428864
+    m_Key: mkm_param
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16788521484288
+    m_Key: label_cur_acc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16954381041664
+    m_Key: label_cur_bend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17286330843136
+    m_Key: label_opt_min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17416392015872
+    m_Key: label_opt_range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17733879857152
+    m_Key: data.goal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17861810323456
+    m_Key: data.more_bend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18001023467520
+    m_Key: data.more_acc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18097400184832
+    m_Key: data.less_bend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18204531097600
+    m_Key: data.less_acc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21211876425728
+    m_Key: data.yLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21238057271296
+    m_Key: data.xLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21267610337280
+    m_Key: data.zLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27147865161728
+    m_Key: squareTableHeader
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 4292937022185668659
+  references:
+    version: 2
+    RefIds:
+    - rid: 4292937022185668659
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1747982347286

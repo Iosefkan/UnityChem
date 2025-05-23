@@ -3,6 +3,7 @@ using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UIElements;
 using static UnityEngine.Rendering.DebugUI.Table;
 
@@ -22,9 +23,6 @@ public class DataPlotter : MonoBehaviour
     public float axisWidth = 0.1f;
     public int labelsCountOnAxes = 6;
     public Color axesColor = Color.blue;
-    public string xAxisLabel = "Axis X";
-    public string yAxisLabel = "Axis Y";
-    public string zAxisLabel = "Axis Z";
     public Color dataColor = Color.black;
     public float fontSize = 5f;
     public Color textColor = Color.white;
@@ -44,6 +42,16 @@ public class DataPlotter : MonoBehaviour
 
     [Header("Trajectory Settings")]
     public TMP_Text recommendedText;
+
+    public LocalizedString moreAcc;
+    public LocalizedString lessAcc;
+    public LocalizedString moreBend;
+    public LocalizedString lessBend;
+    public LocalizedString goal;
+
+    public LocalizedString xAxisLabel;
+    public LocalizedString yAxisLabel;
+    public LocalizedString zAxisLabel;
 
     private Vector3[][] matrix;
     private Vector3[][] originalMatrix;
@@ -139,7 +147,7 @@ public class DataPlotter : MonoBehaviour
         }
         else
         {
-            recommendedText.text = "Цель управления достигнута";
+            recommendedText.text = goal.GetLocalizedString();
         }
 
         line.positionCount = vec.Count;
@@ -153,22 +161,22 @@ public class DataPlotter : MonoBehaviour
 
         if (row == rowCur && col > colCur)
         {
-            recommendedText.text = "Увеличьте значение усилия контризгиба";
+            recommendedText.text = moreBend.GetLocalizedString();
             return;
         }
         if (row == rowCur && col < colCur)
         {
-            recommendedText.text = "Уменьшите значение усилия контризгиба";
+            recommendedText.text = lessBend.GetLocalizedString();
             return;
         }
         if (col == colCur && row > rowCur)
         {
-            recommendedText.text = "Увеличьте значение перекрещивания";
+            recommendedText.text = moreAcc.GetLocalizedString();
             return;
         }
         if (col == colCur && row < rowCur)
         {
-            recommendedText.text = "Уменьшите значение перекрещивания";
+            recommendedText.text = lessAcc.GetLocalizedString();
             return;
         }
     }
@@ -340,9 +348,9 @@ public class DataPlotter : MonoBehaviour
         var minY = originalMatrix.MinY();
         var minZ = originalMatrix.MinZ();
 
-        labels.Add(GetNewText("xTitle", xAxisLabel, new Vector3(0, -scaledAxis, scaledAxis) + new Vector3(0, -labelsOffset, labelsOffset), true));
-        labels.Add(GetNewText("yTitle", yAxisLabel, new Vector3(-scaledAxis, 0, -scaledAxis) + new Vector3(labelsOffset, 0, labelsOffset), true));
-        labels.Add(GetNewText("zTitle", zAxisLabel, new Vector3(scaledAxis, -scaledAxis, 0) + new Vector3(labelsOffset, -labelsOffset, 0), true));
+        labels.Add(GetNewText("xTitle", xAxisLabel.GetLocalizedString(), new Vector3(0, -scaledAxis, scaledAxis) + new Vector3(0, -labelsOffset, labelsOffset), true));
+        labels.Add(GetNewText("yTitle", yAxisLabel.GetLocalizedString(), new Vector3(-scaledAxis, 0, -scaledAxis) + new Vector3(labelsOffset, 0, labelsOffset), true));
+        labels.Add(GetNewText("zTitle", zAxisLabel.GetLocalizedString(), new Vector3(scaledAxis, -scaledAxis, 0) + new Vector3(labelsOffset, -labelsOffset, 0), true));
 
 
         // Axis X

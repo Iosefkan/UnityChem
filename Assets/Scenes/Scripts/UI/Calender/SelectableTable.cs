@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public class SelectableTable : MonoBehaviour
@@ -20,7 +23,37 @@ public class SelectableTable : MonoBehaviour
     [SerializeField] private GameObject rowPrefab;
     [SerializeField] private GameObject cellPrefab;
 
-    [SerializeField] private List<string> columns = new() { "Логин", "Роль" };
+    [SerializeField] private List<LocalizedString> columns;
+    private GameObject header;
+    public List<LocalizedString.ChangeHandler> events = new List<LocalizedString.ChangeHandler>();
+
+    private void OnEnable()
+    {
+        events = new();
+        for (int i = 0; i < columns.Count; i++)
+        {
+            int var = i;
+            events.Add((str) => UpdateHeaders(str, var));
+            columns[i].StringChanged += events[i];
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (events.Count == 0) return;
+        for (int i = 0; i < columns.Count; i++)
+        {
+            columns[i].StringChanged -= events[i];
+        }
+    }
+
+    //[SerializeField] private List<string> columns = new() { "Логин", "Роль" };
+
+    void UpdateHeaders(string text, int pos)
+    {
+        TMP_Text[] texts = header.GetComponentsInChildren<TMP_Text>();
+        texts[pos].text = text;
+    }
 
     void Awake()
     {
@@ -35,8 +68,9 @@ public class SelectableTable : MonoBehaviour
             isInit = true;
             rowPrefab.SetActive(false);
             cellPrefab.SetActive(false);
-            GameObject newRow = AddRow(columns);
+            GameObject newRow = AddRow(columns.Select(x => x.GetLocalizedString()).ToList());
             Destroy(newRow.GetComponent<Button>());
+            header = newRow;
             TMP_Text[] texts = newRow.GetComponentsInChildren<TMP_Text>();
             foreach (var text in texts)
             {

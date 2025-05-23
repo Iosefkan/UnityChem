@@ -1,11 +1,11 @@
-using System.Collections;
+п»їusing System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class LeftTrainTime : MonoBehaviour
 {
-    [SerializeField] string text = "Осталось времени: ";
+    [SerializeField] string text { get; set; } = "РћСЃС‚Р°Р»РѕСЃСЊ РІСЂРµРјРµРЅРё: ";
     [SerializeField] int warningTime = 5;
     [SerializeField] CurrTimeUpdate operTime;
 

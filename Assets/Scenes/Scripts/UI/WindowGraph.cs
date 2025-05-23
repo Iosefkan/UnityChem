@@ -5,15 +5,15 @@ using System.Linq;
 using UnityEngine.UI;
 using System;
 using UnityEngine.Assertions;
+using Microsoft.EntityFrameworkCore.Query;
 
 public class WindowGraph : MonoBehaviour
 {
     [SerializeField] private int _numberPrecisionX = 2;
     [SerializeField] private int _numberPrecisionY = 2;
 
-    public string graphName = string.Empty;
-    public string xName = string.Empty;
-    public string yName = string.Empty;
+    public string xName { get; set; } = string.Empty;
+    public string yName { get; set; } = string.Empty;
 
     [SerializeField] private Sprite circleSprite;
     private RectTransform graphContainer;
@@ -30,6 +30,17 @@ public class WindowGraph : MonoBehaviour
     private float? yMaxLineVal = null;
     private float? yMinLineVal = null;
 
+    private GameObject yLabel;
+    private GameObject xLabel;
+
+    public void SetGraphName(string graphName)
+    {
+        if (graphName != string.Empty)
+        {
+            transform.Find("graphName").GetComponent<Text>().text = graphName;
+        }
+    }
+
     private void Awake()
     {
         gameObjectList = new List<GameObject>();
@@ -39,10 +50,6 @@ public class WindowGraph : MonoBehaviour
         labelTemplateY = graphContainer.Find("labelTemplateY").GetComponent<RectTransform>();
         dashTemplateHor = graphContainer.Find("dashTemplateHor").GetComponent<RectTransform>();
         dashTemplateVer = graphContainer.Find("dashTemplateVer").GetComponent<RectTransform>();
-        if (graphName != string.Empty)
-        {
-            transform.Find("graphName").GetComponent<Text>().text = graphName;
-        }
     }
 
     public void SetYMaxMinLine(float max, float min)

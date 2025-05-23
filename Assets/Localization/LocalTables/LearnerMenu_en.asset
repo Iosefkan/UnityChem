@@ -1,0 +1,276 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: LearnerMenu_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: b59c42aea5b040341a72ca3dae9233fe, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 4292937022185668671
+  m_TableData:
+  - m_Id: 149298085888
+    m_Localized: "\rThickness variation control"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153072959488
+    m_Localized: Tables
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2275009101824
+    m_Localized: "\rTime left: "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3378094276608
+    m_Localized: 'Optimal control actions:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3693182976000
+    m_Localized: Current thickness profile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4168213069824
+    m_Localized: z, mm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4655893184512
+    m_Localized: "\rTo achieve the specified thickness variation:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4888639307776
+    m_Localized: "\rDependence of thickness variation on each control action"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5291175051264
+    m_Localized: "\rDependence\nof thickness variation\non accrossing"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5439909265408
+    m_Localized: "\rDependence\nof thickness variation\non roll bending"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6142862032896
+    m_Localized: 'The parameters specified in the training scenario:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6465332707328
+    m_Localized: "\rLearning objective:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6764025872384
+    m_Localized: 'n
+
+      C<sub>1</sub>
+
+      C<sub>2</sub>
+
+      x<sub>cur</sub>
+
+      r<sub>cur</sub>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6980158357504
+    m_Localized: '
+
+
+
+
+      mm
+
+      N
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7198425743360
+    m_Localized: 'Regulatory ranges of control actions:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7396011016192
+    m_Localized: "\rHorizontal displacement of the axis of the internal calibrating
+      roll:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7485311942656
+    m_Localized: 'Roll bending of the outer calibrating roll:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7870122557440
+    m_Localized: "\rTotal thickness profile"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8719376842752
+    m_Localized: "\rComplete training"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9365056389120
+    m_Localized: 'Actual
+
+      accrossing
+
+      value, mm'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8972498894848
+    m_Localized: "\rCalender roll 3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9601690632192
+    m_Localized: "\rSpecified\r\naccrossing\nvalue, mm"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9809010884608
+    m_Localized: Actual value of thickness variation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10819129311232
+    m_Localized: "\rCalender roll 4 \u0421\u041F"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10906840596480
+    m_Localized: "\rCalender roll 4 \u0421\u041D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11241676079104
+    m_Localized: 'Actual
+
+      roll bending
+
+      value, N'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11382344646656
+    m_Localized: 'Specified
+
+      roll bending
+
+      value, N'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13459523371008
+    m_Localized: '- Number of averaged profiles
+
+      - Weight coefficient of averaged
+      profile
+
+      - Weight coefficient of current profile
+
+      - Value of
+      horizontal displacement of the axis of the internal calibrating roll
+
+      -
+      Value of roll bending of the external calibrating roll'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14433503674368
+    m_Localized: "\rFilm thickness variation not exceeding the maximum permissible
+      value\r\nS<sup>max</sup> = {0} \xB5m - Maximum permissible thickness variation"
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 15332745674752
+    m_Localized: x<sup>min</sup>={0} mm, x<sup>max</sup>={1} mm, delta_x={2} mm
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 15654943719424
+    m_Localized: r<sup>min</sup>={0} N, r<sup>max</sup>={1} N, delta_r={2} N
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 15918073380864
+    m_Localized: "\rControl actions of suitable thickness variation,\nclosest to
+      the current control actions:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16093856661504
+    m_Localized: 'To achieve the specified thickness variation:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16280368971776
+    m_Localized: "\rOptimal control actions:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16369757978624
+    m_Localized: "\rTo achieve minimum thickness variation:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16584443428864
+    m_Localized: "{0} \xB5m"
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 16788521484288
+    m_Localized: Accrossing - {0} mm
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 16954381041664
+    m_Localized: Roll bending - {0} N
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 17286330843136
+    m_Localized: "\rMinimum thickness variation - {0} \xB5m"
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 17416392015872
+    m_Localized: "Thickness variation - {0} \xB5m < {1}"
+    m_Metadata:
+      m_Items:
+      - rid: 4292937022185668671
+  - m_Id: 17733879857152
+    m_Localized: "\rControl goal achieved"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17861810323456
+    m_Localized: Increase the roll bending value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18001023467520
+    m_Localized: Increase the accrossing value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18097400184832
+    m_Localized: "\rReduce the roll bending value"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18204531097600
+    m_Localized: "\rReduce the accrossing value"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21211876425728
+    m_Localized: "Thickness variation, \xB5m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21238057271296
+    m_Localized: Roll bending, N
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21267610337280
+    m_Localized: "\rAccrossing, mm"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27147865161728
+    m_Localized: x, mm \ r, N
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 4292937022185668671
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0000dc8f200d00000000dceef10d000000005cf33c0e00000000dc5d150f00000000dce1440f00000000dc7f6b0f000000009cc9b80f00000000dc11d70f0000

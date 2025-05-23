@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: CalenderTable Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: CalenderTable
+  m_TableCollectionNameGuidString: 863b22981b9c8a045ad65bb23d522696
+  m_Entries:
+  - m_Id: 8818262016
+    m_Key: rolls_char
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13037731840
+    m_Key: calen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15847915520
+    m_Key: barrel_diam
+    m_Metadata:
+      m_Items: []
+  - m_Id: 460637077504
+    m_Key: barrel_length
+    m_Metadata:
+      m_Items: []
+  - m_Id: 770411593728
+    m_Key: neck_diam
+    m_Metadata:
+      m_Items: []
+  - m_Id: 777432858624
+    m_Key: first
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1069280919552
+    m_Key: second
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1193591701504
+    m_Key: hole_diam
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1295421014016
+    m_Key: elasticity
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 4292937022185668644
+  references:
+    version: 2
+    RefIds:
+    - rid: 4292937022185668644
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1747976849893

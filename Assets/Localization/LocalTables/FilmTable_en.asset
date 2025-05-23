@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: FilmTable_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: a697ef6f6ff8cae4294ced2461fffec3, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 512898105344
+    m_Localized: Film
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1384239595520
+    m_Localized: Regulatory ranges of change of control actions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1962076274688
+    m_Localized: Parameters of horizontal displacement of the axis of the internal
+      calibrating roll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2142255185920
+    m_Localized: "\rParameters of the roll bending of the external calibrating roll"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2902472785920
+    m_Localized: Lower threshold value, mm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056181444608
+    m_Localized: "\rUpper threshold value, mm"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3234611331072
+    m_Localized: Variation step, mm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3593769582592
+    m_Localized: Lower threshold value, N
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3764788133888
+    m_Localized: Upper threshold value, N
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3875958161408
+    m_Localized: Variation step, N
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4639417958400
+    m_Localized: Film thickness profile array
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5480782757888
+    m_Localized: Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5548873089024
+    m_Localized: Film width, mm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5648026435584
+    m_Localized: "\rCurrent values \u200B\u200Bof control actions"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5882680967168
+    m_Localized: x<sub>cur</sub>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5967951167488
+    m_Localized: r<sub>cur</sub>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6508626313216
+    m_Localized: Load array of profiles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6587361787904
+    m_Localized: "\rCurrent thickness profile"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10468988813312
+    m_Localized: Value of the roll bending of the outer calibrating roll, N
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11220171882496
+    m_Localized: Value of the horizontal displacement of the axis of the internal
+      calibrating roll, mm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12942424408064
+    m_Localized: "\rThickness, \xB5m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13127225442304
+    m_Localized: z, mm
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

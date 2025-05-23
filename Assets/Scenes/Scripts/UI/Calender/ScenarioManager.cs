@@ -56,7 +56,7 @@ public class ScenarioManager : MonoBehaviour
     void LoadData()
     {
         using var ctx = new CalenderContext();
-        var scenario = ctx.Scenarios.AsNoTracking().FirstOrDefault(s => s.Name == scenarioDrop.captionText.text);
+        var scenario = ctx.Scenarios.Include(x => x.FilmProfileCluster).ThenInclude(x => x.FilmProfiles).AsNoTracking().FirstOrDefault(s => s.Name == scenarioDrop.captionText.text);
         SetScenario(scenario);
         UpdateOptions();
     }
@@ -89,7 +89,7 @@ public class ScenarioManager : MonoBehaviour
         thicknessMax.Val = scenario.ThicknessMax ?? 0d;
         time.Val = scenario.Minutes;
 
-        averagedCount.Val = scenario.AveragedProfilesCount;
+        averagedCount.Val = scenario.FilmProfileCluster.FilmProfiles.Count() - 1;
         averagedWeight.Val = scenario.AveragedProfileWeight;
         lastWeight.Val = scenario.LastProfileWeight;
         tableSkipStep.Val = scenario.TableSkipStep;
