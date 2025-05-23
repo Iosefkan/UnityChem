@@ -1,7 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class DataPlotter : MonoBehaviour
 {
@@ -24,10 +27,13 @@ public class DataPlotter : MonoBehaviour
     public string zAxisLabel = "Axis Z";
     public Color dataColor = Color.black;
     public float fontSize = 5f;
+    public Color textColor = Color.white;
 
     [Header("Point Settings")]
     public Color currentColor = new Color32(255, 108, 0, 255);
     public Color optimalColor = new Color32(0, 255, 228, 255);
+    public Color optimPlaneColor = new Color32(0, 255, 228, 255);
+    public Color optimTrajectoryColor = Color.cyan;
     public GameObject point;
 
     [Header("Rotation Settings")]
@@ -36,14 +42,21 @@ public class DataPlotter : MonoBehaviour
     public float verticalSpeed = 50000f;
     public Transform lookCamera;
 
+    [Header("Trajectory Settings")]
+    public TMP_Text recommendedText;
+
     private Vector3[][] matrix;
     private Vector3[][] originalMatrix;
     private Vector3 current;
-    private Vector3 optimal;
+    private Vector3? optimal;
+    private float? minPlane;
     private List<Transform> labels = new();
     private float generalOffset => 0.5f * scaleFactor;
     private float labelsOffset => 1.1f * scaleFactor;
     private GameObject currentPoint;
+    private GameObject currentTrajectory;
+    private object locked = new();
+    public Vector3 currentOptimimum;
 
     void Rotate()
     {
@@ -69,19 +82,167 @@ public class DataPlotter : MonoBehaviour
         UpdateText();
     }
 
+    GameObject DrawTrajectory()
+    {
+        float minY = 0;
+        if (optimal.HasValue) { minY = optimal.Value.y; }
+        else if (minPlane.HasValue) { minY = minPlane.Value; }
+
+        List<Vector3> vec = new();
+        var line = GetNewLineRenderer("trajectory", optimTrajectoryColor, false, true);
+        int row = 0, col = 0;
+
+        bool isFound = false;
+
+        for (int i = 0; i < originalMatrix.Length; i++)
+        {
+            for (int j = 0; j < originalMatrix[i].Length; j++)
+            {
+                if (originalMatrix[i][j] == current)
+                {
+                    row = i;
+                    col = j;
+                    isFound = true;
+                    break;
+                }
+            }
+            if (isFound) break;
+        }
+
+        List<(int, int)> path;
+
+        if (optimal is not null)
+        {
+            path = MatrixManipulator.FindPathToMinimum(originalMatrix, row, col);
+        }
+        else
+        {
+            path = MatrixManipulator.FindPathToLessThen(originalMatrix, row, col, minPlane.Value);
+        }
+
+        int counter = 0;
+        foreach (var (cRow, cCol) in path)
+        {
+            var orValue = originalMatrix[cRow][cCol];
+            var value = matrix[cRow][cCol];
+            vec.Add(value);
+            counter++;
+            if (orValue.y <= minY) break;
+        }
+
+        var coords = path.Last();
+        currentOptimimum = originalMatrix[coords.Item1][coords.Item2];
+
+        if (counter > 1)
+        {
+            SetRecommendedAction(path[1].Item1, path[1].Item2, row, col);
+        }
+        else
+        {
+            recommendedText.text = "Цель управления достигнута";
+        }
+
+        line.positionCount = vec.Count;
+        line.SetPositions(vec.ToArray());
+        return line.gameObject;
+    }
+
+    void SetRecommendedAction(int row, int col, int rowCur, int colCur)
+    {
+        if (recommendedText is null) return;
+
+        if (row == rowCur && col > colCur)
+        {
+            recommendedText.text = "Увеличьте значение усилия контризгиба";
+            return;
+        }
+        if (row == rowCur && col < colCur)
+        {
+            recommendedText.text = "Уменьшите значение усилия контризгиба";
+            return;
+        }
+        if (col == colCur && row > rowCur)
+        {
+            recommendedText.text = "Увеличьте значение перекрещивания";
+            return;
+        }
+        if (col == colCur && row < rowCur)
+        {
+            recommendedText.text = "Уменьшите значение перекрещивания";
+            return;
+        }
+    }
+
+    Vector3? SafeGetPoint(int row, int col)
+    {
+        if (row < 0 || row >= originalMatrix.Length || col < 0 || col >= originalMatrix[0].Length)
+        {
+            return null;
+        }
+
+        return originalMatrix[row][col];
+    }
+
     void CreatePlot()
     {
-        foreach (Transform tr in transform)
+        lock (locked)
         {
-            Destroy(tr);
+            labels = new();
         }
+
+        while (transform.childCount > 0)
+        {
+            DestroyImmediate(transform.GetChild(0).gameObject);
+        }
+
+
         if (drawAxes)
         {
             CreateAxesAndText();
         }
         CreatePoints();
         currentPoint = CreatePoint(current, currentColor);
-        CreatePoint(optimal, optimalColor);
+        if (optimal.HasValue)
+        {
+            CreatePoint(optimal.Value, optimalColor);
+        }
+        if (minPlane.HasValue)
+        {
+            CreateMinPlane(minPlane.Value);
+        }
+        currentTrajectory = DrawTrajectory();
+    }
+
+
+
+    void CreateMinPlane(float minYPlane)
+    {
+        var scaledAxis = axisLength * scaleFactor;
+        var maxX = originalMatrix.MaxX();
+        var maxY = originalMatrix.MaxY();
+        var maxZ = originalMatrix.MaxZ();
+
+        var minX = originalMatrix.MinX();
+        var minY = originalMatrix.MinY();
+        var minZ = originalMatrix.MinZ();
+
+        var yPoint = GetProportion(minYPlane, minY, maxY);
+
+        for (int i = 0; i < labelsCountOnAxes + 2; i++)
+        {
+            (var _, var point) = GetMidValue(i, minX, maxX, labelsCountOnAxes + 2);
+            Vector3 pointOnAxis = new(point, yPoint, -scaledAxis);
+
+            CreateAxis("Min XZ Axis " + i, pointOnAxis, new(point, yPoint, scaledAxis), optimPlaneColor, true);
+        }
+
+        for (int i = 0; i < labelsCountOnAxes + 2; i++)
+        {
+            (var _, var point) = GetMidValue(i, minZ, maxZ, labelsCountOnAxes + 2);
+            Vector3 pointOnAxis = new(-scaledAxis, yPoint, point);
+
+            CreateAxis("Min ZX Axis " + i, pointOnAxis, new(scaledAxis, yPoint, point), optimPlaneColor, true);
+        }
     }
 
     GameObject CreatePoint(Vector3 pos, Color color)
@@ -102,8 +263,10 @@ public class DataPlotter : MonoBehaviour
     public void UpdateCurrentPoint(Vector3 pos)
     {
         Destroy(currentPoint);
+        Destroy(currentTrajectory);
         current = pos;
         currentPoint = CreatePoint(current, currentColor);
+        currentTrajectory = DrawTrajectory();
     }
 
     void CreatePoints()
@@ -126,11 +289,13 @@ public class DataPlotter : MonoBehaviour
         }
     }
 
-    public void SetData(Vector3[][] points, Vector3 current, Vector3 optimal)
+    public void SetData(Vector3[][] points, Vector3 current, Vector3? optimal, float? min)
     {
+
         SetMatrix(points);
         SetCurrent(current);
         SetOptimal(optimal);
+        SetMinPlane(min);
         CreatePlot();
     }
 
@@ -140,7 +305,8 @@ public class DataPlotter : MonoBehaviour
         this.matrix = ScaledMatrix(matrix);
     }
     void SetCurrent(Vector3 cur) { this.current = cur; }
-    void SetOptimal(Vector3 optimal) { this.optimal = optimal; }
+    void SetOptimal(Vector3? optimal) { this.optimal = optimal; }
+    void SetMinPlane(float? min) { this.minPlane = min; }
 
     Vector3[][] SamplePointsMatrix()
     {
@@ -182,7 +348,7 @@ public class DataPlotter : MonoBehaviour
         // Axis X
         for (int i = 0; i < labelsCountOnAxes; i++)
         {
-            (var val, var point) = GetMidValue(i, minX, maxX);
+            (var val, var point) = GetMidValue(i, minX, maxX, labelsCountOnAxes);
             Vector3 pointOnAxis = new(point, -scaledAxis, -scaledAxis);
             AddMidText(val, pointOnAxis, Axis.X);
 
@@ -194,7 +360,7 @@ public class DataPlotter : MonoBehaviour
         // Axis Y
         for (int i = 0; i < labelsCountOnAxes; i++)
         {
-            (var val, var point) = GetMidValue(i, minY, maxY);
+            (var val, var point) = GetMidValue(i, minY, maxY, labelsCountOnAxes);
             Vector3 pointOnAxis = new(-scaledAxis, point, -scaledAxis);
             AddMidText(val, pointOnAxis, Axis.Y);
 
@@ -206,7 +372,7 @@ public class DataPlotter : MonoBehaviour
         // Axis Z
         for (int i = 0; i < labelsCountOnAxes; i++)
         {
-            (var val, var point) = GetMidValue(i, minZ, maxZ);
+            (var val, var point) = GetMidValue(i, minZ, maxZ, labelsCountOnAxes);
             Vector3 pointOnAxis = new(-scaledAxis, -scaledAxis, point);
             AddMidText(val, pointOnAxis, Axis.Z);
 
@@ -216,9 +382,9 @@ public class DataPlotter : MonoBehaviour
         }
     }
 
-    void CreateAxis(string name, Vector3 start, Vector3 end, Color color)
+    void CreateAxis(string name, Vector3 start, Vector3 end, Color color, bool thick = false)
     {
-        var lr = GetNewLineRenderer(name, color, false);
+        var lr = GetNewLineRenderer(name, color, false, thick);
         lr.positionCount = 2;
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
@@ -262,7 +428,7 @@ public class DataPlotter : MonoBehaviour
         var point = scaledLength - prop * (2 * scaledLength);
         return point;
     }
-    LineRenderer GetNewLineRenderer(string name, Color rendererColor, bool isPlot = true)
+    LineRenderer GetNewLineRenderer(string name, Color rendererColor, bool isPlot = true, bool isThick = false)
     {
         GameObject axis = new GameObject(name);
         axis.layer = gameObject.layer;
@@ -272,12 +438,15 @@ public class DataPlotter : MonoBehaviour
         LineRenderer lr = axis.AddComponent<LineRenderer>();
         lr.useWorldSpace = false;
 
-        float scalecWidth = axisWidth * (isPlot ? 0.75f : 1) * scaleFactor;
+        var mult = isThick ? 1.5f : isPlot ? 0.75f : 1;
+
+        float scalecWidth = axisWidth * mult * scaleFactor;
         lr.startWidth = scalecWidth;
         lr.endWidth = scalecWidth;
         lr.material = new Material(Shader.Find("Unlit/Color"));
         lr.material.color = rendererColor;
         axis.transform.localScale = new Vector3(1, 1, 1);
+        axis.transform.localRotation = Quaternion.Euler(0, 0, 0);
         return lr;
     }
 
@@ -296,6 +465,7 @@ public class DataPlotter : MonoBehaviour
         rect.sizeDelta = new(size * 2f / 10f, size / 2f / 10f);
         text.text = label;
         text.fontSize = fontSize;
+        text.color = textColor;
         textObj.transform.localScale = new Vector3(1, 1, 1);
         return textObj.transform;
     }
@@ -337,10 +507,13 @@ public class DataPlotter : MonoBehaviour
 
     void UpdateText()
     {
-        var camera = lookCamera.transform;
-        foreach (var label in labels)
+        lock (locked)
         {
-            label.rotation = Quaternion.LookRotation(label.position - camera.position);
+            var camera = lookCamera.transform;
+            foreach (var label in labels)
+            {
+                label.rotation = Quaternion.LookRotation(label.position - camera.position);
+            }
         }
     }
 
@@ -355,9 +528,9 @@ public class DataPlotter : MonoBehaviour
         labels.Add(GetNewText(point.ToString(), value.ToString("F"), point + offset));
     }
 
-    (float, float) GetMidValue(int index, float min, float max)
+    (float, float) GetMidValue(int index, float min, float max, int count)
     {
-        var value = min + ((max - min) / (labelsCountOnAxes - 1) * index);
+        var value = min + ((max - min) / (count - 1) * index);
         var point = GetProportion(value, min, max);
         return (value, point);
     }

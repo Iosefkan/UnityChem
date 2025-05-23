@@ -1,6 +1,7 @@
 ﻿using CalenderDatabase;
 using SimpleFileBrowser;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
@@ -50,14 +51,14 @@ public class LoadProfile : MonoBehaviour
 
         for (int l = 0; l < values.Length; l++)
         {
-            if (!double.TryParse(values[l][0], out var coordinate))
+            if (!double.TryParse(values[l][0], NumberStyles.Float, CultureInfo.InvariantCulture, out var coordinate))
             {
                 continue;
             }
 
             for (int i = 1; i < values[l].Length; i++)
             {
-                if (!double.TryParse(values[l][i], out var thickness))
+                if (!double.TryParse(values[l][i], NumberStyles.Float, CultureInfo.InvariantCulture, out var thickness))
                 {
                     continue;
                 }

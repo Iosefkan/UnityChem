@@ -16,6 +16,7 @@ public class StartStopTrain : MonoBehaviour
 
     [SerializeField] private Recalculates calcs;
     [SerializeField] private TMP_Dropdown filmDD;
+    private bool _enabled = true;
 
     void Start()
     {
@@ -23,10 +24,12 @@ public class StartStopTrain : MonoBehaviour
         _click.click.AddListener(StopTrain);
         _startBtn.onClick.AddListener(StartTrain);
     }
+    
+    public void SetEnabled(bool enabled) => _enabled = enabled;
 
     void Update()
     {
-        if (_leftTime.GetLeftMin() <= 0)
+        if (_enabled && _leftTime.GetLeftMin() <= 0)
         {
             StopTrain();
         }

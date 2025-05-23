@@ -38,12 +38,13 @@ public class Rotater : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Transform rotateTarget;
     public float horizontalSpeed = 1;
     public float verticalSpeed = 1;
+    public float scrollMult = 1;
 
     private void Update()
     {
         if (update && Input.GetMouseButton(0))
         {
-            float h = -horizontalSpeed * Input.GetAxis("Mouse X") * Time.deltaTime;
+            float h = -horizontalSpeed * Input.GetAxis("Mouse X") * scrollMult * Time.deltaTime;
             // float v = verticalSpeed * Input.GetAxis("Mouse Y") * Time.deltaTime;
             rotateTarget.Rotate(0, h, 0);
         }
