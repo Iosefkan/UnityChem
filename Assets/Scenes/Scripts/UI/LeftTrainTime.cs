@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LeftTrainTime : MonoBehaviour
 {
-    [SerializeField] string text { get; set; } = "Осталось времени: ";
+    public string text { get; set; } = "Осталось времени: ";
     [SerializeField] int warningTime = 5;
     [SerializeField] CurrTimeUpdate operTime;
 

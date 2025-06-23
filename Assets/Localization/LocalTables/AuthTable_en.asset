@@ -19,8 +19,8 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 15772418048
-    m_Localized: "\rComputer training system for quality management of polymeric
-      materials at the main stages of polymer film production"
+    m_Localized: "\rComputer training system for quality control of polymeric materials
+      at the main stages of polymer film production"
     m_Metadata:
       m_Items: []
   - m_Id: 19861864448
@@ -127,6 +127,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 64256550371328
     m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1141606180454400
+    m_Localized: Loading...
     m_Metadata:
       m_Items: []
   references:

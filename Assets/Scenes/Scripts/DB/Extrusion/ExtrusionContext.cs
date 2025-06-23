@@ -70,6 +70,7 @@ namespace Database
                 
                 string connectStr = File.ReadAllText(ConnectFile, Encoding.UTF8);
                 optionsBuilder.UseNpgsql(connectStr);
+                //optionsBuilder.UseSqlite("Data Source=Extrusion.db");
             }
         }
 

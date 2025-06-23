@@ -123,7 +123,7 @@ public class ProfileClusterManager : MonoBehaviour
         using var ctx = new CalenderContext();
         var profileCluster = ctx.FilmProfileClusters.Find(currentId);
 
-        var profiles = ctx.FilmProfiles.Where(fp => fp.FilmProfileClusterId == profileCluster.Id);
+        var profiles = ctx.FilmProfiles.Where(fp => fp.FilmProfileClusterId == profileCluster.Id).ToList();
         ctx.FilmProfiles.RemoveRange(profiles);
 
         profileCluster.Width = (double)width.Val;

@@ -60,7 +60,14 @@ public class Avtorization : MonoBehaviour
 
         if (validRole)
         {
+            ClearFields();
             gameObject.SetActive(false);
         }
+    }
+
+    void ClearFields()
+    {
+        _loginObj.text = string.Empty;
+        _passwordObj.text = string.Empty;
     }
 }
