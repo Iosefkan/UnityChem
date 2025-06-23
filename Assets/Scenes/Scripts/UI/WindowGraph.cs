@@ -5,15 +5,15 @@ using System.Linq;
 using UnityEngine.UI;
 using System;
 using UnityEngine.Assertions;
+using Microsoft.EntityFrameworkCore.Query;
 
 public class WindowGraph : MonoBehaviour
 {
     [SerializeField] private int _numberPrecisionX = 2;
     [SerializeField] private int _numberPrecisionY = 2;
 
-    public string graphName = string.Empty;
-    public string xName = string.Empty;
-    public string yName = string.Empty;
+    public string xName { get; set; } = string.Empty;
+    public string yName { get; set; } = string.Empty;
 
     [SerializeField] private Sprite circleSprite;
     private RectTransform graphContainer;
@@ -30,6 +30,17 @@ public class WindowGraph : MonoBehaviour
     private float? yMaxLineVal = null;
     private float? yMinLineVal = null;
 
+    private GameObject yLabel;
+    private GameObject xLabel;
+
+    public void SetGraphName(string graphName)
+    {
+        if (graphName != string.Empty)
+        {
+            transform.Find("graphName").GetComponent<Text>().text = graphName;
+        }
+    }
+
     private void Awake()
     {
         gameObjectList = new List<GameObject>();
@@ -39,10 +50,6 @@ public class WindowGraph : MonoBehaviour
         labelTemplateY = graphContainer.Find("labelTemplateY").GetComponent<RectTransform>();
         dashTemplateHor = graphContainer.Find("dashTemplateHor").GetComponent<RectTransform>();
         dashTemplateVer = graphContainer.Find("dashTemplateVer").GetComponent<RectTransform>();
-        if (graphName != string.Empty)
-        {
-            transform.Find("graphName").GetComponent<Text>().text = graphName;
-        }
     }
 
     public void SetYMaxMinLine(float max, float min)
@@ -88,6 +95,11 @@ public class WindowGraph : MonoBehaviour
 
         float yMax = valueList.Max((Vector vec) => { return vec.Y; });
         float yMin = valueList.Min((Vector vec) => { return vec.Y; });
+        if ((int)yMax == (int)yMin)
+        {
+            yMax += 1;
+            yMin -= 1;
+        }
         float xMax = valueList.Max((Vector vec) => { return vec.X; });
         float xMin = valueList.Min((Vector vec) => { return vec.X; });
 
@@ -153,7 +165,6 @@ public class WindowGraph : MonoBehaviour
         {
             float y = yMax > yMaxLineVal.Value ? yMaxLineVal.Value : yMax;
             y = yMin < y ? y : yMin;
-            Debug.Log($"max {yMax} {yMin} {yMaxLineVal.Value} {y}");
             isMaxMin = true;
             Vector2 lastCircle = ShowValue(new Vector(xMin, y), null, xMax, xMin, yMax, yMin);
             lastCircle = ShowValue(new Vector(xMax, y), lastCircle, xMax, xMin, yMax, yMin);
@@ -163,7 +174,6 @@ public class WindowGraph : MonoBehaviour
         {
             float y = yMin < yMinLineVal.Value ? yMinLineVal.Value : yMin;
             y = yMax > y ? y : yMax;
-            Debug.Log($"min {yMax} {yMin} {yMinLineVal.Value} {y}");
             isMaxMin = true;
             Vector2 lastCircle = ShowValue(new Vector(xMin, y), null, xMax, xMin, yMax, yMin);
             lastCircle = ShowValue(new Vector(xMax, y), lastCircle, xMax, xMin, yMax, yMin);
@@ -261,6 +271,7 @@ public class WindowGraph : MonoBehaviour
     private void ClearObjs()
     {
         Debug.Assert(gameObject is not null);
+        if (gameObjectList is null) return;
         foreach (GameObject gameObject in gameObjectList)
         {
             Destroy(gameObject);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CurrTimeUpdate : MonoBehaviour
 {
-    TimeSpan trainTime;
+    TimeSpan? trainTime;
 
     TMP_Text _text;
     DateTime _startTime;
@@ -17,6 +17,7 @@ public class CurrTimeUpdate : MonoBehaviour
 
     void Update()
     {
+        if (trainTime is null) return;
         _text.text = GetTimeStr();
     }
 
@@ -44,7 +45,8 @@ public class CurrTimeUpdate : MonoBehaviour
 
     public TimeSpan GetLeftTime()
     {
-        return trainTime - GetTime();
+        if (trainTime.HasValue) return trainTime.Value - GetTime();
+        else return TimeSpan.Zero;
     }
 
     public double GetLeftMin()

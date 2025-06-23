@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Scenario_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: f6d41d18b69a55546b48302b9aef4b65, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 6083575808
+    m_Localized: "\rScenario"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8965062656
+    m_Localized: "\rTraining scenario"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11364204544
+    m_Localized: "\rTraining time, min"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 503876157440
+    m_Localized: Learning objective
+    m_Metadata:
+      m_Items: []
+  - m_Id: 668896854016
+    m_Localized: Minimum film thickness variation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 673544142848
+    m_Localized: Film thickness variation not exceeding the maximum permissible value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 919972085760
+    m_Localized: "Maximum permissible thickness variation, \xB5m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1008845193216
+    m_Localized: Features of thickness control system
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1200789127168
+    m_Localized: Number of profiles averaged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1378040414208
+    m_Localized: Weight coefficient of the average profile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451738529792
+    m_Localized: Weight coefficient of the current profile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1560538775552
+    m_Localized: Number of skipped steps for calculating the maximum thickness variation
+      when outputting to tables
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Shared
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 3111f9738a06746418c76da5903420b1
+  m_SerializeEntries:
+  - m_GUID: a697ef6f6ff8cae4294ced2461fffec3
+    m_Address: Assets/Localization/LocalTables/MenuTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9a6036e3290d964e9e4d8456c5699e9
+    m_Address: Assets/Localization/LocalTables/AuthTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 863b22981b9c8a045ad65bb23d522696
+    m_Address: Assets/Localization/LocalTables/CalenderTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6d41d18b69a55546b48302b9aef4b65
+    m_Address: Assets/Localization/LocalTables/Scenario Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b59c42aea5b040341a72ca3dae9233fe
+    m_Address: Assets/Localization/LocalTables/LearnerMenu Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: bc1f507b6615f7342a5f25d7c860e457, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bb277a7aab62e8c48803a7810af3eb1a, type: 2}
+    - {fileID: 11400000, guid: dc9f5420eb4ac6d43a9c74589f3b6bc9, type: 2}

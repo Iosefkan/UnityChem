@@ -13,6 +13,10 @@ public class LoadColorIntervals : MonoBehaviour
     [SerializeField] private TMP_Dropdown filmDD;
     [SerializeField] private DoubleValue maxDelE;
 
+    [SerializeField] private GameObject popup;
+    [SerializeField] private ConfirmColorPopup conf;
+    [SerializeField] private Image avgColor;
+
     public void Awake()
     {
         filmDD.onValueChanged.AddListener((int _) => Load());
@@ -45,6 +49,10 @@ public class LoadColorIntervals : MonoBehaviour
             if (interval.IsBaseColor) row.GetComponent<BaseSelected>().Selected(interval.IsBaseColor);
             toggle.group = intervalsPanel.GetComponent<ToggleGroup>();
             row.GetComponentInChildren<SetColor>().Set(ColorHelper.LabToRGB(new Vector3(interval.L, interval.a, interval.b)));
+            var openPicker = row.GetComponentInChildren<OpenColorPickerPopup>();
+            openPicker.popup = popup;
+            openPicker.conf = conf;
+            openPicker.avgColor = avgColor;
         }
     }
 }

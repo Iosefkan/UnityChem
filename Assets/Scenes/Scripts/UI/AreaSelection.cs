@@ -1,15 +1,14 @@
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Linq;
-using UnityEditor.Build;
 
 public class AreaSelection : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     [SerializeField] private Image image;
     [SerializeField] private Image displayAvgColor;
     [SerializeField] private float borderThicknessFactor = 0.01f;
+    [SerializeField] private SetCieLabText text;
 
     private bool firstDraw = true;
     private Texture2D origTex;
@@ -115,6 +114,7 @@ public class AreaSelection : MonoBehaviour, IPointerDownHandler, IBeginDragHandl
 
         average = GetAverageColor(start, current);
         displayAvgColor.color = average;
+        text.SetColor(average);
         var labColor = ColorHelper.RGBToLab(average);
         Debug.Log("Average color: " + (Color32)average);
         Debug.Log("CieLab color: " + labColor);

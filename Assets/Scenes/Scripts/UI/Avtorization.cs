@@ -1,28 +1,73 @@
+﻿using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public class Avtorization : MonoBehaviour
 {
-    [SerializeField] GameObject _panel;
-
+    [SerializeField] LocalizedString error;
+    [SerializeField] LocalizedString roleError;
     [SerializeField] TMP_InputField _loginObj;
     [SerializeField] TMP_InputField _passwordObj;
     [SerializeField] Button _btn;
 
-    [SerializeField] string _login = "login";
-    [SerializeField] string _password = "password";
+    [SerializeField] GameObject adminPanel;
+    [SerializeField] GameObject calenderInstrPanel;
+    [SerializeField] GameObject extrInstrPanel;
+    [SerializeField] TMP_Text errorLabel;
 
-    void Start()
+    void Awake()
     {
-        _btn.onClick.AddListener(TryAvtoriz);
+        _btn.onClick.AddListener(TryAuth);
     }
 
-    void TryAvtoriz()
+    private void OnDestroy()
     {
-        if (_loginObj.text == _login && _passwordObj.text == _password)
+        _btn.onClick.RemoveListener(TryAuth);
+    }
+
+    void TryAuth()
+    {
+        var login = _loginObj.text;
+        var password = HashHelper.GetSha256Hash(_passwordObj.text);
+        using var ctx = new UsersContext();
+        var user = ctx.Users.FirstOrDefault(u => u.Login == login && u.Password == password);
+        if (user is null)
         {
-            _panel.SetActive(false);
+            errorLabel.text = error.GetLocalizedString();
+            return;
         }
+        bool validRole = false;
+        switch (user.RoleId)
+        {
+            case 1:
+                validRole = true;
+                adminPanel.SetActive(true);
+                break;
+            case 2:
+                validRole = true;
+                calenderInstrPanel.SetActive(true);
+                break;
+            case 3:
+                validRole = true;
+                extrInstrPanel.SetActive(true);
+                break;
+            default:
+                errorLabel.text = roleError.GetLocalizedString();
+                break;
+        }
+
+        if (validRole)
+        {
+            ClearFields();
+            gameObject.SetActive(false);
+        }
+    }
+
+    void ClearFields()
+    {
+        _loginObj.text = string.Empty;
+        _passwordObj.text = string.Empty;
     }
 }

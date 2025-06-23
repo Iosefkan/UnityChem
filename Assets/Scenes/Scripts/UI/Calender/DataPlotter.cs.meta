@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f9d1d3820bdd95545b1e60c567739378
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - dataPointPrefab: {instanceID: 0}
+  - plotParent: {instanceID: 0}
+  - axisMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  executionOrder: -20
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
